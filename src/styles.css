@@ -34,12 +34,15 @@ body::before {
   z-index: -3;
   content: "";
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.7) 1px, transparent 1px),
-    linear-gradient(rgba(255, 255, 255, 0.7) 1px, transparent 1px),
-    radial-gradient(circle at 12% 18%, rgba(47, 199, 189, 0.2), transparent 28%),
+    linear-gradient(90deg, rgba(255, 249, 238, 0.96) 0%, rgba(255, 249, 238, 0.72) 46%, rgba(255, 249, 238, 0.9) 100%),
+    radial-gradient(circle at 12% 18%, rgba(47, 199, 189, 0.26), transparent 28%),
     radial-gradient(circle at 86% 10%, rgba(255, 201, 79, 0.28), transparent 26%),
+    url("/story/treehouse-atmosphere.jpg"),
     linear-gradient(135deg, #fff9ee 0%, #efffff 52%, #fff2f5 100%);
-  background-size: 54px 54px, 54px 54px, auto, auto, auto;
+  background-position: center, center, center, right top, center;
+  background-repeat: no-repeat;
+  background-size: auto, auto, auto, min(62vw, 760px) auto, auto;
+  opacity: 0.9;
 }
 
 #magic-world {
@@ -115,23 +118,52 @@ a {
 
 .brand {
   position: relative;
-  gap: 10px;
+  gap: 12px;
   font-family: "Baloo 2", Inter, sans-serif;
-  font-size: 1.15rem;
   font-weight: 800;
   white-space: nowrap;
 }
 
 .brand-mark {
   display: grid;
-  width: 38px;
-  height: 38px;
+  width: 54px;
+  height: 54px;
   place-items: center;
-  border: 2px solid var(--ink);
+  overflow: hidden;
+  border: 3px solid white;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--blue), #2fc7bd);
-  color: white;
-  box-shadow: 5px 5px 0 var(--gold);
+  background: var(--gold);
+  box-shadow: 0 0 0 2px var(--ink), 6px 6px 0 var(--gold);
+  transform: rotate(-4deg);
+}
+
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.08);
+}
+
+.brand-text {
+  display: grid;
+  gap: 0;
+  color: var(--ink);
+  font-family: "Baloo 2", Inter, sans-serif;
+  font-size: clamp(1.15rem, 2vw, 1.75rem);
+  font-weight: 800;
+  line-height: 0.82;
+  text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.9);
+}
+
+.brand-text span:first-child {
+  color: var(--rose);
+}
+
+.brand-text span:last-child {
+  background: linear-gradient(90deg, var(--blue), var(--aqua), #a8334f);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .nav-links {

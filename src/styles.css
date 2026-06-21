@@ -1,0 +1,617 @@
+:root {
+  color: #172033;
+  background: #fff9ee;
+  font-family: Inter, system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --ink: #172033;
+  --paper: #fff9ee;
+  --aqua: #2fc7bd;
+  --rose: #ff5573;
+  --gold: #ffc94f;
+  --blue: #4169e1;
+  --line: rgba(23, 32, 51, 0.14);
+  --shadow: 0 24px 70px rgba(23, 32, 51, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  overflow-x: hidden;
+}
+
+body::before {
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  content: "";
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.7) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.7) 1px, transparent 1px),
+    radial-gradient(circle at 12% 18%, rgba(47, 199, 189, 0.2), transparent 28%),
+    radial-gradient(circle at 86% 10%, rgba(255, 201, 79, 0.28), transparent 26%),
+    linear-gradient(135deg, #fff9ee 0%, #efffff 52%, #fff2f5 100%);
+  background-size: 54px 54px, 54px 54px, auto, auto, auto;
+}
+
+#magic-world {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px clamp(18px, 4vw, 54px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+  background: rgba(255, 249, 238, 0.76);
+  backdrop-filter: blur(18px);
+}
+
+.brand,
+.nav-links,
+.hero-actions,
+.teacher-resources {
+  display: flex;
+  align-items: center;
+}
+
+.brand {
+  gap: 10px;
+  font-family: "Baloo 2", Inter, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.brand-mark {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--blue);
+  color: white;
+  box-shadow: 5px 5px 0 var(--gold);
+}
+
+.nav-links {
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.nav-links a,
+.nav-cta {
+  padding: 10px 12px;
+  border: 1px solid transparent;
+}
+
+.nav-links a:hover,
+.nav-cta:hover {
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.nav-cta {
+  border: 1px solid var(--ink);
+  background: var(--gold);
+  font-size: 0.84rem;
+  font-weight: 900;
+  box-shadow: 4px 4px 0 var(--ink);
+  white-space: nowrap;
+}
+
+.section-band {
+  width: min(1180px, calc(100% - 32px));
+  margin-inline: auto;
+}
+
+.hero {
+  min-height: calc(100vh - 70px);
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.15fr);
+  align-items: center;
+  gap: clamp(24px, 5vw, 72px);
+  padding: 58px 0 44px;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: #a8334f;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: "Baloo 2", Inter, sans-serif;
+  line-height: 0.98;
+}
+
+h1 {
+  max-width: 720px;
+  color: var(--ink);
+  font-size: clamp(4rem, 12vw, 9.6rem);
+}
+
+h2 {
+  font-size: clamp(2.2rem, 5vw, 4.7rem);
+}
+
+h3 {
+  font-size: 1.8rem;
+}
+
+p {
+  line-height: 1.7;
+}
+
+.hero-lede,
+.section-heading p,
+.book-panel p,
+.profile-section p,
+.invite-copy p,
+.teachers .section-heading p {
+  max-width: 660px;
+  color: rgba(23, 32, 51, 0.76);
+  font-size: 1.07rem;
+}
+
+.hero-actions {
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 30px;
+}
+
+.button {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  border: 2px solid var(--ink);
+  font-weight: 900;
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.button.primary {
+  background: var(--rose);
+  color: white;
+}
+
+.button.secondary {
+  background: white;
+}
+
+.hero-art {
+  position: relative;
+  min-height: 430px;
+  display: grid;
+  place-items: center;
+  perspective: 900px;
+}
+
+.portal-ring {
+  position: absolute;
+  width: min(72vw, 580px);
+  aspect-ratio: 1;
+  border: 18px solid rgba(47, 199, 189, 0.28);
+  border-left-color: rgba(255, 85, 115, 0.56);
+  border-bottom-color: rgba(255, 201, 79, 0.62);
+  border-radius: 50%;
+  animation: spinPortal 15s linear infinite;
+}
+
+.hero-art img {
+  position: relative;
+  width: min(100%, 760px);
+  max-height: 62vh;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  filter: drop-shadow(0 34px 34px rgba(23, 32, 51, 0.18));
+  transform: rotateX(7deg) rotateY(-8deg);
+}
+
+.story-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin-top: -16px;
+  border: 2px solid var(--ink);
+  background: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+.story-strip div {
+  min-height: 126px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.story-strip strong {
+  display: block;
+  margin-bottom: 8px;
+  font-family: "Baloo 2", Inter, sans-serif;
+  font-size: 1.8rem;
+}
+
+.story-strip span {
+  color: rgba(23, 32, 51, 0.7);
+}
+
+.characters,
+.companion,
+.curriculum,
+.profile-section,
+.invite,
+.teachers {
+  padding: 110px 0 0;
+}
+
+.section-heading {
+  margin-bottom: 36px;
+}
+
+.character-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.character-card {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  display: grid;
+  grid-template-columns: 44% 1fr;
+  min-height: 282px;
+  overflow: hidden;
+  border: 2px solid var(--ink);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 8px 8px 0 rgba(23, 32, 51, 0.9);
+  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transform-style: preserve-3d;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.character-card:hover {
+  box-shadow: 13px 13px 0 rgba(23, 32, 51, 0.9);
+}
+
+.character-card.featured {
+  grid-column: span 2;
+  background: linear-gradient(135deg, #fff 0%, #ecfbff 54%, #fff1d1 100%);
+}
+
+.character-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  align-self: end;
+  padding: 18px 0 0 12px;
+  mix-blend-mode: multiply;
+  transform: translateZ(24px);
+}
+
+.character-card div {
+  align-self: center;
+  padding: 24px 24px 24px 10px;
+}
+
+.character-card span {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #a8334f;
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.character-card p {
+  margin-bottom: 0;
+  color: rgba(23, 32, 51, 0.7);
+}
+
+.companion {
+  display: grid;
+  grid-template-columns: 0.92fr 1.08fr;
+  gap: 28px;
+  align-items: center;
+}
+
+.book-panel {
+  padding: 34px;
+  border: 2px solid var(--ink);
+  background: #172033;
+  color: white;
+  box-shadow: 10px 10px 0 var(--aqua);
+}
+
+.book-panel p {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.module-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.module-stack div {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 12px;
+  padding: 20px;
+  border: 2px solid var(--ink);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+.module-stack span {
+  grid-row: span 2;
+  color: var(--blue);
+  font-family: "Baloo 2", Inter, sans-serif;
+  font-size: 2.5rem;
+  font-weight: 800;
+}
+
+.module-stack strong {
+  font-size: 1.35rem;
+}
+
+.module-stack small {
+  color: rgba(23, 32, 51, 0.66);
+}
+
+.curriculum-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.8fr);
+  gap: 28px;
+  align-items: center;
+}
+
+.curriculum-copy {
+  padding: 30px;
+  border-left: 8px solid var(--rose);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.curriculum-copy ul {
+  margin: 24px 0 0;
+  padding-left: 20px;
+  line-height: 2;
+  font-weight: 700;
+}
+
+.curriculum-orbit {
+  position: relative;
+  min-height: 390px;
+  border: 2px solid var(--ink);
+  background: linear-gradient(150deg, rgba(47, 199, 189, 0.9), rgba(65, 105, 225, 0.88));
+  box-shadow: 10px 10px 0 var(--gold);
+}
+
+.curriculum-orbit::before,
+.curriculum-orbit::after {
+  position: absolute;
+  inset: 58px;
+  content: "";
+  border: 2px dashed rgba(255, 255, 255, 0.76);
+  border-radius: 50%;
+  animation: spinPortal 18s linear infinite reverse;
+}
+
+.curriculum-orbit::after {
+  inset: 112px;
+  animation-duration: 12s;
+}
+
+.curriculum-orbit span {
+  position: absolute;
+  padding: 10px 12px;
+  border: 2px solid var(--ink);
+  background: white;
+  font-weight: 900;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.curriculum-orbit span:nth-child(1) { top: 42px; left: 38px; }
+.curriculum-orbit span:nth-child(2) { top: 120px; right: 28px; }
+.curriculum-orbit span:nth-child(3) { bottom: 88px; left: 52px; }
+.curriculum-orbit span:nth-child(4) { right: 48px; bottom: 42px; }
+
+.profile-section,
+.invite {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.profile-section > div {
+  padding: 34px;
+  border: 2px solid var(--ink);
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 8px 8px 0 var(--ink);
+}
+
+.invite {
+  align-items: start;
+}
+
+.invite-copy {
+  padding-top: 12px;
+}
+
+.invite-form {
+  display: grid;
+  gap: 14px;
+  padding: 26px;
+  border: 2px solid var(--ink);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 10px 10px 0 var(--blue);
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  font-weight: 900;
+}
+
+input,
+select {
+  width: 100%;
+  min-height: 46px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: #fffdf8;
+  color: var(--ink);
+  font: inherit;
+  padding: 10px 12px;
+}
+
+.teachers {
+  padding-bottom: 96px;
+}
+
+.teacher-resources {
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.teacher-resources a {
+  padding: 16px 18px;
+  border: 2px solid var(--ink);
+  background: var(--gold);
+  font-weight: 900;
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.site-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 28px clamp(18px, 4vw, 54px);
+  border-top: 2px solid var(--ink);
+  background: var(--ink);
+  color: white;
+}
+
+.site-footer span:first-child {
+  font-family: "Baloo 2", Inter, sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+@keyframes spinPortal {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 980px) {
+  .site-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .nav-links {
+    justify-content: flex-start;
+  }
+
+  .hero,
+  .companion,
+  .curriculum-layout,
+  .profile-section,
+  .invite {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    min-height: auto;
+    padding-top: 42px;
+  }
+
+  .hero-art {
+    min-height: 300px;
+  }
+
+  .story-strip,
+  .character-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .character-card.featured {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 620px) {
+  .nav-cta {
+    width: 100%;
+    text-align: center;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .section-band {
+    width: min(100% - 24px, 1180px);
+  }
+
+  h1 {
+    font-size: clamp(3.6rem, 18vw, 5.2rem);
+  }
+
+  .character-card {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .character-card img {
+    height: 260px;
+    padding: 12px 12px 0;
+  }
+
+  .character-card div {
+    padding: 18px;
+  }
+
+  .story-strip div,
+  .book-panel,
+  .profile-section > div,
+  .invite-form,
+  .curriculum-copy {
+    padding: 20px;
+  }
+
+  .site-footer {
+    flex-direction: column;
+  }
+}

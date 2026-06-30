@@ -317,44 +317,35 @@ p {
   transform: rotateX(7deg) rotateY(-8deg);
 }
 
-.hero-art .hero-rider {
+.hero-art .hero-rider,
+.hero-rider-video {
   z-index: 3;
-  width: min(118%, 760px);
+  width: min(104%, 700px);
   max-height: min(72vh, 720px);
-  mix-blend-mode: normal;
   filter: drop-shadow(0 32px 28px rgba(23, 32, 51, 0.22));
   transform: translateX(2%) rotateX(5deg) rotateY(-7deg);
   transform-origin: center bottom;
   animation: riderFloat 5.8s ease-in-out infinite;
 }
 
-.hero-art .cape-billow {
+.hero-art .hero-rider {
+  mix-blend-mode: normal;
+}
+
+.hero-rider-video {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  mix-blend-mode: screen;
+  opacity: 0.98;
+  filter: saturate(1.12) contrast(1.08) drop-shadow(0 32px 28px rgba(23, 32, 51, 0.18));
+}
+
+.hero-rider-fallback {
   position: absolute;
   z-index: 2;
-  width: min(66vw, 610px);
-  max-width: 88%;
-  height: auto;
-  left: 4%;
-  top: 26%;
-  object-fit: contain;
-  opacity: 0.38;
-  mix-blend-mode: multiply;
-  filter: saturate(1.22) blur(0.2px);
-  clip-path: polygon(0 0, 88% 0, 82% 100%, 0 100%);
-  transform-origin: 92% 38%;
+  opacity: 0.16;
   pointer-events: none;
-}
-
-.cape-billow-back {
-  animation: capeBillowBack 5.4s ease-in-out infinite;
-}
-
-.cape-billow-front {
-  z-index: 3;
-  opacity: 0.3;
-  filter: saturate(1.28) blur(0.1px);
-  animation: capeBillowFront 3.8s ease-in-out infinite;
-  animation-delay: -1.1s;
 }
 
 .story-strip {
@@ -662,32 +653,6 @@ select {
   }
 }
 
-@keyframes capeBillowBack {
-  0%,
-  100% {
-    transform: translate3d(-2%, 2%, 0) rotate(-5deg) scaleX(1.02) scaleY(0.98) skewY(1deg);
-    opacity: 0.3;
-  }
-
-  45% {
-    transform: translate3d(-6%, -1%, 0) rotate(-1deg) scaleX(1.11) scaleY(1.02) skewY(-3deg);
-    opacity: 0.44;
-  }
-}
-
-@keyframes capeBillowFront {
-  0%,
-  100% {
-    transform: translate3d(1%, 0, 0) rotate(-3deg) scaleX(0.98) scaleY(1) skewY(0deg);
-    opacity: 0.22;
-  }
-
-  50% {
-    transform: translate3d(-3%, 2%, 0) rotate(2deg) scaleX(1.06) scaleY(0.96) skewY(3deg);
-    opacity: 0.36;
-  }
-}
-
 @keyframes riderFloat {
   0%,
   100% {
@@ -732,15 +697,10 @@ select {
     min-height: 520px;
   }
 
-  .hero-art .hero-rider {
-    width: min(100%, 620px);
+  .hero-art .hero-rider,
+  .hero-rider-video {
+    width: min(100%, 600px);
     max-height: 520px;
-  }
-
-  .hero-art .cape-billow {
-    width: min(72vw, 500px);
-    left: 5%;
-    top: 28%;
   }
 
   .story-strip,
@@ -781,16 +741,11 @@ select {
     overflow: hidden;
   }
 
-  .hero-art .hero-rider {
+  .hero-art .hero-rider,
+  .hero-rider-video {
     width: min(100%, 440px);
     max-height: 390px;
     transform: translateX(0) rotateX(4deg) rotateY(-5deg);
-  }
-
-  .hero-art .cape-billow {
-    width: min(88vw, 360px);
-    left: -6%;
-    top: 32%;
   }
 
   .character-card {

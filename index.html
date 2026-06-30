@@ -54,9 +54,17 @@
         </div>
         <div class="hero-art rider-hero-art" aria-label="Rider with his red cape blowing">
           <div class="portal-ring"></div>
-          <img class="cape-billow cape-billow-back" src="/characters/rider-cape-only.png" alt="" aria-hidden="true" />
-          <img class="cape-billow cape-billow-front" src="/characters/rider-cape-only.png" alt="" aria-hidden="true" />
-          <img class="hero-rider" src="/characters/rider-hero.png" alt="Rider wearing his red cape" />
+          <video
+            class="hero-rider-video"
+            src="/story/rider-cape-kling.mp4"
+            poster="/characters/rider-hero.png"
+            autoplay
+            muted
+            loop
+            playsinline
+            aria-label="Rider with his cape blowing"
+          ></video>
+          <img class="hero-rider hero-rider-fallback" src="/characters/rider-hero.png" alt="Rider wearing his red cape" />
         </div>
       </section>
 

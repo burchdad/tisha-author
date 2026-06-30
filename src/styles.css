@@ -335,8 +335,8 @@ p {
   object-fit: contain;
   background: transparent;
   mix-blend-mode: normal;
-  opacity: 0.86;
-  filter: saturate(1.26) contrast(1.1) drop-shadow(0 30px 24px rgba(23, 32, 51, 0.12));
+  opacity: 1;
+  filter: saturate(1.62) contrast(1.18) brightness(1.04) drop-shadow(0 30px 24px rgba(23, 32, 51, 0.12));
   clip-path: polygon(0 0, 61% 0, 55% 100%, 0 100%);
   pointer-events: none;
 }

@@ -336,9 +336,10 @@ p {
   position: relative;
   aspect-ratio: 16 / 9;
   object-fit: contain;
-  mix-blend-mode: screen;
-  opacity: 0.98;
-  filter: saturate(1.12) contrast(1.08) drop-shadow(0 32px 28px rgba(23, 32, 51, 0.18));
+  background: transparent;
+  mix-blend-mode: normal;
+  opacity: 1;
+  filter: saturate(1.08) contrast(1.04) drop-shadow(0 32px 28px rgba(23, 32, 51, 0.18));
 }
 
 .hero-rider-fallback {

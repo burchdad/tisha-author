@@ -205,10 +205,17 @@ a {
 .hero {
   min-height: calc(100vh - 70px);
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.15fr);
+  grid-template-columns: 1fr;
+  justify-items: center;
   align-items: center;
-  gap: clamp(24px, 5vw, 72px);
-  padding: 58px 0 44px;
+  gap: clamp(12px, 2.5vw, 28px);
+  padding: 62px 0 44px;
+  text-align: center;
+}
+
+.hero-title,
+.hero-copy {
+  width: min(100%, 980px);
 }
 
 .eyebrow {
@@ -229,9 +236,10 @@ h3 {
 }
 
 h1 {
-  max-width: 720px;
+  max-width: none;
   color: var(--ink);
-  font-size: clamp(4rem, 12vw, 9.6rem);
+  font-size: clamp(3.9rem, 8vw, 7.6rem);
+  white-space: nowrap;
 }
 
 h2 {
@@ -258,6 +266,7 @@ p {
 }
 
 .hero-actions {
+  justify-content: center;
   gap: 12px;
   flex-wrap: wrap;
   margin-top: 30px;
@@ -285,6 +294,7 @@ p {
 
 .hero-art {
   position: relative;
+  width: min(100%, 1040px);
   min-height: 430px;
   display: grid;
   place-items: center;
@@ -292,14 +302,14 @@ p {
 }
 
 .rider-hero-art {
-  min-height: min(72vh, 720px);
+  min-height: min(68vh, 680px);
   overflow: visible;
-  --rider-y: 44px;
+  --rider-y: 18px;
 }
 
 .portal-ring {
   position: absolute;
-  width: min(64vw, 540px);
+  width: min(70vw, 650px);
   aspect-ratio: 1;
   border: 18px solid rgba(47, 199, 189, 0.28);
   border-left-color: rgba(255, 85, 115, 0.56);
@@ -320,10 +330,10 @@ p {
 
 .cape-motion-video {
   z-index: 3;
-  width: min(112%, 740px);
-  max-height: min(72vh, 720px);
+  width: min(122%, 920px);
+  max-height: min(76vh, 760px);
   filter: drop-shadow(0 32px 28px rgba(23, 32, 51, 0.22));
-  transform: translate3d(2%, var(--rider-y), 0) rotateX(5deg) rotateY(-7deg);
+  transform: translate3d(-3%, var(--rider-y), 0) rotateX(5deg) rotateY(-7deg);
   transform-origin: center bottom;
   animation: riderFloat 5.8s ease-in-out infinite;
 }
@@ -648,11 +658,11 @@ select {
 @keyframes riderFloat {
   0%,
   100% {
-    transform: translate3d(2%, var(--rider-y), 0) rotateX(5deg) rotateY(-7deg);
+    transform: translate3d(-3%, var(--rider-y), 0) rotateX(5deg) rotateY(-7deg);
   }
 
   50% {
-    transform: translate3d(1%, calc(var(--rider-y) - 10px), 0) rotateX(4deg) rotateY(-5deg);
+    transform: translate3d(-4%, calc(var(--rider-y) - 10px), 0) rotateX(4deg) rotateY(-5deg);
   }
 }
 
@@ -682,17 +692,17 @@ select {
   }
 
   .hero-art {
-    min-height: 440px;
+    min-height: 560px;
   }
 
   .rider-hero-art {
-    min-height: 520px;
-    --rider-y: 34px;
+    min-height: 570px;
+    --rider-y: 18px;
   }
 
   .cape-motion-video {
-    width: min(100%, 600px);
-    max-height: 520px;
+    width: min(116%, 720px);
+    max-height: 610px;
   }
 
   .story-strip,
@@ -724,19 +734,19 @@ select {
   }
 
   h1 {
-    font-size: clamp(3.6rem, 18vw, 5.2rem);
+    font-size: clamp(2.35rem, 12vw, 4.1rem);
   }
 
   .hero-art,
   .rider-hero-art {
-    min-height: 390px;
+    min-height: 430px;
     overflow: hidden;
-    --rider-y: 10px;
+    --rider-y: 8px;
   }
 
   .cape-motion-video {
-    width: min(100%, 440px);
-    max-height: 390px;
+    width: min(112%, 500px);
+    max-height: 430px;
     transform: translate3d(0, var(--rider-y), 0) rotateX(4deg) rotateY(-5deg);
   }
 

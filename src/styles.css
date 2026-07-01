@@ -86,12 +86,12 @@ a {
 .site-header::before {
   bottom: -30px;
   background:
-    radial-gradient(ellipse at 18% 94%, rgba(255, 255, 255, 0.28) 0 20%, transparent 21%),
-    radial-gradient(ellipse at 44% 98%, rgba(255, 255, 255, 0.22) 0 19%, transparent 20%),
-    radial-gradient(ellipse at 72% 92%, rgba(255, 255, 255, 0.18) 0 17%, transparent 18%),
-    linear-gradient(95deg, #b91122 0%, #ee1e32 35%, #c91426 64%, #8f0e1b 100%);
+    radial-gradient(ellipse at 18% 94%, rgba(255, 255, 255, 0.34) 0 20%, transparent 21%),
+    radial-gradient(ellipse at 44% 98%, rgba(255, 255, 255, 0.28) 0 19%, transparent 20%),
+    radial-gradient(ellipse at 72% 92%, rgba(255, 255, 255, 0.24) 0 17%, transparent 18%),
+    linear-gradient(96deg, #e71931 0 17%, #ff7a1a 18% 32%, #ffbf00 33% 48%, #00bfc7 49% 65%, #2864ff 66% 82%, #ff2f5f 83% 100%);
   clip-path: polygon(0 30%, 9% 16%, 18% 25%, 28% 11%, 39% 24%, 51% 13%, 63% 26%, 76% 10%, 88% 23%, 100% 14%, 100% 70%, 92% 62%, 82% 74%, 69% 60%, 57% 73%, 44% 61%, 31% 74%, 18% 62%, 7% 73%, 0 65%);
-  filter: drop-shadow(0 14px 16px rgba(90, 10, 18, 0.22));
+  filter: saturate(1.18) drop-shadow(0 14px 16px rgba(90, 40, 8, 0.24));
   animation: capeWave 7s ease-in-out infinite;
 }
 
@@ -99,11 +99,11 @@ a {
   bottom: -20px;
   z-index: -1;
   background:
-    linear-gradient(110deg, transparent 0 9%, rgba(255, 138, 92, 0.28) 10% 16%, transparent 17% 36%, rgba(255, 194, 98, 0.18) 37% 43%, transparent 44%),
-    linear-gradient(90deg, rgba(92, 6, 13, 0.28), rgba(255, 70, 82, 0.08), rgba(92, 6, 13, 0.34));
+    linear-gradient(110deg, transparent 0 9%, rgba(255, 255, 255, 0.36) 10% 16%, transparent 17% 36%, rgba(255, 255, 255, 0.24) 37% 43%, transparent 44%),
+    linear-gradient(90deg, rgba(141, 37, 5, 0.2), rgba(0, 191, 199, 0.18), rgba(40, 100, 255, 0.16), rgba(255, 47, 95, 0.2));
   clip-path: polygon(0 43%, 11% 27%, 22% 42%, 34% 21%, 46% 40%, 58% 22%, 71% 43%, 83% 26%, 100% 38%, 100% 58%, 88% 51%, 76% 62%, 63% 50%, 50% 63%, 37% 51%, 24% 63%, 12% 52%, 0 59%);
   mix-blend-mode: multiply;
-  opacity: 0.82;
+  opacity: 0.78;
   animation: capeWave 8.5s ease-in-out infinite reverse;
 }
 

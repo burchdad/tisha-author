@@ -337,9 +337,9 @@ p {
   object-fit: contain;
   object-position: center bottom;
   mix-blend-mode: normal;
-  opacity: 0.96;
+  opacity: 0.82;
   filter: drop-shadow(0 30px 24px rgba(23, 32, 51, 0.12));
-  transform: translate3d(27%, calc(var(--rider-y) - 18px), 0) rotateX(5deg) rotateY(-7deg);
+  transform: translate3d(21%, calc(var(--rider-y) - 2px), 0) rotateX(5deg) rotateY(-7deg);
   pointer-events: none;
 }
 
@@ -714,7 +714,7 @@ select {
   .hero-art .rider-safe-underlay {
     width: min(68%, 410px);
     max-height: 560px;
-    transform: translate3d(27%, calc(var(--rider-y) - 16px), 0) rotateX(5deg) rotateY(-7deg);
+    transform: translate3d(21%, calc(var(--rider-y) - 2px), 0) rotateX(5deg) rotateY(-7deg);
   }
 
   .story-strip,
@@ -766,7 +766,7 @@ select {
   .hero-art .rider-safe-underlay {
     width: min(70%, 330px);
     max-height: 430px;
-    transform: translate3d(12%, calc(var(--rider-y) - 10px), 0) rotateX(4deg) rotateY(-5deg);
+    transform: translate3d(8%, calc(var(--rider-y) + 2px), 0) rotateX(4deg) rotateY(-5deg);
   }
 
   .character-card {

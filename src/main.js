@@ -12,25 +12,33 @@ camera.position.set(0, 0, 8);
 const group = new THREE.Group();
 scene.add(group);
 
-const colors = [0x39d6c7, 0xffcf56, 0xff5c7a, 0x4577ff, 0xffffff];
-const geometry = new THREE.SphereGeometry(0.045, 12, 12);
+const leafColors = [0xffb300, 0xff7a1a, 0xf04424, 0xc85a1f, 0x7ec850];
+const leafShape = new THREE.Shape();
+leafShape.moveTo(0, 0.18);
+leafShape.bezierCurveTo(0.22, 0.1, 0.26, -0.12, 0, -0.22);
+leafShape.bezierCurveTo(-0.26, -0.12, -0.22, 0.1, 0, 0.18);
+const leafGeometry = new THREE.ShapeGeometry(leafShape);
 
-for (let i = 0; i < 140; i += 1) {
+for (let i = 0; i < 70; i += 1) {
   const material = new THREE.MeshBasicMaterial({
-    color: colors[i % colors.length],
+    color: leafColors[i % leafColors.length],
+    side: THREE.DoubleSide,
     transparent: true,
-    opacity: 0.72,
+    opacity: 0.7,
   });
-  const star = new THREE.Mesh(geometry, material);
-  const radius = 2.5 + Math.random() * 5.5;
-  const angle = Math.random() * Math.PI * 2;
-  star.position.set(
-    Math.cos(angle) * radius,
-    (Math.random() - 0.5) * 6,
-    Math.sin(angle) * radius - 2
-  );
-  star.userData = { speed: 0.002 + Math.random() * 0.005, radius, angle };
-  group.add(star);
+  const leaf = new THREE.Mesh(leafGeometry, material);
+  const scale = 0.26 + Math.random() * 0.34;
+  leaf.scale.set(scale, scale, scale);
+  leaf.position.set((Math.random() - 0.5) * 10.5, 3.9 + Math.random() * 6, (Math.random() - 0.5) * 4 - 2.2);
+  leaf.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+  leaf.userData = {
+    fallSpeed: 0.006 + Math.random() * 0.014,
+    swaySpeed: 0.012 + Math.random() * 0.022,
+    swayAmount: 0.008 + Math.random() * 0.025,
+    spin: 0.012 + Math.random() * 0.026,
+    phase: Math.random() * Math.PI * 2,
+  };
+  group.add(leaf);
 }
 
 const ringGeometry = new THREE.TorusGeometry(2.25, 0.018, 16, 140);
@@ -62,10 +70,19 @@ function animate() {
   ring.rotation.z += 0.006;
 
   group.children.forEach((child) => {
-    if (!child.userData.speed) return;
-    child.userData.angle += child.userData.speed;
-    child.position.x = Math.cos(child.userData.angle) * child.userData.radius;
-    child.position.z = Math.sin(child.userData.angle) * child.userData.radius - 2;
+    if (!child.userData.fallSpeed) return;
+    child.userData.phase += child.userData.swaySpeed;
+    child.position.y -= child.userData.fallSpeed;
+    child.position.x += Math.sin(child.userData.phase) * child.userData.swayAmount;
+    child.rotation.x += child.userData.spin * 0.7;
+    child.rotation.y += child.userData.spin;
+    child.rotation.z += child.userData.spin * 0.45;
+
+    if (child.position.y < -4.2) {
+      child.position.y = 4.2 + Math.random() * 2.4;
+      child.position.x = (Math.random() - 0.5) * 10.5;
+      child.position.z = (Math.random() - 0.5) * 4 - 2.2;
+    }
   });
 
   renderer.render(scene, camera);

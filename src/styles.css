@@ -1,17 +1,18 @@
 :root {
   color: #172033;
-  background: #fff9ee;
+  background: #fff5dd;
   font-family: Inter, system-ui, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   --ink: #172033;
-  --paper: #fff9ee;
-  --aqua: #2fc7bd;
-  --rose: #ff5573;
-  --gold: #ffc94f;
-  --blue: #4169e1;
+  --paper: #fff5dd;
+  --aqua: #00bfc7;
+  --rose: #ff2f5f;
+  --gold: #ffb800;
+  --blue: #2864ff;
+  --leaf: #ff7a1a;
   --line: rgba(23, 32, 51, 0.14);
-  --shadow: 0 24px 70px rgba(23, 32, 51, 0.16);
+  --shadow: 0 24px 70px rgba(23, 32, 51, 0.2);
 }
 
 * {
@@ -34,15 +35,13 @@ body::before {
   z-index: -3;
   content: "";
   background:
-    linear-gradient(90deg, rgba(255, 249, 238, 0.96) 0%, rgba(255, 249, 238, 0.72) 46%, rgba(255, 249, 238, 0.9) 100%),
-    radial-gradient(circle at 12% 18%, rgba(47, 199, 189, 0.26), transparent 28%),
-    radial-gradient(circle at 86% 10%, rgba(255, 201, 79, 0.28), transparent 26%),
-    url("/story/treehouse-atmosphere.jpg"),
-    linear-gradient(135deg, #fff9ee 0%, #efffff 52%, #fff2f5 100%);
-  background-position: center, center, center, right top, center;
+    linear-gradient(90deg, rgba(255, 245, 221, 0.88) 0%, rgba(255, 245, 221, 0.48) 43%, rgba(255, 245, 221, 0.72) 100%),
+    linear-gradient(180deg, rgba(255, 246, 224, 0.4) 0%, rgba(255, 232, 191, 0.74) 100%),
+    url("/story/treehouse-atmosphere.jpg");
+  background-position: center;
   background-repeat: no-repeat;
-  background-size: auto, auto, auto, min(62vw, 760px) auto, auto;
-  opacity: 0.9;
+  background-size: cover;
+  opacity: 1;
 }
 
 #magic-world {
@@ -68,7 +67,7 @@ a {
   min-height: 86px;
   padding: 17px clamp(18px, 4vw, 54px) 28px;
   border-bottom: 0;
-  background: rgba(255, 249, 238, 0.7);
+  background: rgba(255, 245, 221, 0.74);
   backdrop-filter: blur(18px);
   isolation: isolate;
   overflow: hidden;
@@ -374,7 +373,7 @@ p {
 .story-strip div {
   min-height: 126px;
   padding: 24px;
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.82);
 }
 
 .story-strip strong {
@@ -453,7 +452,7 @@ p {
   min-height: 278px;
   overflow: hidden;
   border: 2px solid var(--ink);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.86);
   box-shadow: 8px 8px 0 rgba(23, 32, 51, 0.9);
   transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
   transform-style: preserve-3d;
@@ -509,7 +508,7 @@ p {
   border: 2px solid var(--ink);
   background: #172033;
   color: white;
-  box-shadow: 10px 10px 0 var(--aqua);
+  box-shadow: 10px 10px 0 var(--leaf);
 }
 
 .book-panel p {
@@ -557,7 +556,7 @@ p {
 .curriculum-copy {
   padding: 30px;
   border-left: 8px solid var(--rose);
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .curriculum-copy ul {
@@ -631,7 +630,7 @@ p {
   gap: 14px;
   padding: 26px;
   border: 2px solid var(--ink);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.86);
   box-shadow: 10px 10px 0 var(--blue);
 }
 

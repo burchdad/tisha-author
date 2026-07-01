@@ -218,6 +218,11 @@ a {
   width: min(100%, 980px);
 }
 
+.hero-copy {
+  display: grid;
+  justify-items: center;
+}
+
 .eyebrow {
   margin: 0 0 12px;
   color: #a8334f;
@@ -263,6 +268,12 @@ p {
   max-width: 660px;
   color: rgba(23, 32, 51, 0.76);
   font-size: 1.07rem;
+}
+
+.hero-lede {
+  max-width: 620px;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .hero-actions {

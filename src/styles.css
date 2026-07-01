@@ -318,10 +318,9 @@ p {
   transform: rotateX(7deg) rotateY(-8deg);
 }
 
-.cape-motion-video,
-.rider-shirt-underlay {
+.cape-motion-video {
   z-index: 3;
-  width: min(104%, 700px);
+  width: min(112%, 740px);
   max-height: min(72vh, 720px);
   filter: drop-shadow(0 32px 28px rgba(23, 32, 51, 0.22));
   transform: translate3d(2%, var(--rider-y), 0) rotateX(5deg) rotateY(-7deg);
@@ -329,46 +328,15 @@ p {
   animation: riderFloat 5.8s ease-in-out infinite;
 }
 
-.hero-art .rider-shirt-underlay {
-  position: absolute;
-  z-index: 1;
-  width: min(104%, 700px);
-  max-height: min(72vh, 720px);
-  aspect-ratio: 16 / 9;
-  object-fit: contain;
-  mix-blend-mode: normal;
-  opacity: 1;
-  filter: none;
-  display: block;
-  pointer-events: none;
-}
-
 .cape-motion-video {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   aspect-ratio: 16 / 9;
   object-fit: contain;
   background: transparent;
   mix-blend-mode: normal;
   opacity: 1;
-  filter: saturate(2.08) contrast(1.34) brightness(1.05) drop-shadow(0 30px 24px rgba(23, 32, 51, 0.12));
-  pointer-events: none;
-}
-
-.hero-art .rider-detail-overlay {
-  position: absolute;
-  z-index: 4;
-  width: min(104%, 700px);
-  max-height: min(72vh, 720px);
-  aspect-ratio: 16 / 9;
-  object-fit: contain;
-  transform: translate3d(2%, var(--rider-y), 0) rotateX(5deg) rotateY(-7deg);
-  transform-origin: center bottom;
-  animation: riderFloat 5.8s ease-in-out infinite;
-  filter: none;
-  mix-blend-mode: normal;
-  opacity: 1;
-  display: block;
+  filter: saturate(1.08) contrast(1.04) brightness(1.01) drop-shadow(0 30px 24px rgba(23, 32, 51, 0.12));
   pointer-events: none;
 }
 
@@ -722,13 +690,7 @@ select {
     --rider-y: 34px;
   }
 
-  .cape-motion-video,
-  .hero-art .rider-shirt-underlay {
-    width: min(100%, 600px);
-    max-height: 520px;
-  }
-
-  .rider-detail-overlay {
+  .cape-motion-video {
     width: min(100%, 600px);
     max-height: 520px;
   }
@@ -772,14 +734,7 @@ select {
     --rider-y: 10px;
   }
 
-  .cape-motion-video,
-  .hero-art .rider-shirt-underlay {
-    width: min(100%, 440px);
-    max-height: 390px;
-    transform: translate3d(0, var(--rider-y), 0) rotateX(4deg) rotateY(-5deg);
-  }
-
-  .rider-detail-overlay {
+  .cape-motion-video {
     width: min(100%, 440px);
     max-height: 390px;
     transform: translate3d(0, var(--rider-y), 0) rotateX(4deg) rotateY(-5deg);

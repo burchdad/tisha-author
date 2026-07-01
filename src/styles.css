@@ -318,7 +318,8 @@ p {
   transform: rotateX(7deg) rotateY(-8deg);
 }
 
-.cape-motion-video {
+.cape-motion-video,
+.hero-art .rider-safe-underlay {
   z-index: 3;
   width: min(112%, 740px);
   max-height: min(72vh, 720px);
@@ -326,6 +327,20 @@ p {
   transform: translate3d(2%, var(--rider-y), 0) rotateX(5deg) rotateY(-7deg);
   transform-origin: center bottom;
   animation: riderFloat 5.8s ease-in-out infinite;
+}
+
+.hero-art .rider-safe-underlay {
+  position: absolute;
+  z-index: 2;
+  width: min(68%, 470px);
+  max-height: min(76vh, 640px);
+  object-fit: contain;
+  object-position: center bottom;
+  mix-blend-mode: normal;
+  opacity: 0.96;
+  filter: drop-shadow(0 30px 24px rgba(23, 32, 51, 0.12));
+  transform: translate3d(27%, calc(var(--rider-y) - 18px), 0) rotateX(5deg) rotateY(-7deg);
+  pointer-events: none;
 }
 
 .cape-motion-video {
@@ -690,9 +705,16 @@ select {
     --rider-y: 34px;
   }
 
-  .cape-motion-video {
+  .cape-motion-video,
+  .hero-art .rider-safe-underlay {
     width: min(100%, 600px);
     max-height: 520px;
+  }
+
+  .hero-art .rider-safe-underlay {
+    width: min(68%, 410px);
+    max-height: 560px;
+    transform: translate3d(27%, calc(var(--rider-y) - 16px), 0) rotateX(5deg) rotateY(-7deg);
   }
 
   .story-strip,
@@ -734,10 +756,17 @@ select {
     --rider-y: 10px;
   }
 
-  .cape-motion-video {
+  .cape-motion-video,
+  .hero-art .rider-safe-underlay {
     width: min(100%, 440px);
     max-height: 390px;
     transform: translate3d(0, var(--rider-y), 0) rotateX(4deg) rotateY(-5deg);
+  }
+
+  .hero-art .rider-safe-underlay {
+    width: min(70%, 330px);
+    max-height: 430px;
+    transform: translate3d(12%, calc(var(--rider-y) - 10px), 0) rotateX(4deg) rotateY(-5deg);
   }
 
   .character-card {

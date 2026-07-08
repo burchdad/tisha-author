@@ -241,6 +241,8 @@ a {
 }
 
 .hero-copy {
+  position: relative;
+  z-index: 5;
   display: grid;
   justify-items: center;
 }
@@ -324,6 +326,8 @@ p {
 }
 
 .hero-lede {
+  position: relative;
+  z-index: 1;
   max-width: 780px;
   margin: 0 auto;
   padding: 12px 22px;
@@ -338,6 +342,8 @@ p {
 }
 
 .hero-actions {
+  position: relative;
+  z-index: 1;
   justify-content: center;
   gap: 12px;
   flex-wrap: wrap;

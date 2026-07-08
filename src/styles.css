@@ -324,8 +324,16 @@ p {
 }
 
 .hero-lede {
-  max-width: 620px;
+  max-width: 780px;
   margin: 0 auto;
+  padding: 12px 22px;
+  border: 2px solid rgba(23, 32, 51, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 249, 238, 0.86);
+  box-shadow: 7px 7px 0 rgba(255, 184, 0, 0.52);
+  color: rgba(23, 32, 51, 0.9);
+  font-weight: 700;
+  line-height: 1.45;
   text-align: center;
 }
 

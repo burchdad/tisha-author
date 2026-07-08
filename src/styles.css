@@ -40,7 +40,7 @@ body::before {
     url("/story/treehouse-atmosphere.jpg");
   background-position: center, center, top center;
   background-repeat: no-repeat;
-  background-size: auto, auto, min(86vw, 1320px) auto;
+  background-size: auto, auto, 100vw auto;
   opacity: 1;
 }
 

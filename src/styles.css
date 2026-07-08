@@ -40,7 +40,7 @@ body::before {
     url("/story/treehouse-atmosphere.jpg");
   background-position: center, center, top center;
   background-repeat: no-repeat;
-  background-size: auto, auto, min(100vw, 1500px) auto;
+  background-size: auto, auto, min(86vw, 1320px) auto;
   opacity: 1;
 }
 
@@ -140,7 +140,8 @@ a {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.08);
+  object-position: 52% 46%;
+  transform: scale(1.16) translateY(1px);
 }
 
 .brand-text {
@@ -202,6 +203,7 @@ a {
 }
 
 .hero {
+  position: relative;
   min-height: calc(100vh - 70px);
   display: grid;
   grid-template-columns: 1fr;
@@ -209,6 +211,7 @@ a {
   align-items: center;
   gap: clamp(12px, 2.5vw, 28px);
   padding: 62px 0 44px;
+  isolation: isolate;
   text-align: center;
 }
 
@@ -240,10 +243,30 @@ h3 {
 }
 
 h1 {
+  position: relative;
+  display: inline-block;
   max-width: none;
   color: var(--ink);
-  font-size: clamp(3.9rem, 8vw, 7.6rem);
+  font-size: clamp(3.7rem, 7.4vw, 7.1rem);
+  text-shadow:
+    0 5px 0 rgba(255, 255, 255, 0.78),
+    0 0 34px rgba(255, 184, 0, 0.28),
+    0 0 54px rgba(0, 191, 199, 0.18);
   white-space: nowrap;
+}
+
+h1::after {
+  position: absolute;
+  right: 11%;
+  bottom: -9px;
+  left: 11%;
+  height: 9px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--rose), var(--gold), var(--aqua), var(--blue));
+  box-shadow: 0 8px 22px rgba(255, 184, 0, 0.28);
+  content: "";
+  transform-origin: center;
+  animation: titleSwoosh 5.2s ease-in-out infinite;
 }
 
 h2 {
@@ -312,20 +335,82 @@ p {
 }
 
 .rider-hero-art {
-  min-height: min(68vh, 680px);
+  min-height: min(58vh, 620px);
   overflow: visible;
-  --rider-y: 18px;
+  --rider-y: 4px;
+}
+
+.rider-hero-art::before,
+.rider-hero-art::after {
+  position: absolute;
+  content: "";
+  pointer-events: none;
+}
+
+.rider-hero-art::before {
+  z-index: -2;
+  width: min(78vw, 820px);
+  aspect-ratio: 16 / 10;
+  border-radius: 48% 42% 50% 44% / 42% 50% 46% 52%;
+  background:
+    linear-gradient(180deg, rgba(255, 245, 221, 0.18), rgba(255, 245, 221, 0.42)),
+    url("/story/treehouse-atmosphere.jpg") center / cover no-repeat;
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.42),
+    0 28px 80px rgba(23, 32, 51, 0.18);
+  filter: saturate(1.25) contrast(1.08);
+  opacity: 0.52;
+  transform: translateY(4px) rotate(-2deg);
+}
+
+.rider-hero-art::after {
+  z-index: -1;
+  width: min(76vw, 760px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.72) 0 22%, rgba(255, 184, 0, 0.32) 34%, rgba(0, 191, 199, 0.2) 54%, transparent 72%);
+  filter: blur(8px);
+  animation: heroGlow 5.8s ease-in-out infinite;
 }
 
 .portal-ring {
   position: absolute;
+  z-index: 1;
   width: min(70vw, 650px);
   aspect-ratio: 1;
   border: 18px solid rgba(47, 199, 189, 0.28);
   border-left-color: rgba(255, 85, 115, 0.56);
   border-bottom-color: rgba(255, 201, 79, 0.62);
   border-radius: 50%;
-  animation: spinPortal 15s linear infinite;
+  box-shadow:
+    0 0 42px rgba(0, 191, 199, 0.2),
+    inset 0 0 28px rgba(255, 255, 255, 0.24);
+  animation: spinPortal 15s linear infinite, portalPulse 4.8s ease-in-out infinite;
+}
+
+.portal-ring::before,
+.portal-ring::after {
+  position: absolute;
+  content: "";
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.portal-ring::before {
+  inset: -40px;
+  border: 3px dashed rgba(255, 184, 0, 0.42);
+  animation: spinPortal 20s linear infinite reverse;
+}
+
+.portal-ring::after {
+  inset: -20px;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(255, 184, 0, 0.8) 0 6px, transparent 7px),
+    radial-gradient(circle at 76% 30%, rgba(255, 47, 95, 0.7) 0 5px, transparent 6px),
+    radial-gradient(circle at 28% 82%, rgba(0, 191, 199, 0.75) 0 7px, transparent 8px),
+    radial-gradient(circle at 85% 76%, rgba(40, 100, 255, 0.58) 0 5px, transparent 6px);
+  opacity: 0.58;
+  animation: portalSparkle 3.8s ease-in-out infinite;
 }
 
 .hero-art img {
@@ -341,7 +426,7 @@ p {
 .cape-motion-video {
   z-index: 3;
   width: min(122%, 920px);
-  max-height: min(76vh, 760px);
+  max-height: min(60vh, 700px);
   filter: drop-shadow(0 32px 28px rgba(23, 32, 51, 0.22));
   transform: translate3d(-3%, var(--rider-y), 0) rotateX(5deg) rotateY(-7deg);
   transform-origin: center bottom;
@@ -436,7 +521,7 @@ p {
 
 .character-track {
   width: max-content;
-  animation: characterLoop 38s linear infinite;
+  animation: characterLoop 52s linear infinite;
 }
 
 .character-carousel:hover .character-track {
@@ -446,10 +531,10 @@ p {
 .character-card {
   --tilt-x: 0deg;
   --tilt-y: 0deg;
-  flex: 0 0 clamp(300px, 31vw, 372px);
+  flex: 0 0 clamp(360px, 34vw, 430px);
   display: grid;
-  grid-template-columns: 44% 1fr;
-  min-height: 278px;
+  grid-template-columns: 38% 1fr;
+  min-height: 360px;
   overflow: hidden;
   border: 2px solid var(--ink);
   background: rgba(255, 255, 255, 0.86);
@@ -494,6 +579,8 @@ p {
 .character-card p {
   margin-bottom: 0;
   color: rgba(23, 32, 51, 0.7);
+  font-size: 0.92rem;
+  line-height: 1.48;
 }
 
 .companion {
@@ -691,6 +778,63 @@ select {
   }
 }
 
+@keyframes portalPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 42px rgba(0, 191, 199, 0.2),
+      inset 0 0 28px rgba(255, 255, 255, 0.24);
+    filter: saturate(1);
+  }
+
+  50% {
+    box-shadow:
+      0 0 64px rgba(255, 184, 0, 0.28),
+      0 0 36px rgba(255, 47, 95, 0.18),
+      inset 0 0 36px rgba(255, 255, 255, 0.34);
+    filter: saturate(1.24);
+  }
+}
+
+@keyframes portalSparkle {
+  0%,
+  100% {
+    opacity: 0.42;
+    transform: scale(0.96) rotate(0deg);
+  }
+
+  50% {
+    opacity: 0.84;
+    transform: scale(1.04) rotate(8deg);
+  }
+}
+
+@keyframes heroGlow {
+  0%,
+  100% {
+    opacity: 0.74;
+    transform: scale(0.98);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes titleSwoosh {
+  0%,
+  100% {
+    transform: scaleX(0.76);
+    opacity: 0.74;
+  }
+
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
 @keyframes capeWave {
   0%,
   100% {
@@ -793,6 +937,12 @@ select {
 
   h1 {
     font-size: clamp(2.35rem, 12vw, 4.1rem);
+    white-space: normal;
+  }
+
+  h1::after {
+    right: 16%;
+    left: 16%;
   }
 
   .hero-art,
@@ -809,7 +959,7 @@ select {
   }
 
   .character-card {
-    flex-basis: min(82vw, 340px);
+    flex-basis: min(86vw, 360px);
     grid-template-columns: 1fr;
     min-height: auto;
   }
@@ -821,6 +971,10 @@ select {
 
   .character-card div {
     padding: 18px;
+  }
+
+  .character-card p {
+    font-size: 0.9rem;
   }
 
   .story-strip div,

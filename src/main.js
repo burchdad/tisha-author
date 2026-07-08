@@ -20,22 +20,28 @@ leafShape.bezierCurveTo(-0.26, -0.12, -0.22, 0.1, 0, 0.18);
 const leafGeometry = new THREE.ShapeGeometry(leafShape);
 
 for (let i = 0; i < 70; i += 1) {
+  const isForeground = i < 16;
   const material = new THREE.MeshBasicMaterial({
     color: leafColors[i % leafColors.length],
     side: THREE.DoubleSide,
     transparent: true,
-    opacity: 0.7,
+    opacity: isForeground ? 0.48 : 0.7,
   });
   const leaf = new THREE.Mesh(leafGeometry, material);
-  const scale = 0.26 + Math.random() * 0.34;
+  const scale = isForeground ? 0.58 + Math.random() * 0.48 : 0.26 + Math.random() * 0.34;
   leaf.scale.set(scale, scale, scale);
-  leaf.position.set((Math.random() - 0.5) * 10.5, 3.9 + Math.random() * 6, (Math.random() - 0.5) * 4 - 2.2);
+  leaf.position.set(
+    (Math.random() - 0.5) * 10.5,
+    3.9 + Math.random() * 6,
+    isForeground ? 1 + Math.random() * 1.4 : (Math.random() - 0.5) * 4 - 2.2,
+  );
   leaf.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
   leaf.userData = {
-    fallSpeed: 0.006 + Math.random() * 0.014,
+    foreground: isForeground,
+    fallSpeed: (isForeground ? 0.01 : 0.006) + Math.random() * 0.014,
     swaySpeed: 0.012 + Math.random() * 0.022,
-    swayAmount: 0.008 + Math.random() * 0.025,
-    spin: 0.012 + Math.random() * 0.026,
+    swayAmount: (isForeground ? 0.014 : 0.008) + Math.random() * 0.025,
+    spin: (isForeground ? 0.018 : 0.012) + Math.random() * 0.026,
     phase: Math.random() * Math.PI * 2,
   };
   group.add(leaf);
@@ -81,7 +87,7 @@ function animate() {
     if (child.position.y < -4.2) {
       child.position.y = 4.2 + Math.random() * 2.4;
       child.position.x = (Math.random() - 0.5) * 10.5;
-      child.position.z = (Math.random() - 0.5) * 4 - 2.2;
+      child.position.z = child.userData.foreground ? 1 + Math.random() * 1.4 : (Math.random() - 0.5) * 4 - 2.2;
     }
   });
 

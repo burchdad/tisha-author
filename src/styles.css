@@ -788,17 +788,63 @@ select {
   padding-bottom: 96px;
 }
 
+.toolkit-feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: center;
+  margin-top: 28px;
+  padding: 28px;
+  border: 2px solid var(--ink);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(236, 251, 255, 0.88)),
+    linear-gradient(90deg, var(--gold), var(--aqua));
+  box-shadow: 9px 9px 0 var(--blue);
+}
+
+.toolkit-feature span,
+.teacher-resources span {
+  display: block;
+  margin-bottom: 8px;
+  color: #a8334f;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.toolkit-feature h3 {
+  margin-bottom: 8px;
+}
+
+.toolkit-feature p {
+  max-width: 680px;
+  margin: 0;
+  color: rgba(23, 32, 51, 0.74);
+  font-weight: 700;
+}
+
 .teacher-resources {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
-  flex-wrap: wrap;
+  margin-top: 24px;
 }
 
 .teacher-resources a {
-  padding: 16px 18px;
+  min-height: 132px;
+  padding: 18px;
   border: 2px solid var(--ink);
-  background: var(--gold);
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--ink);
   font-weight: 900;
   box-shadow: 5px 5px 0 var(--ink);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.teacher-resources a:hover {
+  background: #fffdf8;
+  box-shadow: 8px 8px 0 var(--rose);
+  transform: translate(-2px, -2px);
 }
 
 .site-footer {
@@ -951,6 +997,7 @@ select {
   .hero,
   .companion,
   .curriculum-layout,
+  .toolkit-feature,
   .profile-section,
   .invite {
     grid-template-columns: 1fr;
@@ -977,6 +1024,10 @@ select {
 
   .story-strip {
     grid-template-columns: 1fr;
+  }
+
+  .teacher-resources {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1042,6 +1093,7 @@ select {
   }
 
   .story-strip div,
+  .toolkit-feature,
   .book-panel,
   .profile-section > div,
   .invite-form,
@@ -1052,6 +1104,10 @@ select {
   .site-footer {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .teacher-resources {
+    grid-template-columns: 1fr;
   }
 
   .footer-actions {

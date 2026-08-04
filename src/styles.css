@@ -831,6 +831,26 @@ select {
   box-shadow: 9px 9px 0 var(--rose);
 }
 
+.extras-feature,
+.teacher-things-feature {
+  grid-template-columns: 1fr;
+  margin-top: 42px;
+}
+
+.extras-feature {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(232, 255, 251, 0.9)),
+    linear-gradient(90deg, var(--aqua), var(--gold));
+  box-shadow: 9px 9px 0 var(--aqua);
+}
+
+.teacher-things-feature {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 247, 226, 0.9)),
+    linear-gradient(90deg, #ff7a2f, var(--gold));
+  box-shadow: 9px 9px 0 #ff7a2f;
+}
+
 .teacher-resources {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

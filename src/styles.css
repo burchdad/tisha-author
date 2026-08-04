@@ -832,6 +832,7 @@ select {
 }
 
 .extras-feature,
+.poems-feature,
 .teacher-things-feature {
   grid-template-columns: 1fr;
   margin-top: 42px;
@@ -842,6 +843,13 @@ select {
     linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(232, 255, 251, 0.9)),
     linear-gradient(90deg, var(--aqua), var(--gold));
   box-shadow: 9px 9px 0 var(--aqua);
+}
+
+.poems-feature {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 235, 242, 0.88)),
+    linear-gradient(90deg, var(--rose), var(--blue));
+  box-shadow: 9px 9px 0 var(--rose);
 }
 
 .teacher-things-feature {

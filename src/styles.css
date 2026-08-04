@@ -823,11 +823,23 @@ select {
   font-weight: 700;
 }
 
+.certificate-feature {
+  margin-top: 42px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 241, 209, 0.9)),
+    linear-gradient(90deg, var(--rose), var(--gold));
+  box-shadow: 9px 9px 0 var(--rose);
+}
+
 .teacher-resources {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin-top: 24px;
+}
+
+.certificate-resources {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .teacher-resources a {

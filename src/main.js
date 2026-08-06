@@ -97,17 +97,129 @@ function animate() {
 
 animate();
 
-document.querySelectorAll('.character-card').forEach((card) => {
-  card.addEventListener('pointermove', (event) => {
-    const rect = card.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width - 0.5;
-    const y = (event.clientY - rect.top) / rect.height - 0.5;
-    card.style.setProperty('--tilt-x', `${y * -8}deg`);
-    card.style.setProperty('--tilt-y', `${x * 8}deg`);
-  });
+const pageCopy = {
+  '/author/': {
+    title: 'Meet Dr. Tisha Shipley',
+    copy: "The author page keeps Dr. Shipley's story, education background, speaking focus, and media-ready details in one dedicated place.",
+    sections: ['author'],
+    profileMode: 'author',
+  },
+  '/illustrator/': {
+    title: 'Meet the Illustrator',
+    copy: "A focused space for the artist behind Rider and his friends, with room for process notes, sketches, and final illustration details.",
+    sections: ['author'],
+    profileMode: 'illustrator',
+  },
+  '/characters/': {
+    title: 'Meet the Characters',
+    copy: "A deeper look at Rider and the friends who help children talk about courage, empathy, creativity, laughter, and confidence.",
+    sections: ['characters'],
+  },
+  '/companion/': {
+    title: "Rider's Magic Mark Companion",
+    copy: 'Curriculum, classroom conversations, and SEL-ready activities that help the story live beyond the read-aloud.',
+    sections: ['companion', 'curriculum'],
+  },
+  '/schools/': {
+    title: 'Invite Dr. Shipley to Your School',
+    copy: 'A dedicated school visit page for assemblies, classroom workshops, author Q&A sessions, educator trainings, and book events.',
+    sections: ['schools'],
+  },
+  '/teachers/': {
+    title: 'Extras for Teachers',
+    copy: 'A clean download library for worksheets, certificates, poems, reflection cards, classroom resources, and family connection tools.',
+    sections: ['teacher-toolkit'],
+  },
+};
 
-  card.addEventListener('pointerleave', () => {
-    card.style.setProperty('--tilt-x', '0deg');
-    card.style.setProperty('--tilt-y', '0deg');
+function addHomeGateway(storyStrip) {
+  const gateway = document.createElement('section');
+  gateway.className = 'home-gateway section-band';
+  gateway.setAttribute('aria-label', 'Explore Rider pages');
+  gateway.innerHTML = `
+    <div class="section-heading">
+      <p class="eyebrow">Explore the world</p>
+      <h2>Choose the next part of the adventure</h2>
+      <p>Jump into the cast, companion curriculum, school visits, teacher resources, or the creative team behind Rider's story.</p>
+    </div>
+    <div class="gateway-grid">
+      <a href="/characters/"><span>01</span><strong>Meet the Characters</strong><small>Rider and the friends who bring the story to life.</small></a>
+      <a href="/companion/"><span>02</span><strong>Companion & Curriculum</strong><small>Read, reflect, create, and share classroom moments.</small></a>
+      <a href="/teachers/"><span>03</span><strong>Teacher Downloads</strong><small>Selective worksheets, poems, certificates, and extras.</small></a>
+      <a href="/schools/"><span>04</span><strong>School Visits</strong><small>Invite Dr. Shipley for assemblies and workshops.</small></a>
+      <a href="/author/"><span>05</span><strong>Meet the Author</strong><small>Dr. Tisha Shipley's story and speaking details.</small></a>
+      <a href="/illustrator/"><span>06</span><strong>Meet the Illustrator</strong><small>The creative process behind Rider's visual world.</small></a>
+    </div>
+  `;
+  storyStrip.insertAdjacentElement('afterend', gateway);
+}
+
+function addPageIntro(main, page) {
+  const intro = document.createElement('section');
+  intro.className = 'page-intro section-band';
+  intro.innerHTML = `
+    <p class="eyebrow">Rider's Magic Mark</p>
+    <h1>${page.title}</h1>
+    <p>${page.copy}</p>
+  `;
+  main.prepend(intro);
+}
+
+function shapeProfilePage(mode) {
+  const profile = document.querySelector('.profile-section');
+  if (!profile) return;
+
+  const author = profile.querySelector(':scope > div:first-child');
+  const illustrator = profile.querySelector('#illustrator');
+
+  if (mode === 'author' && illustrator) illustrator.remove();
+  if (mode === 'illustrator' && author) author.remove();
+}
+
+function initializeCharacterCards() {
+  document.querySelectorAll('.character-card').forEach((card) => {
+    card.addEventListener('pointermove', (event) => {
+      const rect = card.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - 0.5;
+      const y = (event.clientY - rect.top) / rect.height - 0.5;
+      card.style.setProperty('--tilt-x', `${y * -8}deg`);
+      card.style.setProperty('--tilt-y', `${x * 8}deg`);
+    });
+
+    card.addEventListener('pointerleave', () => {
+      card.style.setProperty('--tilt-x', '0deg');
+      card.style.setProperty('--tilt-y', '0deg');
+    });
   });
-});
+}
+
+function initializePages() {
+  const pathname = window.location.pathname.endsWith('/')
+    ? window.location.pathname
+    : `${window.location.pathname}/`;
+  const page = pageCopy[pathname];
+  const main = document.querySelector('main');
+  const hero = document.querySelector('.hero');
+  const storyStrip = document.querySelector('.story-strip');
+  const sections = Array.from(main.querySelectorAll('section[id]'));
+
+  document.body.classList.toggle('is-subpage', Boolean(page));
+  document.body.classList.toggle('is-home', !page);
+
+  if (!page) {
+    sections.forEach((section) => section.remove());
+    if (storyStrip) addHomeGateway(storyStrip);
+    return;
+  }
+
+  if (hero) hero.remove();
+  if (storyStrip) storyStrip.remove();
+  sections.forEach((section) => {
+    if (!page.sections.includes(section.id)) section.remove();
+  });
+  addPageIntro(main, page);
+  if (page.profileMode) shapeProfilePage(page.profileMode);
+}
+
+initializePages();
+initializeCharacterCards();

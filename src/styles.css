@@ -517,6 +517,103 @@ p {
   color: rgba(23, 32, 51, 0.7);
 }
 
+.home-gateway,
+.page-intro {
+  position: relative;
+  z-index: 1;
+}
+
+.home-gateway {
+  padding: 88px 0 8px;
+}
+
+.gateway-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.gateway-grid a {
+  min-height: 190px;
+  padding: 24px;
+  border: 2px solid var(--ink);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 7px 7px 0 var(--ink);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.gateway-grid a:nth-child(2n) {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(236, 251, 255, 0.86));
+}
+
+.gateway-grid a:nth-child(3n) {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 241, 209, 0.86));
+}
+
+.gateway-grid a:hover {
+  box-shadow: 10px 10px 0 var(--rose);
+  transform: translate(-2px, -2px);
+}
+
+.gateway-grid span {
+  display: block;
+  margin-bottom: 22px;
+  color: var(--blue);
+  font-family: "Baloo 2", Inter, sans-serif;
+  font-size: 2.35rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.gateway-grid strong {
+  display: block;
+  margin-bottom: 10px;
+  font-family: "Baloo 2", Inter, sans-serif;
+  font-size: 1.45rem;
+  line-height: 1.05;
+}
+
+.gateway-grid small {
+  color: rgba(23, 32, 51, 0.68);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.page-intro {
+  padding: 92px 0 0;
+  text-align: center;
+}
+
+.page-intro h1 {
+  font-size: clamp(3.1rem, 7vw, 6.4rem);
+  white-space: normal;
+}
+
+.page-intro p:last-child {
+  max-width: 760px;
+  margin: 30px auto 0;
+  padding: 14px 22px;
+  border: 2px solid rgba(23, 32, 51, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 249, 238, 0.86);
+  color: rgba(23, 32, 51, 0.82);
+  font-weight: 700;
+}
+
+.is-subpage .characters,
+.is-subpage .companion,
+.is-subpage .curriculum,
+.is-subpage .profile-section,
+.is-subpage .invite,
+.is-subpage .teachers {
+  padding-top: 74px;
+}
+
+.is-subpage .profile-section:has(> div:only-child) {
+  grid-template-columns: minmax(0, 760px);
+  justify-content: center;
+}
+
 .characters,
 .companion,
 .curriculum,
@@ -1066,6 +1163,10 @@ select {
     grid-template-columns: 1fr;
   }
 
+  .gateway-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .teacher-resources {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1144,6 +1245,14 @@ select {
   .site-footer {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .gateway-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-intro {
+    padding-top: 54px;
   }
 
   .teacher-resources {

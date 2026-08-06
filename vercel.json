@@ -1,0 +1,52 @@
+{
+  "rewrites": [
+    {
+      "source": "/author",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/author/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/illustrator",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/illustrator/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/characters",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/characters/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/companion",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/companion/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/schools",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/schools/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/teachers",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/teachers/",
+      "destination": "/index.html"
+    }
+  ]
+}

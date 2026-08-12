@@ -191,6 +191,14 @@ a {
   border-radius: 999px;
 }
 
+button.nav-cta,
+button.footer-book-link,
+button.button {
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
+}
+
 .nav-links a:hover,
 .nav-cta:hover,
 .footer-book-link:hover {
@@ -210,6 +218,10 @@ a {
 .book-link {
   background: var(--rose);
   color: white;
+}
+
+.toolkit-open {
+  background: var(--aqua);
 }
 
 .section-band {
@@ -515,103 +527,6 @@ p {
 
 .story-strip span {
   color: rgba(23, 32, 51, 0.7);
-}
-
-.home-gateway,
-.page-intro {
-  position: relative;
-  z-index: 1;
-}
-
-.home-gateway {
-  padding: 88px 0 8px;
-}
-
-.gateway-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.gateway-grid a {
-  min-height: 190px;
-  padding: 24px;
-  border: 2px solid var(--ink);
-  background: rgba(255, 255, 255, 0.86);
-  box-shadow: 7px 7px 0 var(--ink);
-  transition: transform 160ms ease, box-shadow 160ms ease;
-}
-
-.gateway-grid a:nth-child(2n) {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(236, 251, 255, 0.86));
-}
-
-.gateway-grid a:nth-child(3n) {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 241, 209, 0.86));
-}
-
-.gateway-grid a:hover {
-  box-shadow: 10px 10px 0 var(--rose);
-  transform: translate(-2px, -2px);
-}
-
-.gateway-grid span {
-  display: block;
-  margin-bottom: 22px;
-  color: var(--blue);
-  font-family: "Baloo 2", Inter, sans-serif;
-  font-size: 2.35rem;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.gateway-grid strong {
-  display: block;
-  margin-bottom: 10px;
-  font-family: "Baloo 2", Inter, sans-serif;
-  font-size: 1.45rem;
-  line-height: 1.05;
-}
-
-.gateway-grid small {
-  color: rgba(23, 32, 51, 0.68);
-  font-weight: 700;
-  line-height: 1.5;
-}
-
-.page-intro {
-  padding: 92px 0 0;
-  text-align: center;
-}
-
-.page-intro h1 {
-  font-size: clamp(3.1rem, 7vw, 6.4rem);
-  white-space: normal;
-}
-
-.page-intro p:last-child {
-  max-width: 760px;
-  margin: 30px auto 0;
-  padding: 14px 22px;
-  border: 2px solid rgba(23, 32, 51, 0.2);
-  border-radius: 8px;
-  background: rgba(255, 249, 238, 0.86);
-  color: rgba(23, 32, 51, 0.82);
-  font-weight: 700;
-}
-
-.is-subpage .characters,
-.is-subpage .companion,
-.is-subpage .curriculum,
-.is-subpage .profile-section,
-.is-subpage .invite,
-.is-subpage .teachers {
-  padding-top: 74px;
-}
-
-.is-subpage .profile-section:has(> div:only-child) {
-  grid-template-columns: minmax(0, 760px);
-  justify-content: center;
 }
 
 .characters,
@@ -1017,6 +932,133 @@ select {
   white-space: nowrap;
 }
 
+.toolkit-modal[hidden] {
+  display: none;
+}
+
+.modal-open {
+  overflow: hidden;
+}
+
+.toolkit-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: clamp(14px, 3vw, 34px);
+}
+
+.toolkit-backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 184, 0, 0.22), transparent 28%),
+    radial-gradient(circle at 82% 18%, rgba(0, 191, 199, 0.22), transparent 24%),
+    rgba(23, 32, 51, 0.66);
+  backdrop-filter: blur(8px);
+}
+
+.toolkit-dialog {
+  position: relative;
+  width: min(1120px, 100%);
+  max-height: min(86vh, 900px);
+  overflow: hidden;
+  border: 2px solid var(--ink);
+  background: #fff9ee;
+  box-shadow: 12px 12px 0 rgba(23, 32, 51, 0.9);
+}
+
+.toolkit-modal-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: start;
+  padding: clamp(20px, 3vw, 34px);
+  border-bottom: 2px solid var(--ink);
+  background:
+    linear-gradient(110deg, rgba(255, 255, 255, 0.92), rgba(236, 251, 255, 0.86)),
+    linear-gradient(90deg, var(--rose), var(--gold), var(--aqua));
+}
+
+.toolkit-modal-header h2 {
+  font-size: clamp(2.2rem, 4vw, 4.4rem);
+}
+
+.toolkit-modal-header p:last-child {
+  max-width: 760px;
+  margin: 12px 0 0;
+  color: rgba(23, 32, 51, 0.72);
+  font-weight: 700;
+}
+
+.toolkit-close {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--rose);
+  color: white;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.toolkit-modal-body {
+  max-height: calc(min(86vh, 900px) - 178px);
+  overflow-y: auto;
+  padding: clamp(18px, 3vw, 34px);
+}
+
+.modal-resource-group {
+  display: grid;
+  gap: 16px;
+  padding: 0 0 30px;
+}
+
+.modal-resource-group + .modal-resource-group {
+  padding-top: 30px;
+  border-top: 2px solid rgba(23, 32, 51, 0.18);
+}
+
+.modal-resource-group > div:first-child span,
+.modal-resource-grid span {
+  display: block;
+  margin-bottom: 8px;
+  color: #a8334f;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.modal-resource-group h3 {
+  font-size: clamp(1.6rem, 3vw, 2.45rem);
+}
+
+.modal-resource-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.modal-resource-grid a {
+  min-height: 108px;
+  padding: 16px;
+  border: 2px solid var(--ink);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink);
+  font-weight: 900;
+  box-shadow: 4px 4px 0 var(--ink);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.modal-resource-grid a:hover {
+  background: #fffdf8;
+  box-shadow: 7px 7px 0 var(--rose);
+  transform: translate(-2px, -2px);
+}
+
 @keyframes spinPortal {
   to {
     transform: rotate(360deg);
@@ -1163,11 +1205,11 @@ select {
     grid-template-columns: 1fr;
   }
 
-  .gateway-grid {
+  .teacher-resources {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .teacher-resources {
+  .modal-resource-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -1247,15 +1289,27 @@ select {
     flex-direction: column;
   }
 
-  .gateway-grid {
+  .teacher-resources {
     grid-template-columns: 1fr;
   }
 
-  .page-intro {
-    padding-top: 54px;
+  .toolkit-modal {
+    padding: 10px;
   }
 
-  .teacher-resources {
+  .toolkit-modal-header {
+    grid-template-columns: 1fr;
+  }
+
+  .toolkit-close {
+    width: 100%;
+  }
+
+  .toolkit-modal-body {
+    max-height: calc(86vh - 220px);
+  }
+
+  .modal-resource-grid {
     grid-template-columns: 1fr;
   }
 

@@ -331,6 +331,8 @@ p {
 .book-panel p,
 .profile-section p,
 .invite-copy p,
+.visit-options p,
+.gratitude-resources .section-heading p,
 .teachers .section-heading p {
   max-width: 660px;
   color: rgba(23, 32, 51, 0.76);
@@ -688,6 +690,7 @@ p {
 
 .module-stack small {
   color: rgba(23, 32, 51, 0.66);
+  line-height: 1.45;
 }
 
 .curriculum-layout {
@@ -769,6 +772,31 @@ p {
   padding-top: 12px;
 }
 
+.visit-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 26px 0;
+}
+
+.visit-options article {
+  padding: 18px;
+  border: 2px solid var(--ink);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 5px 5px 0 rgba(23, 32, 51, 0.88);
+}
+
+.visit-options h3 {
+  margin-bottom: 8px;
+  font-size: 1.35rem;
+}
+
+.visit-options p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.48;
+}
+
 .invite-form {
   display: grid;
   gap: 14px;
@@ -794,6 +822,32 @@ select {
   color: var(--ink);
   font: inherit;
   padding: 10px 12px;
+}
+
+.gratitude-resources {
+  padding: 110px 0 0;
+}
+
+.resource-link-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.resource-link-grid a {
+  min-height: 118px;
+  padding: 18px;
+  border: 2px solid var(--ink);
+  background: rgba(255, 255, 255, 0.88);
+  font-weight: 900;
+  box-shadow: 6px 6px 0 var(--gold);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.resource-link-grid a:hover {
+  background: #fffdf8;
+  box-shadow: 8px 8px 0 var(--aqua);
+  transform: translate(-2px, -2px);
 }
 
 .teachers {
@@ -962,8 +1016,8 @@ select {
 .toolkit-dialog {
   position: relative;
   width: min(1120px, 100%);
-  max-height: min(86vh, 900px);
-  overflow: hidden;
+  max-height: calc(100vh - clamp(28px, 6vw, 68px));
+  overflow: auto;
   border: 2px solid var(--ink);
   background: #fff9ee;
   box-shadow: 12px 12px 0 rgba(23, 32, 51, 0.9);
@@ -1006,8 +1060,6 @@ select {
 }
 
 .toolkit-modal-body {
-  max-height: calc(min(86vh, 900px) - 178px);
-  overflow-y: auto;
   padding: clamp(18px, 3vw, 34px);
 }
 
@@ -1178,7 +1230,8 @@ select {
   .curriculum-layout,
   .toolkit-feature,
   .profile-section,
-  .invite {
+  .invite,
+  .resource-link-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1207,6 +1260,10 @@ select {
 
   .teacher-resources {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .visit-options {
+    grid-template-columns: 1fr;
   }
 
   .modal-resource-grid {
@@ -1303,10 +1360,6 @@ select {
 
   .toolkit-close {
     width: 100%;
-  }
-
-  .toolkit-modal-body {
-    max-height: calc(86vh - 220px);
   }
 
   .modal-resource-grid {

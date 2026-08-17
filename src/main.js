@@ -182,7 +182,6 @@ function initializeBookModal() {
   const closeModal = () => {
     modal.hidden = true;
     document.body.classList.remove('modal-open');
-    sessionStorage.setItem('bookOfferSeen', 'true');
     lastFocusedElement?.focus?.();
   };
 
@@ -192,9 +191,6 @@ function initializeBookModal() {
     if (event.key === 'Escape' && !modal.hidden) closeModal();
   });
 
-  if (!sessionStorage.getItem('bookOfferSeen')) {
-    window.setTimeout(openModal, 1400);
-  }
 }
 
 function initializeEventTabs() {

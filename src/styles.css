@@ -1371,3 +1371,100 @@ select {
     text-align: left;
   }
 }
+
+/* Storefront, profiles, toolkit navigation, and events */
+.book-button { appearance: none; border: 0; cursor: pointer; font: inherit; }
+
+.profile-section { display: grid; gap: 28px; }
+.profile-card {
+  display: grid;
+  grid-template-columns: minmax(150px, 210px) 1fr;
+  gap: clamp(22px, 4vw, 46px);
+  align-items: start;
+  padding: clamp(24px, 4vw, 46px);
+  border: 2px solid var(--ink);
+  border-radius: 34px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 9px 9px 0 rgba(23, 32, 51, 0.13);
+}
+.profile-photo-placeholder {
+  display: grid;
+  align-content: center;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  padding: 18px;
+  border: 3px solid var(--ink);
+  border-radius: 48% 48% 42% 42%;
+  color: white;
+  text-align: center;
+  background: radial-gradient(circle at 35% 25%, #ffd75e 0 12%, transparent 13%), linear-gradient(145deg, var(--rose), #9a246d 54%, var(--blue));
+  box-shadow: 8px 8px 0 var(--gold);
+}
+.profile-photo-placeholder span { font-family: "Baloo 2", sans-serif; font-size: clamp(2.2rem, 5vw, 4.5rem); font-weight: 800; line-height: 1; }
+.profile-photo-placeholder small { margin-top: 10px; font-weight: 800; }
+.illustrator-photo { background: radial-gradient(circle at 65% 22%, #fff 0 10%, transparent 11%), linear-gradient(145deg, var(--aqua), var(--blue) 58%, #52248f); }
+.podcast-promo { display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center; margin-top: 22px; padding: 18px; border-radius: 22px; background: #172033; color: white; }
+.podcast-promo p { margin: 4px 0 0; color: rgba(255,255,255,.78); font-size: .9rem; }
+.podcast-icon { display: grid; width: 48px; height: 48px; place-items: center; border: 2px solid white; border-radius: 50%; color: var(--rose); box-shadow: inset 0 0 0 8px var(--gold); }
+.coming-soon-pill { padding: 8px 11px; border-radius: 999px; background: var(--gold); color: var(--ink); font-size: .72rem; font-weight: 900; white-space: nowrap; }
+
+.events-section { padding: clamp(70px, 9vw, 130px) clamp(20px, 7vw, 110px); background: linear-gradient(135deg, rgba(255,255,255,.9), rgba(255,235,181,.9)); }
+.event-tabs, .toolkit-tabs { display: flex; gap: 9px; flex-wrap: wrap; }
+.event-tabs { margin: 28px 0; }
+.event-tabs button, .toolkit-tabs button { appearance: none; padding: 10px 15px; border: 2px solid var(--ink); border-radius: 999px; background: white; cursor: pointer; font: inherit; font-size: .82rem; font-weight: 900; }
+.event-tabs button[aria-selected="true"], .toolkit-tabs button[aria-selected="true"] { background: var(--gold); box-shadow: 4px 4px 0 var(--ink); }
+.event-card, .event-gallery-placeholder { max-width: 780px; padding: clamp(26px, 4vw, 46px); border: 2px solid var(--ink); border-radius: 28px; background: white; box-shadow: 8px 8px 0 var(--aqua); }
+.event-date, .event-location { display: inline-block; padding: 7px 11px; border-radius: 999px; background: var(--rose); color: white; font-size: .78rem; font-weight: 900; }
+.event-location { background: var(--ink); }
+.event-gallery-placeholder { min-height: 220px; background: repeating-linear-gradient(135deg, white 0 18px, #fff7df 18px 36px); }
+.event-gallery-placeholder span { font-family: "Baloo 2", sans-serif; font-size: 1.6rem; font-weight: 800; }
+
+.toolkit-tabs { position: sticky; top: 0; z-index: 2; padding: 4px 0 18px; background: inherit; }
+.resource-coming-soon { display: grid; gap: 6px; min-height: 118px; padding: 17px; border: 2px dashed rgba(23,32,51,.35); border-radius: 18px; background: rgba(255,255,255,.62); }
+.resource-coming-soon span { color: var(--rose); font-size: .73rem; font-weight: 900; text-transform: uppercase; }
+.resource-coming-soon small { color: rgba(23,32,51,.6); }
+
+.book-modal[hidden], .event-panel[hidden], .modal-resource-group[hidden] { display: none; }
+.book-modal { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 18px; }
+.book-modal-backdrop { position: absolute; inset: 0; background: rgba(10,15,29,.72); backdrop-filter: blur(8px); }
+.book-dialog { position: relative; display: grid; grid-template-columns: minmax(230px, .75fr) 1.25fr; width: min(920px, 96vw); max-height: 92vh; overflow: auto; border: 3px solid var(--ink); border-radius: 34px; background: var(--paper); box-shadow: 15px 15px 0 rgba(255,184,0,.75); }
+.book-modal-close { position: absolute; top: 14px; right: 14px; z-index: 2; display: grid; width: 42px; height: 42px; place-items: center; border: 2px solid var(--ink); border-radius: 50%; background: white; cursor: pointer; font-size: 1.7rem; line-height: 1; }
+.book-cover-stage { position: relative; display: grid; min-height: 510px; place-items: end center; overflow: hidden; padding: 28px; background: linear-gradient(165deg, #80e0db, #2368d7 60%, #172033); }
+.book-cover-stage::before { position: absolute; inset: 9% 12%; content: ""; border: 3px solid rgba(255,255,255,.7); border-radius: 50%; box-shadow: 0 0 60px rgba(255,218,96,.7); }
+.book-cover-stage img { position: relative; width: 100%; max-height: 440px; object-fit: contain; filter: drop-shadow(0 20px 24px rgba(0,0,0,.28)); }
+.book-cover-stage > span { position: absolute; top: 24px; left: 24px; padding: 8px 12px; border-radius: 999px; background: var(--gold); font-weight: 900; text-transform: uppercase; }
+.book-offer-copy { padding: clamp(34px, 5vw, 64px); }
+.author-social-chip { display: inline-flex; align-items: center; gap: 11px; margin-bottom: 18px; padding: 7px 13px 7px 7px; border: 1px solid rgba(23,32,51,.15); border-radius: 999px; background: white; }
+.author-social-chip > span { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 50%; background: linear-gradient(145deg, var(--rose), var(--blue)); color: white; font-weight: 900; }
+.author-social-chip div { display: grid; }
+.author-social-chip small { color: rgba(23,32,51,.62); font-size: .7rem; }
+.book-offer-copy h2 { margin: 4px 0 14px; font-family: "Baloo 2", sans-serif; font-size: clamp(2.2rem, 5vw, 4.2rem); line-height: .95; }
+.book-price { display: grid; gap: 3px; margin: 24px 0; padding: 16px 18px; border-left: 6px solid var(--gold); background: white; }
+.book-price span { font-size: .75rem; font-weight: 900; text-transform: uppercase; }
+.book-price strong { font-size: 1.35rem; }
+.payment-placeholder-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.payment-placeholder-grid button { display: grid; gap: 4px; min-height: 82px; padding: 12px; border: 2px solid rgba(23,32,51,.25); border-radius: 16px; background: rgba(255,255,255,.7); color: var(--ink); text-align: left; }
+.payment-placeholder-grid button:disabled { opacity: .67; cursor: not-allowed; }
+.payment-placeholder-grid span { font-weight: 900; }
+.checkout-status { font-size: .78rem; color: rgba(23,32,51,.7); }
+
+@media (max-width: 780px) {
+  .profile-card, .book-dialog { grid-template-columns: 1fr; }
+  .profile-photo-placeholder { width: min(230px, 72vw); }
+  .podcast-promo { grid-template-columns: auto 1fr; }
+  .coming-soon-pill { grid-column: 1 / -1; justify-self: start; }
+  .book-cover-stage { min-height: 320px; }
+  .book-cover-stage img { max-height: 280px; }
+}
+
+@media (max-width: 520px) {
+  .payment-placeholder-grid { grid-template-columns: 1fr; }
+  .book-offer-copy { padding: 32px 22px; }
+  .toolkit-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 14px; }
+  .toolkit-tabs button { flex: 0 0 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #magic-world { display: none; }
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}

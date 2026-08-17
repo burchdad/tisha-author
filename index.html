@@ -7,6 +7,12 @@
       name="description"
       content="Rider's Magic Mark by Dr. Tisha Shipley, a children's book experience about gratitude, uniqueness, courage, and classroom connection."
     />
+    <meta property="og:title" content="Rider's Magic Mark | Dr. Tisha Shipley" />
+    <meta property="og:description" content="Discover Rider's story, classroom resources, author visits, and the magic in what makes every child unique." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://tisha-author.vercel.app/" />
+    <meta property="og:image" content="https://tisha-author.vercel.app/characters/rider-hero.png" />
+    <link rel="canonical" href="https://tisha-author.vercel.app/" />
     <title>Rider's Magic Mark | Dr. Tisha Shipley</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -35,7 +41,7 @@
         <a href="#schools">Schools</a>
       </nav>
       <div class="header-actions">
-        <a class="nav-cta book-link" href="https://ridersmagicmark.com/" target="_blank" rel="noopener">Pre-Order Book</a>
+        <button class="nav-cta book-link" type="button" data-open-book>Get the Book</button>
         <button class="nav-cta toolkit-open" type="button" data-open-toolkit>Teacher's Toolkit</button>
         <a class="nav-cta" href="#schools">Invite Dr. Shipley</a>
       </div>
@@ -66,6 +72,7 @@
             uniquely YOU becomes your greatest strength!
           </p>
           <div class="hero-actions">
+            <button class="button primary book-button" type="button" data-open-book>Get the Book</button>
             <a class="button primary" href="#characters">Meet the Characters</a>
             <a class="button secondary" href="#curriculum">Explore Curriculum</a>
           </div>
@@ -257,7 +264,11 @@
       </section>
 
       <section id="author" class="profile-section section-band">
-        <div>
+        <article class="profile-card">
+          <div class="profile-photo-placeholder" data-photo-slot="author" role="img" aria-label="Author headshot coming soon">
+            <span>TS</span><small>Author photo coming soon</small>
+          </div>
+          <div>
           <p class="eyebrow">Meet the author</p>
           <h2>Dr. Tisha Shipley</h2>
           <p>
@@ -272,14 +283,43 @@
             creates. Rider's Magic Mark was inspired by the belief that what makes us different can also
             be what makes us extraordinary.
           </p>
-        </div>
-        <div id="illustrator">
+          <div class="podcast-promo">
+            <span class="podcast-icon" aria-hidden="true">●</span>
+            <div><strong>Author · Educator · Podcaster</strong><p>Listen in for conversations about early childhood education, gratitude, confidence, and helping every child discover their strengths.</p></div>
+            <span class="coming-soon-pill">Podcast link coming soon</span>
+          </div>
+          </div>
+        </article>
+        <article id="illustrator" class="profile-card">
+          <div class="profile-photo-placeholder illustrator-photo" data-photo-slot="illustrator" role="img" aria-label="Illustrator headshot coming soon">
+            <span>ART</span><small>Illustrator photo coming soon</small>
+          </div>
+          <div>
           <p class="eyebrow">Meet the illustrator</p>
           <h2>The artist behind the magic</h2>
           <p>
-            A dedicated illustrator page can spotlight the process behind Rider and his friends, from
-            first sketches to the final expressive character art that gives the book its warmth.
+            From first sketches to the final expressive character art, the illustrator gives Rider and
+            his friends the warmth, wonder, and personality that make their world feel alive.
           </p>
+          </div>
+        </article>
+      </section>
+
+      <section id="events" class="events-section section-band">
+        <div class="section-heading">
+          <p class="eyebrow">On the road with Rider</p>
+          <h2>Book signings, school visits, and story-filled moments</h2>
+          <p>Follow the journey and revisit the places where readers, families, and educators have gathered to celebrate every child's unique magic mark.</p>
+        </div>
+        <div class="event-tabs" role="tablist" aria-label="Book event galleries">
+          <button type="button" role="tab" aria-selected="true" data-event-tab="upcoming">Upcoming</button>
+          <button type="button" role="tab" aria-selected="false" data-event-tab="past">Past Events</button>
+        </div>
+        <div class="event-panel" data-event-panel="upcoming">
+          <article class="event-card featured-event"><span class="event-date">Dates coming soon</span><h3>Meet Dr. Shipley and Rider</h3><p>New signing locations and school appearances will be announced here.</p><span class="event-location">Location to be announced</span></article>
+        </div>
+        <div class="event-panel" data-event-panel="past" hidden>
+          <div class="event-gallery-placeholder"><span>Event photos coming soon</span><p>Signing photos, locations, and memories will appear here as the gallery grows.</p></div>
         </div>
       </section>
 
@@ -367,9 +407,8 @@
           <p class="eyebrow">Teacher Toolkit</p>
           <h2>Ready-to-grow resources</h2>
           <p>
-            A selective library of classroom pages, certificates, poems, reflection cards, and family
-            extras can open whenever teachers need it. Coloring sheets and the Gratitude Journal can be
-            added here as soon as those files are ready.
+            A selective library of curriculum, classroom pages, certificates, poems, reflection cards,
+            coloring pages, and gratitude activities can open whenever teachers need it.
           </p>
         </div>
         <div class="toolkit-feature">
@@ -395,7 +434,25 @@
           <button class="toolkit-close" type="button" aria-label="Close teacher toolkit" data-close-toolkit>Close</button>
         </div>
         <div class="toolkit-modal-body">
-          <section class="modal-resource-group">
+          <div class="toolkit-tabs" role="tablist" aria-label="Teacher toolkit categories">
+            <button type="button" role="tab" aria-selected="true" data-toolkit-tab="all">All</button>
+            <button type="button" role="tab" aria-selected="false" data-toolkit-tab="curriculum">Curriculum</button>
+            <button type="button" role="tab" aria-selected="false" data-toolkit-tab="activities">Activities</button>
+            <button type="button" role="tab" aria-selected="false" data-toolkit-tab="coloring">Coloring & Journal</button>
+            <button type="button" role="tab" aria-selected="false" data-toolkit-tab="certificates">Certificates</button>
+            <button type="button" role="tab" aria-selected="false" data-toolkit-tab="poems">Poems</button>
+            <button type="button" role="tab" aria-selected="false" data-toolkit-tab="family">Family</button>
+            <button type="button" role="tab" aria-selected="false" data-toolkit-tab="teachers">Teacher Things</button>
+          </div>
+          <section class="modal-resource-group" data-toolkit-category="curriculum">
+            <div><span>Curriculum</span><h3>Story-to-SEL learning path</h3></div>
+            <div class="modal-resource-grid">
+              <a href="#curriculum" data-close-toolkit><span>Overview</span>Explore the Two-Week Curriculum</a>
+              <a href="/toolkit/incorporating-math-activities.docx" download><span>Math</span>Curriculum Math Activities</a>
+              <a href="/resources/sel-word-search-pack-magic-character-traits.docx" download><span>SEL</span>Character Traits Word Search Pack</a>
+            </div>
+          </section>
+          <section class="modal-resource-group" data-toolkit-category="activities">
             <div>
               <span>Full kit</span>
               <h3>Rider's Magic Mark Teacher Toolkit</h3>
@@ -411,7 +468,14 @@
               <a href="/toolkit/riders-magic-mark-vocabulary-word-searches-advanced.docx" download><span>Word Search</span>Advanced Vocabulary Searches</a>
             </div>
           </section>
-          <section class="modal-resource-group">
+          <section class="modal-resource-group" data-toolkit-category="coloring">
+            <div><span>Creative Reflection</span><h3>Coloring Pages & Gratitude Journal</h3></div>
+            <div class="modal-resource-grid">
+              <div class="resource-coming-soon"><span>Coloring Pages</span><strong>Rider's Coloring Pages</strong><small>Download coming soon</small></div>
+              <div class="resource-coming-soon"><span>Gratitude Journal</span><strong>My Magic Mark Gratitude Journal</strong><small>Download coming soon</small></div>
+            </div>
+          </section>
+          <section class="modal-resource-group" data-toolkit-category="certificates">
             <div>
               <span>Certificates</span>
               <h3>Celebrate every magic mark</h3>
@@ -428,7 +492,7 @@
               <a href="/certificates/i-am-special-certificate.pdf" download><span>Certificate</span>I Am Special Certificate</a>
             </div>
           </section>
-          <section class="modal-resource-group">
+          <section class="modal-resource-group" data-toolkit-category="family">
             <div>
               <span>Student & Family Extras</span>
               <h3>Activities for reflection and home connection</h3>
@@ -442,7 +506,7 @@
               <a href="/resources/sel-word-search-pack-magic-character-traits.docx" download><span>Word Search</span>SEL Word Search Pack</a>
             </div>
           </section>
-          <section class="modal-resource-group">
+          <section class="modal-resource-group" data-toolkit-category="poems">
             <div>
               <span>Poems</span>
               <h3>Character poems and reflection pieces</h3>
@@ -459,7 +523,7 @@
               <a href="/poems/your-poem.docx" download><span>Student Poem</span>Your Poem</a>
             </div>
           </section>
-          <section class="modal-resource-group">
+          <section class="modal-resource-group" data-toolkit-category="teachers">
             <div>
               <span>Teacher Things</span>
               <h3>Encouragement and connection tools</h3>
@@ -480,12 +544,34 @@
       </div>
     </div>
 
+    <div class="book-modal" role="dialog" aria-modal="true" aria-labelledby="book-modal-title" hidden>
+      <div class="book-modal-backdrop" data-close-book></div>
+      <div class="book-dialog">
+        <button class="book-modal-close" type="button" aria-label="Close book offer" data-close-book>×</button>
+        <div class="book-cover-stage"><img src="/characters/rider-hero.png" alt="Rider wearing his red cape" /><span>New book</span></div>
+        <div class="book-offer-copy">
+          <div class="author-social-chip" aria-label="Author profile photo coming soon"><span>TS</span><div><strong>Dr. Tisha Shipley</strong><small>Author · Educator · Podcaster</small></div></div>
+          <p class="eyebrow">Bring the magic home</p>
+          <h2 id="book-modal-title">Get <em>Rider's Magic Mark</em></h2>
+          <p>A heartwarming adventure about friendship, gratitude, courage, and discovering that what makes you different may be your greatest strength.</p>
+          <div class="book-price"><span>Book price</span><strong>Coming soon</strong><small>Shipping will be confirmed before checkout launches.</small></div>
+          <div class="payment-placeholder-grid" aria-label="Payment options coming soon">
+            <button type="button" disabled><span>Stripe</span><small>Cards & Cash App Pay</small></button>
+            <button type="button" disabled><span>PayPal</span><small>PayPal & Venmo</small></button>
+            <button type="button" disabled><span>Cash App</span><small>Business payment link</small></button>
+          </div>
+          <p class="checkout-status">Secure checkout is being prepared. No payment can be submitted yet.</p>
+          <a class="button secondary" href="https://ridersmagicmark.com/" target="_blank" rel="noopener">Visit the Book Website</a>
+        </div>
+      </div>
+    </div>
+
     <footer class="site-footer">
       <span>Rider's Magic Mark</span>
       <div class="footer-actions">
         <span>Pre-order your book and have it before the official launch on Oct. 17. Free delivery is available in the Alva, Oklahoma area at the author signing.</span>
         <button class="footer-book-link" type="button" data-open-toolkit>Teacher's Toolkit</button>
-        <a class="footer-book-link" href="https://ridersmagicmark.com/" target="_blank" rel="noopener">Pre-Order Book</a>
+        <button class="footer-book-link" type="button" data-open-book>Get the Book</button>
       </div>
     </footer>
 

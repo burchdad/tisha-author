@@ -95,7 +95,11 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
-animate();
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  animate();
+} else {
+  renderer.render(scene, camera);
+}
 
 function initializeCharacterCards() {
   document.querySelectorAll('.character-card').forEach((card) => {
@@ -118,6 +122,8 @@ function initializeToolkitModal() {
   const modal = document.querySelector('.toolkit-modal');
   const openButtons = document.querySelectorAll('[data-open-toolkit]');
   const closeButtons = document.querySelectorAll('[data-close-toolkit]');
+  const tabs = document.querySelectorAll('[data-toolkit-tab]');
+  const groups = document.querySelectorAll('[data-toolkit-category]');
   let lastFocusedElement = null;
 
   if (!modal || !openButtons.length) return;
@@ -146,7 +152,65 @@ function initializeToolkitModal() {
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && !modal.hidden) closeModal();
   });
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const selectedCategory = tab.dataset.toolkitTab;
+      tabs.forEach((item) => item.setAttribute('aria-selected', String(item === tab)));
+      groups.forEach((group) => {
+        group.hidden = selectedCategory !== 'all' && group.dataset.toolkitCategory !== selectedCategory;
+      });
+      modal.querySelector('.toolkit-modal-body')?.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+function initializeBookModal() {
+  const modal = document.querySelector('.book-modal');
+  const openButtons = document.querySelectorAll('[data-open-book]');
+  const closeButtons = document.querySelectorAll('[data-close-book]');
+  let lastFocusedElement = null;
+  if (!modal || !openButtons.length) return;
+
+  const openModal = () => {
+    lastFocusedElement = document.activeElement;
+    modal.hidden = false;
+    document.body.classList.add('modal-open');
+    modal.querySelector('.book-modal-close')?.focus();
+  };
+
+  const closeModal = () => {
+    modal.hidden = true;
+    document.body.classList.remove('modal-open');
+    sessionStorage.setItem('bookOfferSeen', 'true');
+    lastFocusedElement?.focus?.();
+  };
+
+  openButtons.forEach((button) => button.addEventListener('click', openModal));
+  closeButtons.forEach((button) => button.addEventListener('click', closeModal));
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !modal.hidden) closeModal();
+  });
+
+  if (!sessionStorage.getItem('bookOfferSeen')) {
+    window.setTimeout(openModal, 1400);
+  }
+}
+
+function initializeEventTabs() {
+  const tabs = document.querySelectorAll('[data-event-tab]');
+  const panels = document.querySelectorAll('[data-event-panel]');
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach((item) => item.setAttribute('aria-selected', String(item === tab)));
+      panels.forEach((panel) => {
+        panel.hidden = panel.dataset.eventPanel !== tab.dataset.eventTab;
+      });
+    });
+  });
 }
 
 initializeCharacterCards();
 initializeToolkitModal();
+initializeBookModal();
+initializeEventTabs();

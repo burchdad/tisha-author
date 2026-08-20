@@ -20,13 +20,14 @@
 }
 
 html {
+  overflow-x: clip;
   scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
   min-width: 320px;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body::before {
@@ -540,6 +541,10 @@ p {
   padding: 110px 0 0;
 }
 
+.characters {
+  overflow-x: clip;
+}
+
 .section-heading {
   margin-bottom: 36px;
 }
@@ -547,7 +552,9 @@ p {
 .character-carousel {
   position: relative;
   width: 100%;
-  overflow: hidden;
+  max-width: 100%;
+  overflow: clip;
+  contain: paint;
   padding: 6px 0 16px;
 }
 

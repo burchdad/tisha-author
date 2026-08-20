@@ -1495,6 +1495,10 @@ select {
   object-position: center 42%;
 }
 
+.author-photo img {
+  object-position: center 48%;
+}
+
 .profile-photo-placeholder span { font-family: "Baloo 2", sans-serif; font-size: clamp(2.2rem, 5vw, 4.5rem); font-weight: 800; line-height: 1; }
 .profile-photo-placeholder small,
 .profile-photo small { margin-top: 10px; font-weight: 800; }
@@ -1542,7 +1546,7 @@ select {
 .book-cover-stage > span { position: absolute; top: 24px; left: 24px; padding: 8px 12px; border-radius: 999px; background: var(--gold); font-weight: 900; text-transform: uppercase; }
 .book-offer-copy { display: grid; align-content: center; overflow: hidden; padding: 28px clamp(30px, 4vw, 44px); }
 .author-social-chip { display: inline-flex; align-items: center; gap: 10px; width: fit-content; margin-bottom: 12px; padding: 6px 12px 6px 6px; border: 1px solid rgba(23,32,51,.15); border-radius: 999px; background: white; }
-.author-social-chip > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 50%; background: linear-gradient(145deg, var(--rose), var(--blue)); color: white; font-weight: 900; }
+.author-social-chip img { width: 40px; height: 40px; border: 2px solid var(--ink); border-radius: 50%; object-fit: cover; object-position: 77% 44%; }
 .author-social-chip div { display: grid; }
 .author-social-chip small { color: rgba(23,32,51,.62); font-size: .7rem; }
 .book-offer-copy .eyebrow { margin: 0 0 7px; }

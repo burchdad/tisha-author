@@ -1728,8 +1728,18 @@ button:disabled {
 @media (max-width: 520px) {
   .payment-placeholder-grid { grid-template-columns: 1fr; }
   .book-offer-copy { padding: 32px 22px; }
-  .toolkit-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 14px; }
-  .toolkit-tabs button { flex: 0 0 auto; }
+  .toolkit-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    overflow: visible;
+    padding-bottom: 14px;
+  }
+  .toolkit-tabs button {
+    min-width: 0;
+    padding-inline: 10px;
+    white-space: normal;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

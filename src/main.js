@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import './styles.css';
+import { initializeMobileMenu } from './mobile-menu.js';
 
 const canvas = document.querySelector('#magic-world');
 const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
@@ -253,6 +254,7 @@ function initializeInviteForm() {
 }
 
 initializeCharacterCards();
+initializeMobileMenu();
 initializeToolkitModal();
 initializeBookModal();
 initializeEventTabs();

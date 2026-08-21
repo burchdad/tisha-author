@@ -811,6 +811,12 @@ p {
   box-shadow: 10px 10px 0 var(--blue);
 }
 
+.form-schedule-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
 .visit-photo {
   position: relative;
   overflow: hidden;
@@ -1298,6 +1304,10 @@ select {
   }
 
   .visit-options {
+    grid-template-columns: 1fr;
+  }
+
+  .form-schedule-row {
     grid-template-columns: 1fr;
   }
 

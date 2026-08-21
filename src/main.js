@@ -176,11 +176,16 @@ function initializeBookModal() {
   const subtotalElement = modal?.querySelector('[data-book-subtotal]');
   const shippingElement = modal?.querySelector('[data-shipping-total]');
   const totalElement = modal?.querySelector('[data-order-total]');
+  const shippingNoteElement = modal?.querySelector('[data-shipping-note]');
   const statusElement = modal?.querySelector('[data-checkout-status]');
   const cashAppLink = modal?.querySelector('[data-cashapp-link]');
   const paypalLink = modal?.querySelector('[data-paypal-link]');
   const copyOrderButton = modal?.querySelector('[data-copy-order]');
   let lastFocusedElement = null;
+  let shippingRequest = null;
+  let checkoutSequence = 0;
+  let currentCheckout = null;
+  let quoteTimer = null;
   if (!modal || !openButtons.length) return;
 
   const prices = {
@@ -208,6 +213,17 @@ function initializeBookModal() {
     return Math.min(Math.max(value, 1), 10);
   };
 
+  const getCheckoutInput = () => ({
+    format: getSelectedFormat(),
+    quantity: getQuantity(),
+    state: getFieldValue('state').toUpperCase(),
+    zip: getFieldValue('zip'),
+    name: getFieldValue('name'),
+    email: getFieldValue('email'),
+    street: getFieldValue('street'),
+    city: getFieldValue('city'),
+  });
+
   const calculateShipping = ({ format, quantity, state, zip }) => {
     const cleanState = state.trim().toUpperCase();
     const cleanZip = zip.trim();
@@ -228,6 +244,17 @@ function initializeBookModal() {
     return base + Math.max(quantity - 1, 0) * additionalBook;
   };
 
+  const getFallbackShipping = (input) => {
+    const shipping = calculateShipping(input);
+    if (shipping === null) return null;
+    return {
+      amount: shipping,
+      source: 'estimate',
+      label: 'Estimated shipping & handling',
+      note: 'Estimated from Tyler, TX 75703. Live carrier quote will be used when available.',
+    };
+  };
+
   const setPaymentEnabled = (isEnabled) => {
     [cashAppLink, paypalLink].forEach((link) => {
       if (!link) return;
@@ -236,7 +263,7 @@ function initializeBookModal() {
     });
   };
 
-  const buildOrderSummary = ({ format, quantity, subtotal, shipping, total }) => {
+  const buildOrderSummary = ({ format, quantity, subtotal, shipping, total, shippingSource, carrier }) => {
     const formatLabel = format === 'hardcover' ? 'Hard-cover' : 'Soft-cover';
     const addressLines = [
       getFieldValue('name'),
@@ -249,46 +276,125 @@ function initializeBookModal() {
       `Rider's Magic Mark order`,
       `${quantity} ${formatLabel} book${quantity === 1 ? '' : 's'}`,
       `Books: ${currency.format(subtotal)}`,
-      `Estimated shipping & handling: ${currency.format(shipping)}`,
-      `Estimated total: ${currency.format(total)}`,
+      `${shippingSource === 'shippo' ? 'Live shipping & handling' : 'Estimated shipping & handling'}: ${currency.format(shipping)}`,
+      carrier ? `Carrier: ${carrier}` : '',
+      `Order total: ${currency.format(total)}`,
       addressLines.length ? `Ship to: ${addressLines.join(' | ')}` : '',
-      'Shipping estimate from Tyler, TX 75703.',
+      shippingSource === 'shippo' ? 'Live carrier quote from Tyler, TX 75703.' : 'Shipping estimate from Tyler, TX 75703.',
     ].filter(Boolean).join('\n');
   };
 
-  const updateCheckout = () => {
-    const format = getSelectedFormat();
-    const quantity = getQuantity();
+  const renderCheckout = ({ input, shippingRate = null, loading = false, message = '' }) => {
+    const { format, quantity } = input;
     if (quantityInput) quantityInput.value = String(quantity);
 
     const subtotal = prices[format] * quantity;
-    const shipping = calculateShipping({
-      format,
-      quantity,
-      state: getFieldValue('state'),
-      zip: getFieldValue('zip'),
-    });
+    const shipping = shippingRate?.amount ?? null;
     const total = subtotal + (shipping ?? 0);
-    const canPay = shipping !== null;
+    const canPay = shipping !== null && !loading;
+    const carrier = shippingRate?.provider && shippingRate?.service
+      ? `${shippingRate.provider} ${shippingRate.service}`
+      : shippingRate?.provider || '';
 
     if (subtotalElement) subtotalElement.textContent = currency.format(subtotal);
-    if (shippingElement) shippingElement.textContent = canPay ? currency.format(shipping) : 'Enter ZIP';
+    if (shippingElement) shippingElement.textContent = shipping !== null ? currency.format(shipping) : 'Enter ZIP';
     if (totalElement) totalElement.textContent = currency.format(total);
+    if (shippingNoteElement) {
+      shippingNoteElement.textContent = shippingRate?.source === 'shippo'
+        ? `${carrier || 'Carrier'} quote from Tyler, TX 75703${shippingRate.estimatedDays ? `, estimated ${shippingRate.estimatedDays} day${shippingRate.estimatedDays === 1 ? '' : 's'}.` : '.'}`
+        : shippingRate?.note || 'Live carrier quote from Tyler, TX 75703 once a destination ZIP is entered.';
+    }
     if (statusElement) {
-      statusElement.textContent = canPay
-        ? `Estimated total: ${currency.format(total)}. Use this amount when paying, then include your copied order summary in the note.`
-        : 'Enter a state and ZIP to estimate shipping before payment.';
+      if (loading) {
+        statusElement.textContent = 'Checking live shipping with Shippo...';
+      } else if (message) {
+        statusElement.textContent = message;
+      } else if (canPay) {
+        statusElement.textContent = `${shippingRate?.source === 'shippo' ? 'Live' : 'Estimated'} total: ${currency.format(total)}. Use this amount when paying, then include your copied order summary in the note.`;
+      } else {
+        statusElement.textContent = 'Enter a state and ZIP to calculate shipping before payment.';
+      }
     }
 
     if (cashAppLink) cashAppLink.href = canPay ? `https://cash.app/$tishashipleyauthor/${total.toFixed(2)}` : 'https://cash.app/$tishashipleyauthor';
     if (paypalLink) paypalLink.href = canPay ? `https://www.paypal.com/paypalme/Tishashipley/${total.toFixed(2)}` : 'https://www.paypal.com/paypalme/Tishashipley';
     setPaymentEnabled(canPay);
 
-    return { format, quantity, subtotal, shipping: shipping ?? 0, total, canPay };
+    currentCheckout = {
+      format,
+      quantity,
+      subtotal,
+      shipping: shipping ?? 0,
+      total,
+      canPay,
+      shippingSource: shippingRate?.source ?? '',
+      carrier,
+    };
+
+    return currentCheckout;
+  };
+
+  const fetchLiveShipping = async (input, signal) => {
+    const response = await fetch('/api/shipping-rate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+      signal,
+    });
+
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(payload.message || 'Live shipping was not available.');
+    return payload;
+  };
+
+  const updateCheckout = async () => {
+    const input = getCheckoutInput();
+    const subtotal = prices[input.format] * input.quantity;
+    const fallbackRate = getFallbackShipping(input);
+    const canQuote = Boolean(input.state && input.zip.length >= 5);
+    const sequence = ++checkoutSequence;
+
+    if (!canQuote) {
+      shippingRequest?.abort();
+      renderCheckout({ input, message: 'Enter a state and ZIP to calculate shipping before payment.' });
+      return currentCheckout;
+    }
+
+    renderCheckout({ input, shippingRate: fallbackRate, loading: true });
+    shippingRequest?.abort();
+    shippingRequest = new AbortController();
+
+    try {
+      const liveRate = await fetchLiveShipping(input, shippingRequest.signal);
+      if (sequence !== checkoutSequence) return currentCheckout;
+      renderCheckout({
+        input,
+        shippingRate: {
+          ...liveRate,
+          source: 'shippo',
+        },
+      });
+    } catch (error) {
+      if (error.name === 'AbortError' || sequence !== checkoutSequence) return currentCheckout;
+      renderCheckout({
+        input,
+        shippingRate: fallbackRate,
+        message: fallbackRate
+          ? `Live Shippo rate is unavailable right now, so this total uses a local estimate: ${currency.format(subtotal + fallbackRate.amount)}.`
+          : 'Enter a state and ZIP to calculate shipping before payment.',
+      });
+    }
+
+    return currentCheckout;
+  };
+
+  const scheduleCheckoutUpdate = (delay = 250) => {
+    window.clearTimeout(quoteTimer);
+    quoteTimer = window.setTimeout(updateCheckout, delay);
   };
 
   const handlePaymentClick = (event) => {
-    const checkout = updateCheckout();
+    const checkout = currentCheckout ?? renderCheckout({ input: getCheckoutInput(), shippingRate: getFallbackShipping(getCheckoutInput()) });
     if (checkout.canPay) return;
     event.preventDefault();
     statusElement?.focus?.();
@@ -310,13 +416,17 @@ function initializeBookModal() {
 
   openButtons.forEach((button) => button.addEventListener('click', openModal));
   closeButtons.forEach((button) => button.addEventListener('click', closeModal));
-  formatInputs.forEach((input) => input.addEventListener('change', updateCheckout));
-  quantityInput?.addEventListener('input', updateCheckout);
-  shippingFields.forEach((field) => field.addEventListener('input', updateCheckout));
+  formatInputs.forEach((input) => input.addEventListener('change', () => scheduleCheckoutUpdate(0)));
+  quantityInput?.addEventListener('input', () => scheduleCheckoutUpdate(0));
+  shippingFields.forEach((field) => field.addEventListener('input', () => scheduleCheckoutUpdate()));
   cashAppLink?.addEventListener('click', handlePaymentClick);
   paypalLink?.addEventListener('click', handlePaymentClick);
   copyOrderButton?.addEventListener('click', async () => {
-    const checkout = updateCheckout();
+    const checkout = currentCheckout?.canPay ? currentCheckout : await updateCheckout();
+    if (!checkout?.canPay) {
+      if (statusElement) statusElement.textContent = 'Enter a state and ZIP to calculate shipping before copying the order summary.';
+      return;
+    }
     const summary = buildOrderSummary(checkout);
     try {
       await navigator.clipboard.writeText(summary);
@@ -329,7 +439,7 @@ function initializeBookModal() {
     if (event.key === 'Escape' && !modal.hidden) closeModal();
   });
 
-  updateCheckout();
+  renderCheckout({ input: getCheckoutInput() });
 }
 
 function initializeEventTabs() {

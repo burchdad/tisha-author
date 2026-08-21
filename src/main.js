@@ -170,11 +170,133 @@ function initializeBookModal() {
   const modal = document.querySelector('.book-modal');
   const openButtons = document.querySelectorAll('[data-open-book]');
   const closeButtons = document.querySelectorAll('[data-close-book]');
+  const formatInputs = modal?.querySelectorAll('[data-book-format]') ?? [];
+  const quantityInput = modal?.querySelector('[data-book-quantity]');
+  const shippingFields = modal?.querySelectorAll('[data-shipping-field]') ?? [];
+  const subtotalElement = modal?.querySelector('[data-book-subtotal]');
+  const shippingElement = modal?.querySelector('[data-shipping-total]');
+  const totalElement = modal?.querySelector('[data-order-total]');
+  const statusElement = modal?.querySelector('[data-checkout-status]');
+  const cashAppLink = modal?.querySelector('[data-cashapp-link]');
+  const paypalLink = modal?.querySelector('[data-paypal-link]');
+  const copyOrderButton = modal?.querySelector('[data-copy-order]');
   let lastFocusedElement = null;
   if (!modal || !openButtons.length) return;
 
+  const prices = {
+    paperback: 12.99,
+    hardcover: 15.99,
+  };
+  const nearbyStates = new Set(['AR', 'LA', 'NM', 'OK']);
+  const regionalStates = new Set(['AL', 'CO', 'IA', 'IL', 'KS', 'MO', 'MS', 'NE', 'TN']);
+  const distantStates = new Set(['AK', 'HI', 'PR', 'GU', 'VI']);
+  const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+
+  const getFieldValue = (name) => {
+    const field = modal.querySelector(`[data-shipping-field="${name}"]`);
+    return field?.value.trim() ?? '';
+  };
+
+  const getSelectedFormat = () => {
+    const selected = Array.from(formatInputs).find((input) => input.checked);
+    return selected?.value === 'hardcover' ? 'hardcover' : 'paperback';
+  };
+
+  const getQuantity = () => {
+    const value = Number.parseInt(quantityInput?.value ?? '1', 10);
+    if (Number.isNaN(value)) return 1;
+    return Math.min(Math.max(value, 1), 10);
+  };
+
+  const calculateShipping = ({ format, quantity, state, zip }) => {
+    const cleanState = state.trim().toUpperCase();
+    const cleanZip = zip.trim();
+    if (!cleanState || cleanZip.length < 5) return null;
+
+    let base = 7.99;
+    if (distantStates.has(cleanState)) {
+      base = 10.99;
+    } else if (cleanState === 'TX' || cleanZip.startsWith('75') || cleanZip.startsWith('76')) {
+      base = 4.99;
+    } else if (nearbyStates.has(cleanState)) {
+      base = 5.99;
+    } else if (regionalStates.has(cleanState)) {
+      base = 6.99;
+    }
+
+    const additionalBook = format === 'hardcover' ? 1.65 : 1.25;
+    return base + Math.max(quantity - 1, 0) * additionalBook;
+  };
+
+  const setPaymentEnabled = (isEnabled) => {
+    [cashAppLink, paypalLink].forEach((link) => {
+      if (!link) return;
+      link.classList.toggle('is-disabled', !isEnabled);
+      link.setAttribute('aria-disabled', String(!isEnabled));
+    });
+  };
+
+  const buildOrderSummary = ({ format, quantity, subtotal, shipping, total }) => {
+    const formatLabel = format === 'hardcover' ? 'Hard-cover' : 'Soft-cover';
+    const addressLines = [
+      getFieldValue('name'),
+      getFieldValue('street'),
+      [getFieldValue('city'), getFieldValue('state').toUpperCase(), getFieldValue('zip')].filter(Boolean).join(', '),
+      getFieldValue('email'),
+    ].filter(Boolean);
+
+    return [
+      `Rider's Magic Mark order`,
+      `${quantity} ${formatLabel} book${quantity === 1 ? '' : 's'}`,
+      `Books: ${currency.format(subtotal)}`,
+      `Estimated shipping & handling: ${currency.format(shipping)}`,
+      `Estimated total: ${currency.format(total)}`,
+      addressLines.length ? `Ship to: ${addressLines.join(' | ')}` : '',
+      'Shipping estimate from Tyler, TX 75703.',
+    ].filter(Boolean).join('\n');
+  };
+
+  const updateCheckout = () => {
+    const format = getSelectedFormat();
+    const quantity = getQuantity();
+    if (quantityInput) quantityInput.value = String(quantity);
+
+    const subtotal = prices[format] * quantity;
+    const shipping = calculateShipping({
+      format,
+      quantity,
+      state: getFieldValue('state'),
+      zip: getFieldValue('zip'),
+    });
+    const total = subtotal + (shipping ?? 0);
+    const canPay = shipping !== null;
+
+    if (subtotalElement) subtotalElement.textContent = currency.format(subtotal);
+    if (shippingElement) shippingElement.textContent = canPay ? currency.format(shipping) : 'Enter ZIP';
+    if (totalElement) totalElement.textContent = currency.format(total);
+    if (statusElement) {
+      statusElement.textContent = canPay
+        ? `Estimated total: ${currency.format(total)}. Use this amount when paying, then include your copied order summary in the note.`
+        : 'Enter a state and ZIP to estimate shipping before payment.';
+    }
+
+    if (cashAppLink) cashAppLink.href = canPay ? `https://cash.app/$tishashipleyauthor/${total.toFixed(2)}` : 'https://cash.app/$tishashipleyauthor';
+    if (paypalLink) paypalLink.href = canPay ? `https://www.paypal.com/paypalme/Tishashipley/${total.toFixed(2)}` : 'https://www.paypal.com/paypalme/Tishashipley';
+    setPaymentEnabled(canPay);
+
+    return { format, quantity, subtotal, shipping: shipping ?? 0, total, canPay };
+  };
+
+  const handlePaymentClick = (event) => {
+    const checkout = updateCheckout();
+    if (checkout.canPay) return;
+    event.preventDefault();
+    statusElement?.focus?.();
+  };
+
   const openModal = () => {
     lastFocusedElement = document.activeElement;
+    updateCheckout();
     modal.hidden = false;
     document.body.classList.add('modal-open');
     modal.querySelector('.book-modal-close')?.focus();
@@ -188,10 +310,26 @@ function initializeBookModal() {
 
   openButtons.forEach((button) => button.addEventListener('click', openModal));
   closeButtons.forEach((button) => button.addEventListener('click', closeModal));
+  formatInputs.forEach((input) => input.addEventListener('change', updateCheckout));
+  quantityInput?.addEventListener('input', updateCheckout);
+  shippingFields.forEach((field) => field.addEventListener('input', updateCheckout));
+  cashAppLink?.addEventListener('click', handlePaymentClick);
+  paypalLink?.addEventListener('click', handlePaymentClick);
+  copyOrderButton?.addEventListener('click', async () => {
+    const checkout = updateCheckout();
+    const summary = buildOrderSummary(checkout);
+    try {
+      await navigator.clipboard.writeText(summary);
+      if (statusElement) statusElement.textContent = 'Order summary copied. Paste it into the payment note so fulfillment has the right details.';
+    } catch {
+      if (statusElement) statusElement.textContent = summary;
+    }
+  });
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && !modal.hidden) closeModal();
   });
 
+  updateCheckout();
 }
 
 function initializeEventTabs() {

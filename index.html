@@ -575,14 +575,63 @@
           <p class="eyebrow">Bring the magic home</p>
           <h2 id="book-modal-title">Purchase <em>Rider's Magic Mark</em></h2>
           <p>A heartwarming adventure about friendship, gratitude, courage, and discovering that what makes you different may be your greatest strength.</p>
-          <div class="book-price"><span>Book price</span><strong>Coming soon</strong><small>Shipping will be confirmed before checkout launches.</small></div>
-          <div class="payment-placeholder-grid" aria-label="Payment options coming soon">
-            <button type="button" disabled><span>Stripe</span><small>Cards & Cash App Pay</small></button>
-            <button type="button" disabled><span>PayPal</span><small>PayPal & Venmo</small></button>
-            <button type="button" disabled><span>Cash App</span><small>Business payment link</small></button>
+          <form class="book-checkout-form" data-book-checkout>
+            <fieldset class="book-format-options">
+              <legend>Choose your book</legend>
+              <label class="book-format-card">
+                <input type="radio" name="format" value="paperback" data-book-format checked />
+                <span><strong>Soft-cover</strong><small>$12.99</small></span>
+              </label>
+              <label class="book-format-card">
+                <input type="radio" name="format" value="hardcover" data-book-format />
+                <span><strong>Hard-cover</strong><small>$15.99</small></span>
+              </label>
+            </fieldset>
+
+            <div class="book-checkout-grid">
+              <label>Qty
+                <input type="number" min="1" max="10" value="1" inputmode="numeric" data-book-quantity />
+              </label>
+              <label>State
+                <input type="text" maxlength="2" placeholder="TX" autocomplete="address-level1" data-shipping-field="state" />
+              </label>
+              <label>ZIP
+                <input type="text" inputmode="numeric" maxlength="10" placeholder="75703" autocomplete="postal-code" data-shipping-field="zip" />
+              </label>
+            </div>
+
+            <details class="book-address-details">
+              <summary>Add full shipping info to the copied note</summary>
+              <div class="book-address-grid">
+                <label>Ship to
+                  <input type="text" placeholder="Name" autocomplete="name" data-shipping-field="name" />
+                </label>
+                <label>Email
+                  <input type="email" placeholder="you@example.com" autocomplete="email" data-shipping-field="email" />
+                </label>
+                <label class="book-address-wide">Street address
+                  <input type="text" placeholder="Address" autocomplete="street-address" data-shipping-field="street" />
+                </label>
+                <label>City
+                  <input type="text" placeholder="City" autocomplete="address-level2" data-shipping-field="city" />
+                </label>
+              </div>
+            </details>
+
+            <div class="book-total-card" aria-live="polite">
+              <div><span>Books</span><strong data-book-subtotal>$12.99</strong></div>
+              <div><span>Estimated shipping & handling</span><strong data-shipping-total>Enter ZIP</strong></div>
+              <div><span>Estimated total</span><strong data-order-total>$12.99</strong></div>
+              <small>Estimated from Tyler, TX 75703. Final carrier cost may be confirmed before fulfillment.</small>
+            </div>
+
+            <div class="payment-link-grid">
+              <a class="payment-link cashapp-link is-disabled" href="https://cash.app/$tishashipleyauthor" target="_blank" rel="noopener" data-cashapp-link aria-disabled="true">Cash App</a>
+              <a class="payment-link paypal-link is-disabled" href="https://www.paypal.com/paypalme/Tishashipley" target="_blank" rel="noopener" data-paypal-link aria-disabled="true">PayPal</a>
+              <button class="copy-order-button" type="button" data-copy-order>Copy order summary</button>
+            </div>
+            <p class="checkout-status" data-checkout-status>Enter a state and ZIP to estimate shipping before payment.</p>
           </div>
-          <p class="checkout-status">Secure checkout is being prepared. No payment can be submitted yet.</p>
-          <a class="button secondary" href="https://ridersmagicmark.com/" target="_blank" rel="noopener">Visit the Book Website</a>
         </div>
       </div>
     </div>

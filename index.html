@@ -318,22 +318,22 @@
           </p>
         </div>
         <div class="invite-side">
-          <form class="invite-form" aria-label="School visit inquiry form">
+          <form class="invite-form" aria-label="School visit inquiry form" data-invite-form>
             <label>
               Name
-              <input type="text" name="name" placeholder="Your name" />
+              <input type="text" name="name" placeholder="Your name" autocomplete="name" required />
             </label>
             <label>
               School or organization
-              <input type="text" name="school" placeholder="School name" />
+              <input type="text" name="school" placeholder="School name" autocomplete="organization" required />
             </label>
             <label>
               Email
-              <input type="email" name="email" placeholder="you@example.com" />
+              <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
             </label>
             <label>
               Visit interest
-              <select name="interest">
+              <select name="interest" required>
                 <option>Author assembly</option>
                 <option>Classroom workshop</option>
                 <option>Teacher PD</option>
@@ -343,11 +343,11 @@
             <div class="form-schedule-row">
               <label>
                 Preferred date
-                <input type="date" name="preferred-date" />
+                <input type="date" name="preferredDate" required />
               </label>
               <label>
                 Preferred time
-                <select name="preferred-time">
+                <select name="preferredTime" required>
                   <option>Morning</option>
                   <option>Midday</option>
                   <option>Afternoon</option>
@@ -356,7 +356,16 @@
                 </select>
               </label>
             </div>
-            <button class="button primary" type="button">Start the Conversation</button>
+            <label class="form-notes">
+              Notes
+              <textarea name="notes" placeholder="Share grade levels, group size, location, or anything helpful."></textarea>
+            </label>
+            <label class="form-honeypot" aria-hidden="true">
+              Leave this field empty
+              <input type="text" name="website" tabindex="-1" autocomplete="off" />
+            </label>
+            <p class="form-status" role="status" aria-live="polite" data-form-status></p>
+            <button class="button primary" type="submit">Start the Conversation</button>
           </form>
           <figure class="visit-photo">
             <img src="/story/tisha-laying-down.jpg" alt="Dr. Tisha Shipley with the Rider puppet and Rider's Magic Mark book" />

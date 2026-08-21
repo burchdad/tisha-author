@@ -206,7 +206,54 @@ function initializeEventTabs() {
   });
 }
 
+function initializeInviteForm() {
+  const form = document.querySelector('[data-invite-form]');
+  if (!form) return;
+
+  const status = form.querySelector('[data-form-status]');
+  const submitButton = form.querySelector('button[type="submit"]');
+
+  const setStatus = (message, state = '') => {
+    if (!status) return;
+    status.textContent = message;
+    status.dataset.state = state;
+  };
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!form.reportValidity()) return;
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Sending...';
+    setStatus('Sending your request...', 'loading');
+
+    const payload = Object.fromEntries(new FormData(form).entries());
+
+    try {
+      const response = await fetch('/api/school-visit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(result.message || 'The message could not be sent yet.');
+      }
+
+      form.reset();
+      setStatus(result.message || 'Thanks! We received your request and will follow up soon.', 'success');
+    } catch (error) {
+      setStatus(error.message || 'Something went wrong. Please try again soon.', 'error');
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Start the Conversation';
+    }
+  });
+}
+
 initializeCharacterCards();
 initializeToolkitModal();
 initializeBookModal();
 initializeEventTabs();
+initializeInviteForm();

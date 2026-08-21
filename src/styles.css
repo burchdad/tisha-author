@@ -854,7 +854,8 @@ label {
 }
 
 input,
-select {
+select,
+textarea {
   width: 100%;
   min-height: 46px;
   border: 2px solid var(--ink);
@@ -863,6 +864,48 @@ select {
   color: var(--ink);
   font: inherit;
   padding: 10px 12px;
+}
+
+textarea {
+  min-height: 104px;
+  resize: vertical;
+}
+
+.form-notes {
+  gap: 8px;
+}
+
+.form-honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.form-status {
+  min-height: 22px;
+  margin: -2px 0 0;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.form-status[data-state="success"] {
+  color: #087a3f;
+}
+
+.form-status[data-state="error"] {
+  color: #c22849;
+}
+
+.form-status[data-state="loading"] {
+  color: var(--blue);
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.72;
 }
 
 .gratitude-resources {

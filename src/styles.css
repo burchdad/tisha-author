@@ -772,6 +772,11 @@ p {
   padding-top: 12px;
 }
 
+.invite-side {
+  display: grid;
+  gap: clamp(22px, 3vw, 34px);
+}
+
 .visit-options {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -804,6 +809,36 @@ p {
   border: 2px solid var(--ink);
   background: rgba(255, 255, 255, 0.86);
   box-shadow: 10px 10px 0 var(--blue);
+}
+
+.visit-photo {
+  position: relative;
+  overflow: hidden;
+  min-height: clamp(300px, 31vw, 470px);
+  margin: 0;
+  border: 2px solid var(--ink);
+  border-radius: 34px;
+  background: var(--rose);
+  box-shadow: 10px 10px 0 var(--gold), 0 22px 60px rgba(23, 32, 51, 0.18);
+}
+
+.visit-photo::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0) 42%),
+    linear-gradient(0deg, rgba(23, 32, 51, 0.18), rgba(23, 32, 51, 0) 44%);
+}
+
+.visit-photo img {
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  object-fit: cover;
+  object-position: 74% center;
+  display: block;
 }
 
 label {

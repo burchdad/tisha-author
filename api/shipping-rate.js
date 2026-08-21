@@ -86,7 +86,7 @@ export default async function handler(request, response) {
     return;
   }
 
-  const apiToken = process.env.SHIPPO_API_TOKEN;
+  const apiToken = process.env.SHIPPO_API_TOKEN || process.env.SHIPPO_API_KEY || process.env.SHIPPO_TOKEN;
   if (!apiToken) {
     json(response, 503, { message: 'Live shipping is not configured yet.' });
     return;

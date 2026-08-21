@@ -1459,6 +1459,7 @@ select {
 
 .profile-section.section-band {
   width: min(1480px, 100% - 32px);
+  margin-bottom: clamp(56px, 7vw, 100px);
 }
 
 .profile-section {
@@ -1552,7 +1553,25 @@ select {
 .podcast-icon { display: grid; width: 48px; height: 48px; place-items: center; border: 2px solid white; border-radius: 50%; color: var(--rose); box-shadow: inset 0 0 0 8px var(--gold); }
 .coming-soon-pill { max-width: 100%; padding: 8px 11px; border-radius: 999px; background: var(--gold); color: var(--ink); font-size: .72rem; font-weight: 900; white-space: normal; }
 
-.events-section { padding: clamp(70px, 9vw, 130px) clamp(20px, 7vw, 110px); background: linear-gradient(135deg, rgba(255,255,255,.9), rgba(255,235,181,.9)); }
+.events-section {
+  position: relative;
+  width: min(1380px, calc(100% - 32px));
+  overflow: hidden;
+  padding: clamp(76px, 8vw, 118px) clamp(28px, 7vw, 118px);
+  border: 2px solid rgba(23, 32, 51, 0.16);
+  border-radius: 36px;
+  background: linear-gradient(135deg, rgba(255,255,255,.94), rgba(255,235,181,.9));
+  box-shadow: 0 28px 80px rgba(23, 32, 51, 0.12);
+}
+
+.events-section .section-heading {
+  max-width: 980px;
+}
+
+.events-section .section-heading h2 {
+  font-size: clamp(2.6rem, 4.7vw, 5.6rem);
+  line-height: 0.98;
+}
 .event-tabs, .toolkit-tabs { display: flex; gap: 9px; flex-wrap: wrap; }
 .event-tabs { margin: 28px 0; }
 .event-tabs button, .toolkit-tabs button { appearance: none; padding: 10px 15px; border: 2px solid var(--ink); border-radius: 999px; background: white; cursor: pointer; font: inherit; font-size: .82rem; font-weight: 900; }

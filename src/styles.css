@@ -1457,17 +1457,42 @@ select {
 }
 [data-open-book]:hover { transform: translateY(-2px); box-shadow: 5px 7px 0 var(--ink), 0 0 0 6px rgba(255,211,52,.25), 0 0 32px rgba(255,184,0,.7); }
 
-.profile-section { display: grid; gap: 28px; }
+.profile-section.section-band {
+  width: min(1480px, 100% - 32px);
+}
+
+.profile-section {
+  display: grid;
+  align-items: start;
+  gap: clamp(24px, 3vw, 40px);
+}
+
 .profile-card {
   display: grid;
-  grid-template-columns: minmax(150px, 210px) 1fr;
-  gap: clamp(22px, 4vw, 46px);
+  grid-template-columns: minmax(140px, 190px) minmax(0, 1fr);
+  gap: clamp(20px, 3vw, 36px);
   align-items: start;
-  padding: clamp(24px, 4vw, 46px);
+  min-width: 0;
+  padding: clamp(24px, 3.2vw, 42px);
   border: 2px solid var(--ink);
-  border-radius: 34px;
+  border-radius: 28px;
   background: rgba(255, 255, 255, 0.86);
   box-shadow: 9px 9px 0 rgba(23, 32, 51, 0.13);
+}
+
+.profile-card > div:last-child {
+  min-width: 0;
+}
+
+.profile-card h2 {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: clamp(2.9rem, 3.8vw, 4.6rem);
+  line-height: 0.92;
+}
+
+.profile-card p {
+  max-width: 48ch;
 }
 .profile-photo-placeholder,
 .profile-photo {
@@ -1490,6 +1515,7 @@ select {
 .profile-photo {
   position: relative;
   gap: 10px;
+  width: min(100%, 190px);
   padding: 0;
   background: linear-gradient(145deg, var(--aqua), var(--blue) 58%, #52248f);
 }
@@ -1657,6 +1683,20 @@ select {
   .site-footer { grid-template-columns: auto 1fr; }
   .footer-message { text-align: left; justify-self: start; }
   .site-footer .footer-actions { grid-column: 1 / -1; justify-content: center; }
+}
+
+@media (min-width: 781px) and (max-width: 1180px) {
+  .profile-section {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-card {
+    grid-template-columns: minmax(150px, 220px) minmax(0, 1fr);
+  }
+
+  .profile-photo {
+    width: min(100%, 220px);
+  }
 }
 
 @media (max-width: 620px) {

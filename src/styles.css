@@ -574,6 +574,9 @@ p {
 
 .no-transparent-video .hero-rider-fallback {
   display: block;
+  width: min(72%, 540px);
+  max-height: min(52vh, 560px);
+  transform: translate3d(0, var(--rider-y), 0) rotateX(4deg) rotateY(-5deg);
 }
 
 @supports (-webkit-touch-callout: none) {
@@ -583,6 +586,9 @@ p {
 
   .hero-rider-fallback {
     display: block;
+    width: min(72%, 540px);
+    max-height: min(52vh, 560px);
+    transform: translate3d(0, var(--rider-y), 0) rotateX(4deg) rotateY(-5deg);
   }
 }
 
@@ -1424,6 +1430,18 @@ button:disabled {
     max-height: 610px;
   }
 
+  .no-transparent-video .hero-rider-fallback {
+    width: min(68%, 430px);
+    max-height: 500px;
+  }
+
+  @supports (-webkit-touch-callout: none) {
+    .hero-rider-fallback {
+      width: min(68%, 430px);
+      max-height: 500px;
+    }
+  }
+
   .story-strip {
     grid-template-columns: 1fr;
   }
@@ -1536,6 +1554,20 @@ button:disabled {
     width: min(112%, 500px);
     max-height: 430px;
     transform: translate3d(0, var(--rider-y), 0) rotateX(4deg) rotateY(-5deg);
+  }
+
+  .no-transparent-video .hero-rider-fallback {
+    width: min(66%, 310px);
+    max-height: 340px;
+    transform: translate3d(0, var(--rider-y), 0) rotateX(4deg) rotateY(-5deg);
+  }
+
+  @supports (-webkit-touch-callout: none) {
+    .hero-rider-fallback {
+      width: min(66%, 310px);
+      max-height: 340px;
+      transform: translate3d(0, var(--rider-y), 0) rotateX(4deg) rotateY(-5deg);
+    }
   }
 
   .character-card {

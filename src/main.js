@@ -4,7 +4,10 @@ import { initializeMobileMenu } from './mobile-menu.js';
 
 const videoProbe = document.createElement('video');
 const supportsWebm = Boolean(videoProbe.canPlayType('video/webm; codecs="vp9"') || videoProbe.canPlayType('video/webm'));
-const isAppleMobile = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isAppleMobile =
+  /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+  (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
 if (!supportsWebm || isAppleMobile) {
   document.documentElement.classList.add('no-transparent-video');

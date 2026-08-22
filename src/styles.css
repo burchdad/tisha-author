@@ -576,6 +576,16 @@ p {
   display: block;
 }
 
+@supports (-webkit-touch-callout: none) {
+  .cape-motion-video {
+    display: none;
+  }
+
+  .hero-rider-fallback {
+    display: block;
+  }
+}
+
 .story-strip {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

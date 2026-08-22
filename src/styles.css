@@ -540,8 +540,7 @@ p {
 }
 
 .cape-motion-video,
-.hero-rider-fallback,
-.hero-cape-fallback {
+.hero-rider-fallback {
   z-index: 3;
   width: min(122%, 920px);
   max-height: min(60vh, 700px);
@@ -552,8 +551,7 @@ p {
 }
 
 .cape-motion-video,
-.hero-rider-fallback,
-.hero-cape-fallback {
+.hero-rider-fallback {
   position: absolute;
   z-index: 3;
   aspect-ratio: 16 / 9;
@@ -570,28 +568,11 @@ p {
   aspect-ratio: auto;
 }
 
-.hero-cape-fallback {
-  display: none;
-  z-index: 2;
-  width: min(58%, 430px);
-  aspect-ratio: auto;
-  max-height: none;
-  object-fit: contain;
-  transform: translate3d(-48%, calc(var(--rider-y) - 10px), 0) rotate(-4deg);
-  transform-origin: 92% 50%;
-  filter: saturate(1.08) contrast(1.04) drop-shadow(0 24px 18px rgba(23, 32, 51, 0.12));
-  animation: safariCapeWave 2.8s ease-in-out infinite;
-}
-
 .no-transparent-video .cape-motion-video {
   display: none;
 }
 
 .no-transparent-video .hero-rider-fallback {
-  display: block;
-}
-
-.no-transparent-video .hero-cape-fallback {
   display: block;
 }
 
@@ -1359,17 +1340,6 @@ button:disabled {
   }
 }
 
-@keyframes safariCapeWave {
-  0%,
-  100% {
-    transform: translate3d(-48%, calc(var(--rider-y) - 10px), 0) rotate(-4deg) skewX(-1deg) scaleX(1);
-  }
-
-  50% {
-    transform: translate3d(-50%, calc(var(--rider-y) - 3px), 0) rotate(-1deg) skewX(2deg) scaleX(1.04);
-  }
-}
-
 @keyframes riderFloat {
   0%,
   100% {
@@ -1442,10 +1412,6 @@ button:disabled {
   .cape-motion-video {
     width: min(116%, 720px);
     max-height: 610px;
-  }
-
-  .hero-cape-fallback {
-    width: min(56%, 360px);
   }
 
   .story-strip {
@@ -1560,10 +1526,6 @@ button:disabled {
     width: min(112%, 500px);
     max-height: 430px;
     transform: translate3d(0, var(--rider-y), 0) rotateX(4deg) rotateY(-5deg);
-  }
-
-  .hero-cape-fallback {
-    width: min(58%, 260px);
   }
 
   .character-card {

@@ -539,7 +539,8 @@ p {
   transform: rotateX(7deg) rotateY(-8deg);
 }
 
-.cape-motion-video {
+.cape-motion-video,
+.hero-rider-fallback {
   z-index: 3;
   width: min(122%, 920px);
   max-height: min(60vh, 700px);
@@ -549,7 +550,8 @@ p {
   animation: riderFloat 5.8s ease-in-out infinite;
 }
 
-.cape-motion-video {
+.cape-motion-video,
+.hero-rider-fallback {
   position: absolute;
   z-index: 3;
   aspect-ratio: 16 / 9;
@@ -559,6 +561,19 @@ p {
   opacity: 1;
   filter: saturate(1.08) contrast(1.04) brightness(1.01) drop-shadow(0 30px 24px rgba(23, 32, 51, 0.12));
   pointer-events: none;
+}
+
+.hero-rider-fallback {
+  display: none;
+  aspect-ratio: auto;
+}
+
+.no-transparent-video .cape-motion-video {
+  display: none;
+}
+
+.no-transparent-video .hero-rider-fallback {
+  display: block;
 }
 
 .story-strip {

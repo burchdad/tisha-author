@@ -130,6 +130,104 @@ function initializeCharacterCards() {
   });
 }
 
+function getTranslateX(element) {
+  const transform = window.getComputedStyle(element).transform;
+
+  if (!transform || transform === 'none') return 0;
+
+  if ('DOMMatrixReadOnly' in window) {
+    return new DOMMatrixReadOnly(transform).m41;
+  }
+
+  const values = transform.match(/matrix.*\((.+)\)/)?.[1]?.split(',') || [];
+  return Number.parseFloat(values[4]) || 0;
+}
+
+function initializeCharacterCarousel() {
+  const carousel = document.querySelector('.character-carousel');
+  const track = carousel?.querySelector('.character-track');
+  const hasTouchControls = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+
+  if (!carousel || !track || !hasTouchControls) return;
+
+  let pointerId = null;
+  let startX = 0;
+  let startTranslate = 0;
+  let currentTranslate = 0;
+  let isDragging = false;
+  const dragThreshold = 8;
+
+  const pauseAtCurrentPosition = () => {
+    currentTranslate = getTranslateX(track);
+    carousel.classList.add('is-paused');
+    track.style.animation = 'none';
+    track.style.transform = `translate3d(${currentTranslate}px, 0, 0)`;
+  };
+
+  const resumeLoop = () => {
+    carousel.classList.remove('is-paused', 'is-dragging');
+    track.style.animation = '';
+    track.style.transform = '';
+  };
+
+  const toggleLoop = () => {
+    if (carousel.classList.contains('is-paused')) {
+      resumeLoop();
+      return;
+    }
+
+    pauseAtCurrentPosition();
+  };
+
+  carousel.addEventListener('pointerdown', (event) => {
+    if (event.button > 0) return;
+
+    pointerId = event.pointerId;
+    startX = event.clientX;
+    startTranslate = carousel.classList.contains('is-paused') ? currentTranslate : getTranslateX(track);
+    isDragging = false;
+    carousel.setPointerCapture?.(pointerId);
+  });
+
+  carousel.addEventListener(
+    'pointermove',
+    (event) => {
+      if (pointerId !== event.pointerId) return;
+
+      const deltaX = event.clientX - startX;
+      if (!isDragging && Math.abs(deltaX) < dragThreshold) return;
+
+      if (!isDragging) {
+        isDragging = true;
+        carousel.classList.add('is-paused', 'is-dragging');
+        track.style.animation = 'none';
+      }
+
+      event.preventDefault();
+      currentTranslate = startTranslate + deltaX;
+      track.style.transform = `translate3d(${currentTranslate}px, 0, 0)`;
+    },
+    { passive: false },
+  );
+
+  const finishPointer = (event) => {
+    if (pointerId !== event.pointerId) return;
+
+    carousel.releasePointerCapture?.(pointerId);
+    pointerId = null;
+    carousel.classList.remove('is-dragging');
+
+    if (!isDragging) {
+      toggleLoop();
+    }
+
+    isDragging = false;
+  };
+
+  carousel.addEventListener('pointerup', finishPointer);
+  carousel.addEventListener('pointercancel', finishPointer);
+}
+
 function initializeToolkitModal() {
   const modal = document.querySelector('.toolkit-modal');
   const openButtons = document.querySelectorAll('[data-open-toolkit]');
@@ -512,6 +610,7 @@ function initializeInviteForm() {
   });
 }
 
+initializeCharacterCarousel();
 initializeCharacterCards();
 initializeMobileMenu();
 initializeToolkitModal();

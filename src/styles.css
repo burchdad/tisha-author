@@ -705,8 +705,26 @@ p {
   animation: characterLoop 52s linear infinite;
 }
 
-.character-carousel:hover .character-track {
+.character-carousel.is-paused .character-track {
   animation-play-state: paused;
+}
+
+.character-carousel.is-dragging {
+  cursor: grabbing;
+}
+
+.character-carousel.is-dragging .character-card {
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .character-carousel {
+    cursor: grab;
+  }
+
+  .character-carousel:hover .character-track {
+    animation-play-state: paused;
+  }
 }
 
 .character-card {

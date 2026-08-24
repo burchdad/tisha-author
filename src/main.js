@@ -259,6 +259,12 @@ function initializeToolkitModal() {
     button.addEventListener('click', closeModal);
   });
 
+  const openFromHash = () => {
+    if (window.location.hash === '#teacher-toolkit-modal') openModal();
+  };
+  openFromHash();
+  window.addEventListener('hashchange', openFromHash);
+
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && !modal.hidden) closeModal();
   });
@@ -525,6 +531,13 @@ function initializeBookModal() {
 
   openButtons.forEach((button) => button.addEventListener('click', openModal));
   closeButtons.forEach((button) => button.addEventListener('click', closeModal));
+
+  const openFromHash = () => {
+    if (window.location.hash === '#purchase-book') openModal();
+  };
+  openFromHash();
+  window.addEventListener('hashchange', openFromHash);
+
   formatInputs.forEach((input) => input.addEventListener('change', () => scheduleCheckoutUpdate(0)));
   quantityInput?.addEventListener('input', () => scheduleCheckoutUpdate(0));
   shippingFields.forEach((field) => field.addEventListener('input', () => scheduleCheckoutUpdate()));

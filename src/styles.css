@@ -1603,27 +1603,15 @@ button:disabled {
   }
 
   .character-carousel {
-    overflow-x: auto;
-    overflow-y: visible;
+    overflow: hidden;
     contain: none;
     padding: 8px 8px 22px;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
-  }
-
-  .character-carousel::before,
-  .character-carousel::after {
-    display: none;
   }
 
   .character-track {
     width: max-content;
-    animation: none;
-    transform: none;
-  }
-
-  .character-set[aria-hidden="true"] {
-    display: none;
+    animation: characterLoop 64s linear infinite;
+    will-change: transform;
   }
 
   .character-set {
@@ -1634,7 +1622,6 @@ button:disabled {
     flex-basis: min(86vw, 360px);
     grid-template-columns: 1fr;
     min-height: auto;
-    scroll-snap-align: center;
   }
 
   .character-card img {

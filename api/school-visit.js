@@ -43,7 +43,7 @@ export default async function handler(request, response) {
   }
 
   const apiKey = process.env.RESEND_API_KEY;
-  const toEmail = process.env.INVITE_TO_EMAIL || process.env.RESEND_TO_EMAIL;
+  const toEmail = process.env.INVITE_TO_EMAIL || process.env.RESEND_TO_EMAIL || 'ridersmagicmark@gmail.com';
   const fromEmail = process.env.RESEND_FROM_EMAIL || "Rider's Magic Mark <onboarding@resend.dev>";
 
   if (!apiKey || !toEmail) {

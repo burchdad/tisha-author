@@ -395,6 +395,7 @@ function initializeBookModal() {
       carrier ? `Carrier: ${carrier}` : '',
       `Order total: ${currency.format(total)}`,
       addressLines.length ? `Ship to: ${addressLines.join(' | ')}` : '',
+      'Order contact: ridersmagicmark@gmail.com',
       shippingSource === 'shippo' ? 'Live carrier quote from Tyler, TX 75703.' : 'Shipping estimate from Tyler, TX 75703.',
     ].filter(Boolean).join('\n');
   };
@@ -425,7 +426,7 @@ function initializeBookModal() {
       } else if (message) {
         statusElement.textContent = message;
       } else if (canPay) {
-        statusElement.textContent = `${shippingRate?.source === 'shippo' ? 'Live' : 'Estimated'} total: ${currency.format(total)}. Use this amount when paying, then include your copied order summary in the note.`;
+        statusElement.textContent = `${shippingRate?.source === 'shippo' ? 'Live' : 'Estimated'} total: ${currency.format(total)}. Use this amount when paying, then include your copied order summary in the note or send it to ridersmagicmark@gmail.com.`;
       } else {
         statusElement.textContent = 'Enter a state and ZIP to calculate shipping before payment.';
       }
@@ -552,7 +553,7 @@ function initializeBookModal() {
     const summary = buildOrderSummary(checkout);
     try {
       await navigator.clipboard.writeText(summary);
-      if (statusElement) statusElement.textContent = 'Order summary copied. Paste it into the payment note so fulfillment has the right details.';
+      if (statusElement) statusElement.textContent = 'Order summary copied. Paste it into the payment note or send it to ridersmagicmark@gmail.com so fulfillment has the right details.';
     } catch {
       if (statusElement) statusElement.textContent = summary;
     }

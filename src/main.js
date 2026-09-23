@@ -295,6 +295,7 @@ function initializeBookModal() {
   const statusElement = modal?.querySelector('[data-checkout-status]');
   const cashAppLink = modal?.querySelector('[data-cashapp-link]');
   const paypalLink = modal?.querySelector('[data-paypal-link]');
+  const venmoLink = modal?.querySelector('[data-venmo-link]');
   const copyOrderButton = modal?.querySelector('[data-copy-order]');
   let lastFocusedElement = null;
   let shippingRequest = null;
@@ -371,7 +372,7 @@ function initializeBookModal() {
   };
 
   const setPaymentEnabled = (isEnabled) => {
-    [cashAppLink, paypalLink].forEach((link) => {
+    [cashAppLink, paypalLink, venmoLink].forEach((link) => {
       if (!link) return;
       link.classList.toggle('is-disabled', !isEnabled);
       link.setAttribute('aria-disabled', String(!isEnabled));
@@ -388,7 +389,8 @@ function initializeBookModal() {
     ].filter(Boolean);
 
     return [
-      `Rider's Magic Mark order`,
+      `Rider's Magic Mark pre-order`,
+      'Books will ship the week of November 10th.',
       `${quantity} ${formatLabel} book${quantity === 1 ? '' : 's'}`,
       `Books: ${currency.format(subtotal)}`,
       `${shippingSource === 'shippo' ? 'Live shipping & handling' : 'Estimated shipping & handling'}: ${currency.format(shipping)}`,
@@ -544,6 +546,7 @@ function initializeBookModal() {
   shippingFields.forEach((field) => field.addEventListener('input', () => scheduleCheckoutUpdate()));
   cashAppLink?.addEventListener('click', handlePaymentClick);
   paypalLink?.addEventListener('click', handlePaymentClick);
+  venmoLink?.addEventListener('click', handlePaymentClick);
   copyOrderButton?.addEventListener('click', async () => {
     const checkout = currentCheckout?.canPay ? currentCheckout : await updateCheckout();
     if (!checkout?.canPay) {

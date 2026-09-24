@@ -390,7 +390,7 @@ function initializeBookModal() {
 
     return [
       `Rider's Magic Mark pre-order`,
-      'Books will ship the week of November 10th.',
+      'Books will ship the week of November 20th.',
       `${quantity} ${formatLabel} book${quantity === 1 ? '' : 's'}`,
       `Books: ${currency.format(subtotal)}`,
       `${shippingSource === 'shippo' ? 'Live shipping & handling' : 'Estimated shipping & handling'}: ${currency.format(shipping)}`,

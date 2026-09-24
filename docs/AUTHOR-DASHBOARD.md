@@ -79,3 +79,15 @@ of payment. No Square secrets belong in browser code or Sanity content.
   search crawlers that do not execute JavaScript may see that original copy.
 - This dashboard edits website content; order management remains in the payment
   provider. It does not process or store payment cards.
+
+## Pending tax and shipping-email configuration
+
+- Current requested book prices: soft-cover $13.99; hard-cover $16.99.
+- Temporary shipping/fulfillment email recipient: stephen.burch@ghostai.solutions.
+  This request does not change the school-inquiry recipient or public customer-support address.
+- Confirm Tisha's Square sales-tax settings and collection jurisdictions before enabling tax.
+  Do not assume a flat tax rate or treat an unavailable tax calculation as zero.
+- Confirm whether the email should contain paid-order details for manual label creation,
+  or an automatically purchased label. No label purchases or automated fulfillment
+  emails are currently connected.
+- The Square checkout link and payment-confirmation integration are still pending.

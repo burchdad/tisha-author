@@ -1,8 +1,8 @@
 export const defaultSettings = {
   _id: 'siteSettings', _type: 'siteSettings',
   shippingMessage: 'Books will ship the week of November 20th.',
-  paperbackPrice: 12.99,
-  hardcoverPrice: 15.99,
+  paperbackPrice: 13.99,
+  hardcoverPrice: 16.99,
 };
 
 export const defaultCurricula = [

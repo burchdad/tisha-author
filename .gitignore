@@ -3,3 +3,6 @@ dist/
 .env*
 .codex-*.log
 *.local
+
+playwright-report/
+test-results/

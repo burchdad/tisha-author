@@ -1,0 +1,177 @@
+[
+  {
+    "name": "homeTitle",
+    "title": "Home: book title",
+    "selector": ".hero h1",
+    "page": "index.html",
+    "initialValue": "Rider's Magic Mark"
+  },
+  {
+    "name": "homeIntro",
+    "title": "Home: introduction",
+    "selector": ".hero-lede",
+    "page": "index.html",
+    "initialValue": "Join Rider on a magical adventure where friendship grows, courage shines, and being uniquely YOU becomes your greatest strength!"
+  },
+  {
+    "name": "characterHeading",
+    "title": "Characters: heading",
+    "selector": "#characters h2",
+    "page": "index.html",
+    "initialValue": "Friends who celebrate differences and discover strengths"
+  },
+  {
+    "name": "characterIntro",
+    "title": "Characters: introduction",
+    "selector": "#characters .section-heading > p:last-child",
+    "page": "index.html",
+    "initialValue": "Each character brings a unique voice, personality, and perspective to Rider's world, creating opportunities for children to recognize their own strengths and celebrate the magic within themselves and others."
+  },
+  {
+    "name": "authorName",
+    "title": "Author: name",
+    "selector": "#author > .profile-card:first-child h2",
+    "page": "index.html",
+    "initialValue": "Dr. Tisha Shipley"
+  },
+  {
+    "name": "authorBio1",
+    "title": "Author: first paragraph",
+    "selector": "#author > .profile-card:first-child > div:nth-child(2) > p:nth-of-type(2)",
+    "page": "index.html",
+    "initialValue": "Dr. Tisha Shipley is an educator, podcaster, author, and lifelong advocate for children. With more than 25 years of experience in early childhood and elementary education, Dr. Shipley has dedicated her career to helping children discover their strengths, celebrate their differences, and feel confident in who they are."
+  },
+  {
+    "name": "authorBio2",
+    "title": "Author: second paragraph",
+    "selector": "#author > .profile-card:first-child > div:nth-child(2) > p:nth-of-type(3)",
+    "page": "index.html",
+    "initialValue": "As a professor of Early Childhood Education, she brings her passion for social-emotional learning, developmentally appropriate practice, and inclusive classrooms into everything she creates. Rider's Magic Mark was inspired by the belief that what makes us different can also be what makes us extraordinary."
+  },
+  {
+    "name": "illustratorName",
+    "title": "Illustrator: name",
+    "selector": "#illustrator h2",
+    "page": "index.html",
+    "initialValue": "Chandrani Das"
+  },
+  {
+    "name": "illustratorBio1",
+    "title": "Illustrator: first paragraph",
+    "selector": "#illustrator > div:nth-child(2) > p:nth-of-type(2)",
+    "page": "index.html",
+    "initialValue": "Chandrani Das is a children's book illustrator who loves bringing stories and characters to life through both traditional and digital art. She has been drawing since childhood and has worked professionally as an illustrator for the past five years, with more than 25 children's books illustrated so far."
+  },
+  {
+    "name": "illustratorBio2",
+    "title": "Illustrator: second paragraph",
+    "selector": "#illustrator > div:nth-child(2) > p:nth-of-type(3)",
+    "page": "index.html",
+    "initialValue": "She enjoys exploring different illustration styles and mediums, from playful and whimsical children's artwork to detailed semi-realistic illustrations. One of her favorite parts of the process is creating expressive faces, playful poses, emotions, and little details that make each scene feel alive."
+  },
+  {
+    "name": "illustratorBio3",
+    "title": "Illustrator: third paragraph",
+    "selector": "#illustrator > div:nth-child(2) > p:nth-of-type(4)",
+    "page": "index.html",
+    "initialValue": "Chandrani feels grateful to collaborate with wonderful authors and be part of their storytelling journeys. It was a joy to illustrate Rider's Magic Mark, and she hopes her illustrations add warmth, emotion, and a little extra magic to this beautiful story."
+  },
+  {
+    "name": "eventsHeading",
+    "title": "In the Wild: heading",
+    "selector": "#events h2",
+    "page": "index.html",
+    "initialValue": "Rider’s Magic Mark in the Wild"
+  },
+  {
+    "name": "eventsIntro",
+    "title": "In the Wild: introduction",
+    "selector": "#events .section-heading > p:last-child",
+    "page": "index.html",
+    "initialValue": "Follow the journey and revisit the places where readers, families, and educators have gathered to celebrate every child's unique magic mark."
+  },
+  {
+    "name": "schoolHeading",
+    "title": "School visits: heading",
+    "selector": "#schools h2",
+    "page": "index.html",
+    "initialValue": "Turn the book into a live, memorable school experience"
+  },
+  {
+    "name": "mediaHeading",
+    "title": "Featured media: heading",
+    "selector": "#featured-media h2",
+    "page": "index.html",
+    "initialValue": "Beyond the Book: Featured Media"
+  },
+  {
+    "name": "mediaIntro",
+    "title": "Featured media: introduction",
+    "selector": "#featured-media .section-heading > p:last-child",
+    "page": "index.html",
+    "initialValue": "Conversations, ideas, and stories from Dr. Tisha Shipley and the world of Rider’s Magic Mark."
+  },
+  {
+    "name": "socialHeading",
+    "title": "Social media: heading",
+    "selector": "#social-media h2",
+    "page": "index.html",
+    "initialValue": "Find Rider’s Magic Mark on Social Media"
+  },
+  {
+    "name": "socialIntro",
+    "title": "Social media: introduction",
+    "selector": "#social-media > p:last-of-type",
+    "page": "index.html",
+    "initialValue": "Follow along for book news, classroom inspiration, and moments from Rider’s journey."
+  },
+  {
+    "name": "bookDescription",
+    "title": "Checkout: book description",
+    "selector": ".book-offer-copy > p:nth-of-type(2)",
+    "page": "index.html",
+    "initialValue": "A heartwarming adventure about friendship, gratitude, courage, and discovering that what makes you different may be your greatest strength."
+  },
+  {
+    "name": "curriculumTitle",
+    "title": "Curriculum: title",
+    "selector": ".curriculum-hero h1",
+    "page": "curriculum.html",
+    "initialValue": "Make SEL feel magical"
+  },
+  {
+    "name": "curriculumIntro",
+    "title": "Curriculum: introduction",
+    "selector": ".curriculum-hero > div > p:nth-of-type(2)",
+    "page": "curriculum.html",
+    "initialValue": "Use Rider's story to spark gratitude, uniqueness, courage, kindness, and belonging through flexible classroom and family conversations."
+  },
+  {
+    "name": "companionHeading",
+    "title": "Companion: heading",
+    "selector": "#companion h2",
+    "page": "curriculum.html",
+    "initialValue": "More than a read-aloud"
+  },
+  {
+    "name": "companionIntro",
+    "title": "Companion: introduction",
+    "selector": "#companion .book-panel > p:nth-of-type(2)",
+    "page": "curriculum.html",
+    "initialValue": "The companion experience extends the book into reflection prompts, printable activities, classroom conversations, family take-home moments, and celebration rituals around gratitude and uniqueness."
+  },
+  {
+    "name": "gratitudeHeading",
+    "title": "Gratitude: heading",
+    "selector": "#gratitude-curriculum h2",
+    "page": "curriculum.html",
+    "initialValue": "A beautiful bridge between story and SEL"
+  },
+  {
+    "name": "gratitudeIntro",
+    "title": "Gratitude: introduction",
+    "selector": "#gratitude-curriculum .section-heading > p:last-child",
+    "page": "curriculum.html",
+    "initialValue": "This curriculum companion brings Social Emotional Learning to life through intentional conversations, gratitude practices, and confidence-building activities."
+  }
+]

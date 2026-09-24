@@ -2118,3 +2118,11 @@ button:disabled {
 .curriculum-download .button { white-space: normal; text-align: center; }
 @media (max-width: 980px) { .media-grid { grid-template-columns: 1fr; } .social-links { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 620px) { .community-section { padding-block: 36px; } .media-card { padding: 22px; } }
+.cms-download { display: grid; justify-items: start; gap: 8px; margin-block: 16px; }
+.cms-download a { white-space: normal; text-align: center; }
+.cms-media-list > div + div { margin-top: 20px; }
+.cms-photo-gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.cms-photo-gallery figure { margin: 0; border-radius: 20px; overflow: hidden; background: #fffaf0; }
+.cms-photo-gallery img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.cms-photo-gallery figcaption { padding: 20px; }
+@media (max-width: 780px) { .cms-photo-gallery { grid-template-columns: 1fr; } }

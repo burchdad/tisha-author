@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import './styles.css';
+import { catalog, loadSiteContent } from './site-content.js';
 import { initializeMobileMenu } from './mobile-menu.js';
 
 const videoProbe = document.createElement('video');
@@ -305,8 +306,8 @@ function initializeBookModal() {
   if (!modal || !openButtons.length) return;
 
   const prices = {
-    paperback: 12.99,
-    hardcover: 15.99,
+    get paperback() { return catalog.paperbackPrice; },
+    get hardcover() { return catalog.hardcoverPrice; },
   };
   const nearbyStates = new Set(['AR', 'LA', 'NM', 'OK']);
   const regionalStates = new Set(['AL', 'CO', 'IA', 'IL', 'KS', 'MO', 'MS', 'NE', 'TN']);
@@ -390,7 +391,7 @@ function initializeBookModal() {
 
     return [
       `Rider's Magic Mark pre-order`,
-      'Books will ship the week of November 20th.',
+      catalog.shippingMessage,
       `${quantity} ${formatLabel} book${quantity === 1 ? '' : 's'}`,
       `Books: ${currency.format(subtotal)}`,
       `${shippingSource === 'shippo' ? 'Live shipping & handling' : 'Estimated shipping & handling'}: ${currency.format(shipping)}`,
@@ -409,7 +410,7 @@ function initializeBookModal() {
     const subtotal = prices[format] * quantity;
     const shipping = shippingRate?.amount ?? null;
     const total = subtotal + (shipping ?? 0);
-    const canPay = shipping !== null && !loading;
+    const canPay = catalog.ready && shipping !== null && !loading;
     const carrier = shippingRate?.provider && shippingRate?.service
       ? `${shippingRate.provider} ${shippingRate.service}`
       : shippingRate?.provider || '';
@@ -423,7 +424,9 @@ function initializeBookModal() {
         : shippingRate?.note || 'Live carrier quote from Tyler, TX 75703 once a destination ZIP is entered.';
     }
     if (statusElement) {
-      if (loading) {
+      if (!catalog.ready) {
+        statusElement.textContent = 'Verifying current book prices. If this message remains, refresh the page before paying.';
+      } else if (loading) {
         statusElement.textContent = 'Checking live shipping with Shippo...';
       } else if (message) {
         statusElement.textContent = message;
@@ -505,6 +508,8 @@ function initializeBookModal() {
 
     return currentCheckout;
   };
+
+  window.addEventListener('site-content-ready', () => { updateCheckout(); });
 
   const scheduleCheckoutUpdate = (delay = 250) => {
     window.clearTimeout(quoteTimer);
@@ -634,3 +639,5 @@ initializeToolkitModal();
 initializeBookModal();
 initializeEventTabs();
 initializeInviteForm();
+
+loadSiteContent();

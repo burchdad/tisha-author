@@ -1944,10 +1944,8 @@ button:disabled {
 .book-checkout-grid { grid-template-columns: .62fr .7fr .9fr; }
 .book-address-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .book-address-wide { grid-column: 1 / -1; }
-.book-address-details { border: 2px dashed rgba(23,32,51,.24); border-radius: 16px; background: rgba(255,255,255,.5); }
-.book-address-details summary { padding: 10px 12px; cursor: pointer; color: rgba(23,32,51,.74); font-size: .76rem; font-weight: 900; }
-.book-address-details[open] { padding: 0 10px 10px; }
-.book-address-details[open] summary { padding-inline: 2px; }
+.book-address-details { min-width: 0; margin: 0; padding: 10px 12px 14px; border: 2px dashed rgba(23,32,51,.24); border-radius: 16px; background: rgba(255,255,255,.5); }
+.book-address-details legend { padding: 0 6px; color: rgba(23,32,51,.74); font-size: .8rem; font-weight: 900; }
 .book-checkout-form label { display: grid; gap: 5px; color: var(--ink); font-size: .76rem; font-weight: 900; }
 .book-checkout-form input { width: 100%; min-width: 0; height: 42px; padding: 0 12px; border: 2px solid var(--ink); border-radius: 0; background: rgba(255,255,255,.86); color: var(--ink); font: inherit; font-weight: 800; }
 .book-checkout-form input::placeholder { color: rgba(23,32,51,.45); }
@@ -2126,3 +2124,7 @@ button:disabled {
 .cms-photo-gallery img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 .cms-photo-gallery figcaption { padding: 20px; }
 @media (max-width: 780px) { .cms-photo-gallery { grid-template-columns: 1fr; } }
+
+.venmo-help { display: grid; gap: 10px; }
+.copy-amount-button { min-height: 44px; padding: 10px 14px; border: 2px solid #008cce; border-radius: 12px; background: white; color: #005780; font: inherit; font-size: .85rem; font-weight: 800; cursor: pointer; }
+.copy-amount-button:disabled { opacity: .55; cursor: not-allowed; }

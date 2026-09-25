@@ -298,6 +298,7 @@ function initializeBookModal() {
   const paypalLink = modal?.querySelector('[data-paypal-link]');
   const venmoLink = modal?.querySelector('[data-venmo-link]');
   const copyOrderButton = modal?.querySelector('[data-copy-order]');
+  const copyAmountButton = modal?.querySelector('[data-copy-amount]');
   let lastFocusedElement = null;
   let shippingRequest = null;
   let checkoutSequence = 0;
@@ -319,6 +320,8 @@ function initializeBookModal() {
     return field?.value.trim() ?? '';
   };
 
+  const getCustomerName = () => [getFieldValue('firstName'), getFieldValue('lastName')].filter(Boolean).join(' ');
+
   const getSelectedFormat = () => {
     const selected = Array.from(formatInputs).find((input) => input.checked);
     return selected?.value === 'hardcover' ? 'hardcover' : 'paperback';
@@ -335,7 +338,7 @@ function initializeBookModal() {
     quantity: getQuantity(),
     state: getFieldValue('state').toUpperCase(),
     zip: getFieldValue('zip'),
-    name: getFieldValue('name'),
+    name: getCustomerName(),
     email: getFieldValue('email'),
     street: getFieldValue('street'),
     city: getFieldValue('city'),
@@ -373,6 +376,7 @@ function initializeBookModal() {
   };
 
   const setPaymentEnabled = (isEnabled) => {
+    if (copyAmountButton) copyAmountButton.disabled = !isEnabled;
     [cashAppLink, paypalLink, venmoLink].forEach((link) => {
       if (!link) return;
       link.classList.toggle('is-disabled', !isEnabled);
@@ -383,7 +387,7 @@ function initializeBookModal() {
   const buildOrderSummary = ({ format, quantity, subtotal, shipping, total, shippingSource, carrier }) => {
     const formatLabel = format === 'hardcover' ? 'Hard-cover' : 'Soft-cover';
     const addressLines = [
-      getFieldValue('name'),
+      getCustomerName(),
       getFieldValue('street'),
       [getFieldValue('city'), getFieldValue('state').toUpperCase(), getFieldValue('zip')].filter(Boolean).join(', '),
       getFieldValue('email'),
@@ -439,6 +443,8 @@ function initializeBookModal() {
 
     if (cashAppLink) cashAppLink.href = canPay ? `https://cash.app/$tishashipleyauthor/${total.toFixed(2)}` : 'https://cash.app/$tishashipleyauthor';
     if (paypalLink) paypalLink.href = canPay ? `https://www.paypal.com/paypalme/Tishashipley/${total.toFixed(2)}` : 'https://www.paypal.com/paypalme/Tishashipley';
+    if (venmoLink) venmoLink.textContent = canPay ? `Venmo · ${currency.format(total)}` : 'Venmo';
+    if (copyAmountButton) copyAmountButton.textContent = canPay ? `Copy Venmo amount: ${currency.format(total)}` : 'Copy Venmo amount';
     setPaymentEnabled(canPay);
 
     currentCheckout = {
@@ -513,12 +519,14 @@ function initializeBookModal() {
 
   const scheduleCheckoutUpdate = (delay = 250) => {
     window.clearTimeout(quoteTimer);
+    currentCheckout = null;
+    setPaymentEnabled(false);
     quoteTimer = window.setTimeout(updateCheckout, delay);
   };
 
   const handlePaymentClick = (event) => {
-    const checkout = currentCheckout ?? renderCheckout({ input: getCheckoutInput(), shippingRate: getFallbackShipping(getCheckoutInput()) });
-    if (checkout.canPay) return;
+    const checkout = currentCheckout;
+    if (checkout?.canPay) return;
     event.preventDefault();
     statusElement?.focus?.();
   };
@@ -552,6 +560,16 @@ function initializeBookModal() {
   cashAppLink?.addEventListener('click', handlePaymentClick);
   paypalLink?.addEventListener('click', handlePaymentClick);
   venmoLink?.addEventListener('click', handlePaymentClick);
+  copyAmountButton?.addEventListener('click', async () => {
+    const checkout = currentCheckout;
+    if (!checkout?.canPay) return;
+    try {
+      await navigator.clipboard.writeText(checkout.total.toFixed(2));
+      if (statusElement) statusElement.textContent = `${currency.format(checkout.total)} copied. Open Venmo and paste it into the amount field.`;
+    } catch {
+      if (statusElement) statusElement.textContent = `Copy was unavailable. Enter ${currency.format(checkout.total)} in Venmo.`;
+    }
+  });
   copyOrderButton?.addEventListener('click', async () => {
     const checkout = currentCheckout?.canPay ? currentCheckout : await updateCheckout();
     if (!checkout?.canPay) {

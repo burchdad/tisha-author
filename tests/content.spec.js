@@ -108,3 +108,38 @@ test('configured admin loads managed sign-in on a deep route', async ({ page }) 
   await expect(page.locator('[data-checkout-status]')).toContainText('Verifying current book prices');
   await expect(page.locator('[data-cashapp-link]')).toHaveAttribute('aria-disabled', 'true');
  });
+
+for (const width of [1440, 390]) {
+  test('expanded shipping fields and copied Venmo amount at ' + width, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.addInitScript(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async (text) => { window.copiedCheckoutText = text; } } }));
+    await mockContent(page);
+    const shippingRequests = [];
+    page.on('request', (request) => { if (request.url().endsWith('/api/shipping-rate')) shippingRequests.push(request.postDataJSON()); });
+    await page.goto('/#purchase-book');
+    await expect(page.getByRole('textbox', { name: 'First name', exact: true })).toBeVisible();
+    await expect(page.getByRole('textbox', { name: 'Last name', exact: true })).toBeVisible();
+    await expect(page.locator('details.book-address-details')).toHaveCount(0);
+    await page.locator('[data-shipping-field="firstName"]').fill('Jamie');
+    await page.locator('[data-shipping-field="lastName"]').fill('Reader');
+    await page.locator('[data-shipping-field="email"]').fill('reader@example.com');
+    await page.locator('[data-shipping-field="street"]').fill('123 Test Street');
+    await page.locator('[data-shipping-field="city"]').fill('Tyler');
+    await page.locator('[data-shipping-field="state"]').fill('TX');
+    await page.locator('[data-shipping-field="zip"]').fill('75703');
+    await expect(page.locator('[data-copy-amount]')).toBeEnabled();
+    await expect(page.locator('[data-venmo-link]')).toHaveText('Venmo · $23.50');
+    await page.locator('[data-copy-amount]').click();
+    await expect.poll(() => page.evaluate(() => window.copiedCheckoutText)).toBe('23.50');
+    expect(shippingRequests.at(-1).name).toBe('Jamie Reader');
+    await page.locator('[data-copy-order]').click();
+    await expect.poll(() => page.evaluate(() => window.copiedCheckoutText)).toContain('Jamie Reader');
+    await page.locator('[data-book-quantity]').fill('2');
+    await expect(page.locator('[data-copy-amount]')).toHaveText('Copy Venmo amount: $42.00');
+    await page.locator('[data-copy-amount]').click();
+    await expect.poll(() => page.evaluate(() => window.copiedCheckoutText)).toBe('42.00');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+    await page.locator('[data-shipping-field="firstName"]').scrollIntoViewIfNeeded();
+    await page.screenshot({ path: process.env.TEMP + '/tisha-expanded-checkout-' + width + '.png' });
+  });
+}

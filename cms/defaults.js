@@ -19,10 +19,11 @@ export const defaultCurricula = [
 ];
 
 export const defaultMedia = [
-  { _id: 'media-apple', _type: 'mediaLink', category: 'podcast', title: 'unEDited Chatter on Apple Podcasts', url: 'https://podcasts.apple.com/au/podcast/unedited-chatter/id1846488817', order: 1 },
-  { _id: 'media-youtube', _type: 'mediaLink', category: 'podcast', title: 'unEDited Chatter on YouTube', url: 'https://www.youtube.com/@unEDitedchatter', order: 2 },
+  { _id: 'media-rider-interview', _type: 'mediaLink', category: 'podcast', title: 'Tisha Shipley’s Nephew Rider Has a Magic Mark—and So Do You', url: 'https://podcasts.apple.com/us/podcast/tisha-shipleys-nephew-rider-has-a-magic-mark-and-so-do-you/id1831570309?i=1000791572277', order: 1 },
   { _id: 'media-gratitude', _type: 'mediaLink', category: 'blog', title: 'Practicing Gratitude', url: 'https://www.educationworld.com/blog/practicing-gratitude-personally-and-professional-classroom-community', order: 3 },
   { _id: 'media-confidence', _type: 'mediaLink', category: 'blog', title: 'Growing Gratitude and Confidence', url: 'https://www.educationworld.com/blog/growing-gratitude-and-confidence-our-classroom-communities', order: 4 },
+  { _id: 'media-educator-author', _type: 'mediaLink', category: 'blog', title: 'From Educator to Author: Checking Another Dream Off My Bucket List', url: 'https://www.educationworld.com/blog/educator-author-checking-another-dream-my-bucket-list%C2%A0', order: 5 },
+  { _id: 'media-more-than-book', _type: 'mediaLink', category: 'blog', title: 'More Than a Book: Creating Curriculum to Bring Rider’s Magic Mark to Life', url: 'https://www.educationworld.com/blog/more-book-creating-curriculum-bring-rider%E2%80%99s-magic-mark-life', order: 6 },
 ];
 
 export const photoSlots = [

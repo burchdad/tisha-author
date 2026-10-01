@@ -47,26 +47,17 @@ the content CDN may take a short time to update. Drafts never appear publicly.
 Review changes before publishing. Sanity provides discard/restore actions.
 Layouts, animations, and payment-account destinations stay in code.
 
-## Square
+## Stripe checkout
 
-The Square connection is pending the client's public checkout link.
-Ask for the link and confirm:
-- Does it cover soft-cover, hard-cover, and quantities?
-- Does Square collect the buyer's email and complete shipping address?
-- How are shipping and tax configured?
-- Is the November 20 preorder shipping message shown?
+The checkout uses Stripe Embedded Checkout. The server reads the published Sanity
+prices, recalculates a live Shippo rate, and creates the Stripe session. Browser totals
+are never trusted. Stripe calculates tax and collects payment card details inside its
+hosted component. A signed Stripe webhook is the only payment confirmation used for
+fulfillment email; returning to the thank-you page is not proof of payment.
 
-A static Square link does not automatically inherit this site's calculated total.
-With a static link, Square is the authoritative checkout and its item prices must
-be kept in sync manually. Do not label a static link as carrying the calculated total.
-
-For a dynamic Square-hosted checkout matching this site's cart, configure a
-server-only production access token, location ID, and catalog variation IDs if using
-Square's catalog. The server must read authoritative published prices, validate
-quantity, and recalculate shipping; never trust totals from the browser.
-Use a unique idempotency key per checkout attempt. If the website tracks paid orders,
-add payment/order webhooks and signature verification. A return URL is not proof
-of payment. No Square secrets belong in browser code or Sanity content.
+Activation and test instructions are in `docs/STRIPE-CHECKOUT.md`. Stripe and Resend
+secrets belong only in Vercel server environment variables, never in browser code,
+Sanity content, repository files, screenshots, or chat messages.
 
 ## Validation and limits
 
@@ -85,9 +76,9 @@ of payment. No Square secrets belong in browser code or Sanity content.
 - Current requested book prices: soft-cover $13.99; hard-cover $15.99.
 - Temporary shipping/fulfillment email recipient: stephen.burch@ghostai.solutions.
   This request does not change the school-inquiry recipient or public customer-support address.
-- Confirm Tisha's Square sales-tax settings and collection jurisdictions before enabling tax.
+- Confirm Tisha's Stripe Tax registrations and collection jurisdictions before enabling tax.
   Do not assume a flat tax rate or treat an unavailable tax calculation as zero.
-- Confirm whether the email should contain paid-order details for manual label creation,
-  or an automatically purchased label. No label purchases or automated fulfillment
-  emails are currently connected.
-- The Square checkout link and payment-confirmation integration are still pending.
+- The first Stripe version emails paid-order details for manual label creation. It does
+  not purchase postage automatically.
+- Stripe checkout remains disabled until its Vercel environment variables and signed
+  webhook endpoint are configured and a complete test-mode order succeeds.

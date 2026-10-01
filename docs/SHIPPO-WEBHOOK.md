@@ -19,9 +19,9 @@ It does not persist the complete event, save customer addresses, buy labels,
 send emails, or mark book orders paid. Duplicate events have no fulfillment effects.
 Without a token, logged deliveries are explicitly unverified diagnostics.
 
-Shippo transaction events concern shipping-label transactions, not Square book
-purchases. Purchase confirmations and order-address emails still need the
-Square payment integration.
+Shippo transaction events concern shipping-label transactions, not book payments.
+Stripe payment confirmation and order-address email are handled by the separate
+signed Stripe webhook described in `docs/STRIPE-CHECKOUT.md`.
 
 ## Authentication before adding fulfillment actions
 

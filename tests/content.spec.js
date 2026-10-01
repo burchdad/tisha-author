@@ -37,10 +37,13 @@ for (const width of [1440, 390]) {
     await page.locator('[data-shipping-field="state"]').fill('TX');
     await page.locator('[data-shipping-field="zip"]').fill('75703');
     await expect(page.locator('[data-order-total]')).toHaveText('$23.50');
+    await expect(page.locator('[data-square-link]')).toHaveAttribute('href', 'https://square.link/u/ZV1vr14t');
     await expect(page.locator('[data-paypal-link]')).toHaveAttribute('href', /23.50$/);
     await expect(page.locator('[data-venmo-link]')).toHaveCount(0);
     await page.locator('[data-book-quantity]').fill('2');
     await page.locator('[data-book-format][value="hardcover"]').check();
+    await expect(page.locator('[data-square-link]')).toHaveAttribute('href', 'https://square.link/u/uq2dEXqy');
+    await expect(page.locator('[data-square-link]')).toContainText('Hard-cover');
     await expect(page.locator('[data-order-total]')).toHaveText('$49.00');
     await expect(page.locator('[data-cashapp-link]')).toHaveAttribute('href', /49.00$/);
     await page.locator('.book-modal-close').click();
@@ -62,6 +65,7 @@ test('failed content service does not allow payment at stale prices', async ({ p
   await page.locator('[data-shipping-field="state"]').fill('TX');
   await page.locator('[data-shipping-field="zip"]').fill('75703');
   await expect(page.locator('[data-checkout-status]')).toContainText('Verifying current book prices');
+  await expect(page.locator('[data-square-link]')).toHaveAttribute('aria-disabled', 'true');
   for (const selector of ['[data-cashapp-link]', '[data-paypal-link]']) {
     await expect(page.locator(selector)).toHaveAttribute('aria-disabled', 'true');
   }

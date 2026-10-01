@@ -294,6 +294,7 @@ function initializeBookModal() {
   const totalElement = modal?.querySelector('[data-order-total]');
   const shippingNoteElement = modal?.querySelector('[data-shipping-note]');
   const statusElement = modal?.querySelector('[data-checkout-status]');
+  const squareLink = modal?.querySelector('[data-square-link]');
   const cashAppLink = modal?.querySelector('[data-cashapp-link]');
   const paypalLink = modal?.querySelector('[data-paypal-link]');
   const copyOrderButton = modal?.querySelector('[data-copy-order]');
@@ -312,6 +313,10 @@ function initializeBookModal() {
   const regionalStates = new Set(['AL', 'CO', 'IA', 'IL', 'KS', 'MO', 'MS', 'NE', 'TN']);
   const distantStates = new Set(['AK', 'HI', 'PR', 'GU', 'VI']);
   const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+  const squareLinks = {
+    paperback: 'https://square.link/u/ZV1vr14t',
+    hardcover: 'https://square.link/u/uq2dEXqy',
+  };
 
   const getFieldValue = (name) => {
     const field = modal.querySelector(`[data-shipping-field="${name}"]`);
@@ -381,6 +386,15 @@ function initializeBookModal() {
     });
   };
 
+  const updateSquareLink = (format) => {
+    if (!squareLink) return;
+    const formatLabel = format === 'hardcover' ? 'Hard-cover' : 'Soft-cover';
+    squareLink.href = squareLinks[format];
+    squareLink.textContent = `Pay by card with Square · ${formatLabel}`;
+    squareLink.classList.toggle('is-disabled', !catalog.ready);
+    squareLink.setAttribute('aria-disabled', String(!catalog.ready));
+  };
+
   const buildOrderSummary = ({ format, quantity, subtotal, shipping, total, shippingSource, carrier }) => {
     const formatLabel = format === 'hardcover' ? 'Hard-cover' : 'Soft-cover';
     const addressLines = [
@@ -440,6 +454,7 @@ function initializeBookModal() {
 
     if (cashAppLink) cashAppLink.href = canPay ? `https://cash.app/$tishashipleyauthor/${total.toFixed(2)}` : 'https://cash.app/$tishashipleyauthor';
     if (paypalLink) paypalLink.href = canPay ? `https://www.paypal.com/paypalme/Tishashipley/${total.toFixed(2)}` : 'https://www.paypal.com/paypalme/Tishashipley';
+    updateSquareLink(format);
     setPaymentEnabled(canPay);
 
     currentCheckout = {
@@ -526,6 +541,12 @@ function initializeBookModal() {
     statusElement?.focus?.();
   };
 
+  const handleSquareClick = (event) => {
+    if (catalog.ready) return;
+    event.preventDefault();
+    statusElement?.focus?.();
+  };
+
   const openModal = () => {
     lastFocusedElement = document.activeElement;
     updateCheckout();
@@ -552,6 +573,7 @@ function initializeBookModal() {
   formatInputs.forEach((input) => input.addEventListener('change', () => scheduleCheckoutUpdate(0)));
   quantityInput?.addEventListener('input', () => scheduleCheckoutUpdate(0));
   shippingFields.forEach((field) => field.addEventListener('input', () => scheduleCheckoutUpdate()));
+  squareLink?.addEventListener('click', handleSquareClick);
   cashAppLink?.addEventListener('click', handlePaymentClick);
   paypalLink?.addEventListener('click', handlePaymentClick);
   copyOrderButton?.addEventListener('click', async () => {

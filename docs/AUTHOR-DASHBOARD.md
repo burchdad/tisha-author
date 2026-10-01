@@ -82,7 +82,7 @@ of payment. No Square secrets belong in browser code or Sanity content.
 
 ## Pending tax and shipping-email configuration
 
-- Current requested book prices: soft-cover $13.99; hard-cover $16.99.
+- Current requested book prices: soft-cover $13.99; hard-cover $15.99.
 - Temporary shipping/fulfillment email recipient: stephen.burch@ghostai.solutions.
   This request does not change the school-inquiry recipient or public customer-support address.
 - Confirm Tisha's Square sales-tax settings and collection jurisdictions before enabling tax.

@@ -1959,6 +1959,7 @@ button:disabled {
 .payment-link-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .payment-link,
 .copy-order-button { display: grid; min-height: 46px; place-items: center; padding: 10px 12px; border: 2px solid var(--ink); border-radius: 16px; color: var(--ink); cursor: pointer; font: inherit; font-size: .84rem; font-weight: 900; text-align: center; text-decoration: none; box-shadow: 4px 4px 0 var(--ink); }
+.square-link { grid-column: 1 / -1; background: #111; color: white; }
 .cashapp-link { background: #00d632; }
 .paypal-link { background: #ffd447; }
 .payment-link-grid .copy-order-button { grid-column: 1 / -1; }

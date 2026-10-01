@@ -24,7 +24,7 @@ export const schemaTypes = [
       defineField({ name: 'shippingMessage', title: 'Shipping announcement', type: 'string', description: 'Updates the home page, checkout, footer, and copied order summary together.', validation: (r) => r.required().max(240) }),
       ...['paperback', 'hardcover'].map((format) => defineField({
         name: format + 'Price', title: format === 'paperback' ? 'Soft-cover price (USD)' : 'Hard-cover price (USD)', type: 'number',
-        description: 'Updates the website checkout. Until Square is connected through its API, also update the corresponding price in Square.',
+        description: 'Updates the displayed website price. Also update the matching item price in Square before publishing.',
         validation: (r) => r.required().positive().max(1000).precision(2),
       })),
     ],

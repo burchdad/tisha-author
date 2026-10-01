@@ -19,7 +19,6 @@ async function mockContent(page, data = content()) {
     expect(new URL(route.request().url()).searchParams.get('perspective')).toBe('published');
     await route.fulfill({ json: { result: data } });
   });
-  await page.route('**/api/shipping-rate', (route) => route.fulfill({ json: { amount: 5, provider: 'USPS', service: 'Ground Advantage' } }));
 }
 
 for (const width of [1440, 390]) {
@@ -34,18 +33,13 @@ for (const width of [1440, 390]) {
     await expect(page.locator('.footer-message')).toContainText('November 20th');
     await expect(page.getByRole('link', { name: 'A new podcast episode' })).toHaveAttribute('href', 'https://example.com/episode');
     await page.locator('[data-open-book]').first().evaluate((el) => el.click());
-    await page.locator('[data-shipping-field="state"]').fill('TX');
-    await page.locator('[data-shipping-field="zip"]').fill('75703');
-    await expect(page.locator('[data-order-total]')).toHaveText('$23.50');
     await expect(page.locator('[data-square-link]')).toHaveAttribute('href', 'https://square.link/u/ZV1vr14t');
-    await expect(page.locator('[data-paypal-link]')).toHaveAttribute('href', /23.50$/);
     await expect(page.locator('[data-venmo-link]')).toHaveCount(0);
-    await page.locator('[data-book-quantity]').fill('2');
+    await expect(page.locator('[data-shipping-field]')).toHaveCount(0);
     await page.locator('[data-book-format][value="hardcover"]').check();
     await expect(page.locator('[data-square-link]')).toHaveAttribute('href', 'https://square.link/u/uq2dEXqy');
     await expect(page.locator('[data-square-link]')).toContainText('Hard-cover');
-    await expect(page.locator('[data-order-total]')).toHaveText('$49.00');
-    await expect(page.locator('[data-cashapp-link]')).toHaveAttribute('href', /49.00$/);
+    await expect(page.locator('[data-checkout-status]')).toHaveText('Secure checkout is provided by Square.');
     await page.locator('.book-modal-close').click();
     await page.locator('[data-event-tab="past"]').click();
     await expect(page.locator('.cms-photo-gallery img')).toHaveAttribute('alt', 'Rider and Tisha at a reading');
@@ -60,15 +54,9 @@ for (const width of [1440, 390]) {
 
 test('failed content service does not allow payment at stale prices', async ({ page }) => {
   await page.route('https://dashboardtest.apicdn.sanity.io/**', (route) => route.fulfill({ status: 503, body: '{}' }));
-  await page.route('**/api/shipping-rate', (route) => route.fulfill({ json: { amount: 5 } }));
   await page.goto('/#purchase-book');
-  await page.locator('[data-shipping-field="state"]').fill('TX');
-  await page.locator('[data-shipping-field="zip"]').fill('75703');
   await expect(page.locator('[data-checkout-status]')).toContainText('Verifying current book prices');
   await expect(page.locator('[data-square-link]')).toHaveAttribute('aria-disabled', 'true');
-  for (const selector of ['[data-cashapp-link]', '[data-paypal-link]']) {
-    await expect(page.locator(selector)).toHaveAttribute('aria-disabled', 'true');
-  }
   await expect(page.locator('.hero h1')).toHaveText("Rider's Magic Mark");
 });
 
@@ -107,40 +95,21 @@ test('configured admin loads managed sign-in on a deep route', async ({ page }) 
  test('invalid published prices keep all payment links disabled', async ({ page }) => {
   await mockContent(page, content({ settings: { ...defaultSettings, paperbackPrice: -3 } }));
   await page.goto('/#purchase-book');
-  await page.locator('[data-shipping-field="state"]').fill('TX');
-  await page.locator('[data-shipping-field="zip"]').fill('75703');
   await expect(page.locator('[data-checkout-status]')).toContainText('Verifying current book prices');
-  await expect(page.locator('[data-cashapp-link]')).toHaveAttribute('aria-disabled', 'true');
+  await expect(page.locator('[data-square-link]')).toHaveAttribute('aria-disabled', 'true');
  });
 
 for (const width of [1440, 390]) {
-  test('expanded shipping fields and copied order summary at ' + width, async ({ page }) => {
+  test('Square-only checkout is clear and responsive at ' + width, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
-    await page.addInitScript(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async (text) => { window.copiedCheckoutText = text; } } }));
     await mockContent(page);
-    const shippingRequests = [];
-    page.on('request', (request) => { if (request.url().endsWith('/api/shipping-rate')) shippingRequests.push(request.postDataJSON()); });
     await page.goto('/#purchase-book');
-    await expect(page.getByRole('textbox', { name: 'First name', exact: true })).toBeVisible();
-    await expect(page.getByRole('textbox', { name: 'Last name', exact: true })).toBeVisible();
-    await expect(page.locator('details.book-address-details')).toHaveCount(0);
-    await page.locator('[data-shipping-field="firstName"]').fill('Jamie');
-    await page.locator('[data-shipping-field="lastName"]').fill('Reader');
-    await page.locator('[data-shipping-field="email"]').fill('reader@example.com');
-    await page.locator('[data-shipping-field="street"]').fill('123 Test Street');
-    await page.locator('[data-shipping-field="city"]').fill('Tyler');
-    await page.locator('[data-shipping-field="state"]').fill('TX');
-    await page.locator('[data-shipping-field="zip"]').fill('75703');
-    await expect(page.locator('[data-order-total]')).toHaveText('$23.50');
+    await expect(page.locator('[data-square-link]')).toBeVisible();
+    await expect(page.locator('[data-square-link]')).toContainText('Continue to Square');
+    await expect(page.getByText('Choose your quantity and enter your email, delivery address, and payment securely on Square.')).toBeVisible();
+    await expect(page.getByText(/sent to Pirate Ship/)).toBeVisible();
     await expect(page.locator('[data-venmo-link]')).toHaveCount(0);
-    await expect(page.locator('[data-copy-amount]')).toHaveCount(0);
-    expect(shippingRequests.at(-1).name).toBe('Jamie Reader');
-    await page.locator('[data-copy-order]').click();
-    await expect.poll(() => page.evaluate(() => window.copiedCheckoutText)).toContain('Jamie Reader');
-    await page.locator('[data-book-quantity]').fill('2');
-    await expect(page.locator('[data-order-total]')).toHaveText('$42.00');
+    await expect(page.locator('[data-cashapp-link], [data-paypal-link], [data-shipping-field], [data-copy-order]')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
-    await page.locator('[data-shipping-field="firstName"]').scrollIntoViewIfNeeded();
-    await page.screenshot({ path: process.env.TEMP + '/tisha-expanded-checkout-' + width + '.png' });
   });
 }

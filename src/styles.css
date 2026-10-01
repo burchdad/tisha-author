@@ -1939,31 +1939,9 @@ button:disabled {
 .book-format-card span { display: grid; min-width: 0; line-height: 1.12; }
 .book-format-card strong { font-size: .94rem; }
 .book-format-card small { color: rgba(23,32,51,.68); font-weight: 900; }
-.book-checkout-grid,
-.book-address-grid { display: grid; gap: 10px; }
-.book-checkout-grid { grid-template-columns: .62fr .7fr .9fr; }
-.book-address-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.book-address-wide { grid-column: 1 / -1; }
-.book-address-details { min-width: 0; margin: 0; padding: 10px 12px 14px; border: 2px dashed rgba(23,32,51,.24); border-radius: 16px; background: rgba(255,255,255,.5); }
-.book-address-details legend { padding: 0 6px; color: rgba(23,32,51,.74); font-size: .8rem; font-weight: 900; }
-.book-checkout-form label { display: grid; gap: 5px; color: var(--ink); font-size: .76rem; font-weight: 900; }
-.book-checkout-form input { width: 100%; min-width: 0; height: 42px; padding: 0 12px; border: 2px solid var(--ink); border-radius: 0; background: rgba(255,255,255,.86); color: var(--ink); font: inherit; font-weight: 800; }
-.book-checkout-form input::placeholder { color: rgba(23,32,51,.45); }
-.book-total-card { display: grid; gap: 6px; padding: 12px 14px; border: 2px solid var(--ink); border-radius: 18px; background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(255,244,190,.88)); box-shadow: 5px 5px 0 rgba(36,104,215,.78); }
-.book-total-card div { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.book-total-card span { color: rgba(23,32,51,.68); font-size: .76rem; font-weight: 900; }
-.book-total-card strong { font-size: 1.05rem; white-space: nowrap; }
-.book-total-card div:last-of-type { padding-top: 6px; border-top: 1px solid rgba(23,32,51,.18); }
-.book-total-card div:last-of-type strong { color: var(--rose); font-size: 1.28rem; }
-.book-total-card small { color: rgba(23,32,51,.62); font-size: .72rem; line-height: 1.4; }
-.payment-link-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.payment-link,
-.copy-order-button { display: grid; min-height: 46px; place-items: center; padding: 10px 12px; border: 2px solid var(--ink); border-radius: 16px; color: var(--ink); cursor: pointer; font: inherit; font-size: .84rem; font-weight: 900; text-align: center; text-decoration: none; box-shadow: 4px 4px 0 var(--ink); }
+.payment-link-grid { display: grid; gap: 10px; }
+.payment-link { display: grid; min-height: 46px; place-items: center; padding: 10px 12px; border: 2px solid var(--ink); border-radius: 16px; color: var(--ink); cursor: pointer; font: inherit; font-size: .84rem; font-weight: 900; text-align: center; text-decoration: none; box-shadow: 4px 4px 0 var(--ink); }
 .square-link { grid-column: 1 / -1; background: #111; color: white; }
-.cashapp-link { background: #00d632; }
-.paypal-link { background: #ffd447; }
-.payment-link-grid .copy-order-button { grid-column: 1 / -1; }
-.copy-order-button { background: white; }
 .payment-link.is-disabled { opacity: .56; filter: grayscale(.3); }
 .order-contact-note { margin: 0; font-size: .76rem; line-height: 1.35; color: rgba(23,32,51,.74); }
 .order-contact-note a { color: var(--ink); font-weight: 900; }
@@ -1978,9 +1956,7 @@ button:disabled {
   .book-offer-copy h2 { font-size: clamp(2rem, 3.2vw, 2.85rem); }
   .book-offer-copy > p:not(.eyebrow):not(.checkout-status) { font-size: .9rem; line-height: 1.38; margin-bottom: 8px; }
   .book-checkout-form { gap: 9px; }
-  .book-checkout-form input { height: 36px; }
-  .book-total-card { padding-block: 9px; }
-  .payment-link, .copy-order-button { min-height: 40px; }
+  .payment-link { min-height: 40px; }
   .checkout-status { margin: 7px 0; }
 }
 
@@ -1996,11 +1972,7 @@ button:disabled {
 }
 
 @media (max-width: 520px) {
-  .book-format-options,
-  .book-checkout-grid,
-  .book-address-grid,
-  .payment-link-grid { grid-template-columns: 1fr; }
-  .book-address-wide { grid-column: auto; }
+  .book-format-options { grid-template-columns: 1fr; }
   .book-offer-copy { padding: 32px 22px; }
   .toolkit-tabs {
     display: grid;

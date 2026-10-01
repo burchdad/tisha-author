@@ -655,55 +655,13 @@
               </label>
             </fieldset>
 
-            <div class="book-checkout-grid">
-              <label>Qty
-                <input type="number" min="1" max="10" value="1" inputmode="numeric" data-book-quantity />
-              </label>
-              <label>Ship-to state
-                <input type="text" maxlength="2" placeholder="TX" autocomplete="address-level1" data-shipping-field="state" />
-              </label>
-              <label>Ship-to ZIP
-                <input type="text" inputmode="numeric" maxlength="10" placeholder="75703" autocomplete="postal-code" data-shipping-field="zip" />
-              </label>
-            </div>
-
-            <fieldset class="book-address-details">
-              <legend>Shipping information</legend>
-              <div class="book-address-grid">
-                <label>First name
-                  <input type="text" name="firstName" placeholder="First name" autocomplete="given-name" data-shipping-field="firstName" />
-                </label>
-                <label>Last name
-                  <input type="text" name="lastName" placeholder="Last name" autocomplete="family-name" data-shipping-field="lastName" />
-                </label>
-                <label class="book-address-wide">Email
-                  <input type="email" placeholder="you@example.com" autocomplete="email" data-shipping-field="email" />
-                </label>
-                <label class="book-address-wide">Street address
-                  <input type="text" placeholder="Address" autocomplete="street-address" data-shipping-field="street" />
-                </label>
-                <label>City
-                  <input type="text" placeholder="City" autocomplete="address-level2" data-shipping-field="city" />
-                </label>
-              </div>
-            </fieldset>
-
-            <div class="book-total-card" aria-live="polite">
-              <div><span>Books</span><strong data-book-subtotal>$13.99</strong></div>
-              <div><span>Shipping & handling</span><strong data-shipping-total>Enter ZIP</strong></div>
-              <div><span>Order total</span><strong data-order-total>$13.99</strong></div>
-              <small data-shipping-note>Live carrier quote from Tyler, TX 75703 once a destination ZIP is entered.</small>
-            </div>
-
             <div class="payment-link-grid">
-              <a class="payment-link square-link" href="https://square.link/u/ZV1vr14t" target="_blank" rel="noopener" data-square-link aria-disabled="false">Pay by card with Square · Soft-cover</a>
-              <a class="payment-link cashapp-link is-disabled" href="https://cash.app/$tishashipleyauthor" target="_blank" rel="noopener" data-cashapp-link aria-disabled="true">Cash App</a>
-              <a class="payment-link paypal-link is-disabled" href="https://www.paypal.com/paypalme/Tishashipley" target="_blank" rel="noopener" data-paypal-link aria-disabled="true">PayPal</a>
-              <button class="copy-order-button" type="button" data-copy-order>Copy order summary</button>
+              <a class="payment-link square-link" href="https://square.link/u/ZV1vr14t" target="_blank" rel="noopener" data-square-link aria-disabled="false">Continue to Square · Soft-cover</a>
             </div>
-            <p class="order-contact-note">Square securely collects your delivery address and calculates final shipping and tax. Confirm your quantity on the Square checkout page.</p>
+            <p class="order-contact-note">Choose your quantity and enter your email, delivery address, and payment securely on Square. Shipping and tax are shown before you pay.</p>
+            <p class="order-contact-note">After payment, your order is sent to Pirate Ship so the author can purchase your label and send tracking information.</p>
             <p class="order-contact-note">Order questions and receipt details can be sent to <a href="mailto:ridersmagicmark@gmail.com">ridersmagicmark@gmail.com</a>.</p>
-            <p class="checkout-status" data-checkout-status>Enter a state and ZIP to estimate shipping before payment.</p>
+            <p class="checkout-status" data-checkout-status>Secure checkout is provided by Square.</p>
           </form>
         </div>
       </div>

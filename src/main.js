@@ -287,259 +287,38 @@ function initializeBookModal() {
   const openButtons = document.querySelectorAll('[data-open-book]');
   const closeButtons = document.querySelectorAll('[data-close-book]');
   const formatInputs = modal?.querySelectorAll('[data-book-format]') ?? [];
-  const quantityInput = modal?.querySelector('[data-book-quantity]');
-  const shippingFields = modal?.querySelectorAll('[data-shipping-field]') ?? [];
-  const subtotalElement = modal?.querySelector('[data-book-subtotal]');
-  const shippingElement = modal?.querySelector('[data-shipping-total]');
-  const totalElement = modal?.querySelector('[data-order-total]');
-  const shippingNoteElement = modal?.querySelector('[data-shipping-note]');
   const statusElement = modal?.querySelector('[data-checkout-status]');
   const squareLink = modal?.querySelector('[data-square-link]');
-  const cashAppLink = modal?.querySelector('[data-cashapp-link]');
-  const paypalLink = modal?.querySelector('[data-paypal-link]');
-  const copyOrderButton = modal?.querySelector('[data-copy-order]');
   let lastFocusedElement = null;
-  let shippingRequest = null;
-  let checkoutSequence = 0;
-  let currentCheckout = null;
-  let quoteTimer = null;
   if (!modal || !openButtons.length) return;
 
-  const prices = {
-    get paperback() { return catalog.paperbackPrice; },
-    get hardcover() { return catalog.hardcoverPrice; },
-  };
-  const nearbyStates = new Set(['AR', 'LA', 'NM', 'OK']);
-  const regionalStates = new Set(['AL', 'CO', 'IA', 'IL', 'KS', 'MO', 'MS', 'NE', 'TN']);
-  const distantStates = new Set(['AK', 'HI', 'PR', 'GU', 'VI']);
-  const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
   const squareLinks = {
     paperback: 'https://square.link/u/ZV1vr14t',
     hardcover: 'https://square.link/u/uq2dEXqy',
   };
-
-  const getFieldValue = (name) => {
-    const field = modal.querySelector(`[data-shipping-field="${name}"]`);
-    return field?.value.trim() ?? '';
-  };
-
-  const getCustomerName = () => [getFieldValue('firstName'), getFieldValue('lastName')].filter(Boolean).join(' ');
 
   const getSelectedFormat = () => {
     const selected = Array.from(formatInputs).find((input) => input.checked);
     return selected?.value === 'hardcover' ? 'hardcover' : 'paperback';
   };
 
-  const getQuantity = () => {
-    const value = Number.parseInt(quantityInput?.value ?? '1', 10);
-    if (Number.isNaN(value)) return 1;
-    return Math.min(Math.max(value, 1), 10);
-  };
-
-  const getCheckoutInput = () => ({
-    format: getSelectedFormat(),
-    quantity: getQuantity(),
-    state: getFieldValue('state').toUpperCase(),
-    zip: getFieldValue('zip'),
-    name: getCustomerName(),
-    email: getFieldValue('email'),
-    street: getFieldValue('street'),
-    city: getFieldValue('city'),
-  });
-
-  const calculateShipping = ({ format, quantity, state, zip }) => {
-    const cleanState = state.trim().toUpperCase();
-    const cleanZip = zip.trim();
-    if (!cleanState || cleanZip.length < 5) return null;
-
-    let base = 7.99;
-    if (distantStates.has(cleanState)) {
-      base = 10.99;
-    } else if (cleanState === 'TX' || cleanZip.startsWith('75') || cleanZip.startsWith('76')) {
-      base = 4.99;
-    } else if (nearbyStates.has(cleanState)) {
-      base = 5.99;
-    } else if (regionalStates.has(cleanState)) {
-      base = 6.99;
-    }
-
-    const additionalBook = format === 'hardcover' ? 1.65 : 1.25;
-    return base + Math.max(quantity - 1, 0) * additionalBook;
-  };
-
-  const getFallbackShipping = (input) => {
-    const shipping = calculateShipping(input);
-    if (shipping === null) return null;
-    return {
-      amount: shipping,
-      source: 'estimate',
-      label: 'Estimated shipping & handling',
-      note: 'Estimated from Tyler, TX 75703. Live carrier quote will be used when available.',
-    };
-  };
-
-  const setPaymentEnabled = (isEnabled) => {
-    [cashAppLink, paypalLink].forEach((link) => {
-      if (!link) return;
-      link.classList.toggle('is-disabled', !isEnabled);
-      link.setAttribute('aria-disabled', String(!isEnabled));
-    });
-  };
-
   const updateSquareLink = (format) => {
     if (!squareLink) return;
     const formatLabel = format === 'hardcover' ? 'Hard-cover' : 'Soft-cover';
     squareLink.href = squareLinks[format];
-    squareLink.textContent = `Pay by card with Square · ${formatLabel}`;
+    squareLink.textContent = `Continue to Square · ${formatLabel}`;
     squareLink.classList.toggle('is-disabled', !catalog.ready);
     squareLink.setAttribute('aria-disabled', String(!catalog.ready));
-  };
-
-  const buildOrderSummary = ({ format, quantity, subtotal, shipping, total, shippingSource, carrier }) => {
-    const formatLabel = format === 'hardcover' ? 'Hard-cover' : 'Soft-cover';
-    const addressLines = [
-      getCustomerName(),
-      getFieldValue('street'),
-      [getFieldValue('city'), getFieldValue('state').toUpperCase(), getFieldValue('zip')].filter(Boolean).join(', '),
-      getFieldValue('email'),
-    ].filter(Boolean);
-
-    return [
-      `Rider's Magic Mark pre-order`,
-      catalog.shippingMessage,
-      `${quantity} ${formatLabel} book${quantity === 1 ? '' : 's'}`,
-      `Books: ${currency.format(subtotal)}`,
-      `${shippingSource === 'shippo' ? 'Live shipping & handling' : 'Estimated shipping & handling'}: ${currency.format(shipping)}`,
-      carrier ? `Carrier: ${carrier}` : '',
-      `Order total: ${currency.format(total)}`,
-      addressLines.length ? `Ship to: ${addressLines.join(' | ')}` : '',
-      'Order contact: ridersmagicmark@gmail.com',
-      shippingSource === 'shippo' ? 'Live carrier quote from Tyler, TX 75703.' : 'Shipping estimate from Tyler, TX 75703.',
-    ].filter(Boolean).join('\n');
-  };
-
-  const renderCheckout = ({ input, shippingRate = null, loading = false, message = '' }) => {
-    const { format, quantity } = input;
-    if (quantityInput) quantityInput.value = String(quantity);
-
-    const subtotal = prices[format] * quantity;
-    const shipping = shippingRate?.amount ?? null;
-    const total = subtotal + (shipping ?? 0);
-    const canPay = catalog.ready && shipping !== null && !loading;
-    const carrier = shippingRate?.provider && shippingRate?.service
-      ? `${shippingRate.provider} ${shippingRate.service}`
-      : shippingRate?.provider || '';
-
-    if (subtotalElement) subtotalElement.textContent = currency.format(subtotal);
-    if (shippingElement) shippingElement.textContent = shipping !== null ? currency.format(shipping) : 'Enter ZIP';
-    if (totalElement) totalElement.textContent = currency.format(total);
-    if (shippingNoteElement) {
-      shippingNoteElement.textContent = shippingRate?.source === 'shippo'
-        ? `${carrier || 'Carrier'} quote from Tyler, TX 75703${shippingRate.estimatedDays ? `, estimated ${shippingRate.estimatedDays} day${shippingRate.estimatedDays === 1 ? '' : 's'}.` : '.'}`
-        : shippingRate?.note || 'Live carrier quote from Tyler, TX 75703 once a destination ZIP is entered.';
-    }
     if (statusElement) {
-      if (!catalog.ready) {
-        statusElement.textContent = 'Verifying current book prices. If this message remains, refresh the page before paying.';
-      } else if (loading) {
-        statusElement.textContent = 'Checking live shipping with Shippo...';
-      } else if (message) {
-        statusElement.textContent = message;
-      } else if (canPay) {
-        statusElement.textContent = `${shippingRate?.source === 'shippo' ? 'Live' : 'Estimated'} total: ${currency.format(total)}. Use this amount when paying, then include your copied order summary in the note or send it to ridersmagicmark@gmail.com.`;
-      } else {
-        statusElement.textContent = 'Enter a state and ZIP to calculate shipping before payment.';
-      }
+      statusElement.textContent = catalog.ready
+        ? 'Secure checkout is provided by Square.'
+        : 'Verifying current book prices. If this message remains, refresh the page before paying.';
     }
-
-    if (cashAppLink) cashAppLink.href = canPay ? `https://cash.app/$tishashipleyauthor/${total.toFixed(2)}` : 'https://cash.app/$tishashipleyauthor';
-    if (paypalLink) paypalLink.href = canPay ? `https://www.paypal.com/paypalme/Tishashipley/${total.toFixed(2)}` : 'https://www.paypal.com/paypalme/Tishashipley';
-    updateSquareLink(format);
-    setPaymentEnabled(canPay);
-
-    currentCheckout = {
-      format,
-      quantity,
-      subtotal,
-      shipping: shipping ?? 0,
-      total,
-      canPay,
-      shippingSource: shippingRate?.source ?? '',
-      carrier,
-    };
-
-    return currentCheckout;
+    return catalog.ready;
   };
 
-  const fetchLiveShipping = async (input, signal) => {
-    const response = await fetch('/api/shipping-rate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(input),
-      signal,
-    });
-
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(payload.message || 'Live shipping was not available.');
-    return payload;
-  };
-
-  const updateCheckout = async () => {
-    const input = getCheckoutInput();
-    const subtotal = prices[input.format] * input.quantity;
-    const fallbackRate = getFallbackShipping(input);
-    const canQuote = Boolean(input.state && input.zip.length >= 5);
-    const sequence = ++checkoutSequence;
-
-    if (!canQuote) {
-      shippingRequest?.abort();
-      renderCheckout({ input, message: 'Enter a state and ZIP to calculate shipping before payment.' });
-      return currentCheckout;
-    }
-
-    renderCheckout({ input, shippingRate: fallbackRate, loading: true });
-    shippingRequest?.abort();
-    shippingRequest = new AbortController();
-
-    try {
-      const liveRate = await fetchLiveShipping(input, shippingRequest.signal);
-      if (sequence !== checkoutSequence) return currentCheckout;
-      renderCheckout({
-        input,
-        shippingRate: {
-          ...liveRate,
-          source: 'shippo',
-        },
-      });
-    } catch (error) {
-      if (error.name === 'AbortError' || sequence !== checkoutSequence) return currentCheckout;
-      renderCheckout({
-        input,
-        shippingRate: fallbackRate,
-        message: fallbackRate
-          ? `Live Shippo rate is unavailable right now, so this total uses a local estimate: ${currency.format(subtotal + fallbackRate.amount)}.`
-          : 'Enter a state and ZIP to calculate shipping before payment.',
-      });
-    }
-
-    return currentCheckout;
-  };
-
-  window.addEventListener('site-content-ready', () => { updateCheckout(); });
-
-  const scheduleCheckoutUpdate = (delay = 250) => {
-    window.clearTimeout(quoteTimer);
-    currentCheckout = null;
-    setPaymentEnabled(false);
-    quoteTimer = window.setTimeout(updateCheckout, delay);
-  };
-
-  const handlePaymentClick = (event) => {
-    const checkout = currentCheckout;
-    if (checkout?.canPay) return;
-    event.preventDefault();
-    statusElement?.focus?.();
-  };
+  const updateCheckout = () => updateSquareLink(getSelectedFormat());
+  window.addEventListener('site-content-ready', updateCheckout);
 
   const handleSquareClick = (event) => {
     if (catalog.ready) return;
@@ -570,31 +349,13 @@ function initializeBookModal() {
   openFromHash();
   window.addEventListener('hashchange', openFromHash);
 
-  formatInputs.forEach((input) => input.addEventListener('change', () => scheduleCheckoutUpdate(0)));
-  quantityInput?.addEventListener('input', () => scheduleCheckoutUpdate(0));
-  shippingFields.forEach((field) => field.addEventListener('input', () => scheduleCheckoutUpdate()));
+  formatInputs.forEach((input) => input.addEventListener('change', updateCheckout));
   squareLink?.addEventListener('click', handleSquareClick);
-  cashAppLink?.addEventListener('click', handlePaymentClick);
-  paypalLink?.addEventListener('click', handlePaymentClick);
-  copyOrderButton?.addEventListener('click', async () => {
-    const checkout = currentCheckout?.canPay ? currentCheckout : await updateCheckout();
-    if (!checkout?.canPay) {
-      if (statusElement) statusElement.textContent = 'Enter a state and ZIP to calculate shipping before copying the order summary.';
-      return;
-    }
-    const summary = buildOrderSummary(checkout);
-    try {
-      await navigator.clipboard.writeText(summary);
-      if (statusElement) statusElement.textContent = 'Order summary copied. Paste it into the payment note or send it to ridersmagicmark@gmail.com so fulfillment has the right details.';
-    } catch {
-      if (statusElement) statusElement.textContent = summary;
-    }
-  });
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && !modal.hidden) closeModal();
   });
 
-  renderCheckout({ input: getCheckoutInput() });
+  updateCheckout();
 }
 
 function initializeEventTabs() {

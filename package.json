@@ -8,8 +8,7 @@
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
     "cms:seed": "node --env-file-if-exists=.env.local scripts/seed-content.mjs",
-    "test": "playwright test",
-    "test:api": "node --test tests/*.test.mjs"
+    "test": "playwright test"
   },
   "dependencies": {
     "react": "19.3.0",

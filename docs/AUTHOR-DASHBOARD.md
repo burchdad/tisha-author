@@ -49,30 +49,26 @@ Layouts, animations, and payment-account destinations stay in code.
 
 ## Square
 
-The Square connection is pending the client's public checkout link.
-Ask for the link and confirm:
-- Does it cover soft-cover, hard-cover, and quantities?
-- Does Square collect the buyer's email and complete shipping address?
-- How are shipping and tax configured?
-- Is the November 20 preorder shipping message shown?
+The website sends soft-cover orders to `https://square.link/u/ZV1vr14t` and hard-cover
+orders to `https://square.link/u/uq2dEXqy`. Square is the authoritative checkout for
+quantity, shipping, tax, customer information, payment, and receipts. Prices edited
+in Sanity must also be updated in the matching Square item before publishing.
 
-A static Square link does not automatically inherit this site's calculated total.
-With a static link, Square is the authoritative checkout and its item prices must
-be kept in sync manually. Do not label a static link as carrying the calculated total.
+Each Square item must have **Shipping** enabled as its fulfillment method so checkout
+requires a complete delivery address. Configure the quantity option, shipping charge,
+automatic tax settings, and new-order email notifications in Square Dashboard.
 
-For a dynamic Square-hosted checkout matching this site's cart, configure a
-server-only production access token, location ID, and catalog variation IDs if using
-Square's catalog. The server must read authoritative published prices, validate
-quantity, and recalculate shipping; never trust totals from the browser.
-Use a unique idempotency key per checkout attempt. If the website tracks paid orders,
-add payment/order webhooks and signature verification. A return URL is not proof
-of payment. No Square secrets belong in browser code or Sanity content.
+Pirate Ship connects directly to Square. It imports paid Square orders and their
+delivery addresses; after a label is purchased, Pirate Ship sends tracking and the
+fulfillment update back to Square. Pirate Ship does not calculate or display live
+shipping rates during Square checkout. Setup instructions are in
+`docs/SQUARE-PIRATE-SHIP.md`.
 
 ## Validation and limits
 
 - npm run build builds both the public site and the separately loaded admin app.
 - Test both without CMS variables and with a configured project.
-- Test CMS downtime and malformed prices: payment must remain disabled.
+- Test CMS downtime and malformed prices: the Square links must remain disabled.
 - Hosted login, actual asset upload, and persistence require a real Sanity project
   and cannot be certified using mocked API responses.
 - Content is loaded in the browser. Initial HTML remains the original copy, so
@@ -80,14 +76,11 @@ of payment. No Square secrets belong in browser code or Sanity content.
 - This dashboard edits website content; order management remains in the payment
   provider. It does not process or store payment cards.
 
-## Pending tax and shipping-email configuration
+## Checkout configuration
 
 - Current requested book prices: soft-cover $13.99; hard-cover $15.99.
-- Temporary shipping/fulfillment email recipient: stephen.burch@ghostai.solutions.
-  This request does not change the school-inquiry recipient or public customer-support address.
-- Confirm Tisha's Square sales-tax settings and collection jurisdictions before enabling tax.
-  Do not assume a flat tax rate or treat an unavailable tax calculation as zero.
-- Confirm whether the email should contain paid-order details for manual label creation,
-  or an automatically purchased label. No label purchases or automated fulfillment
-  emails are currently connected.
-- The Square checkout link and payment-confirmation integration are still pending.
+- Square should send new-order notifications to Tisha's chosen fulfillment email.
+- Confirm Tisha's Square sales-tax enrollments and collection jurisdictions before
+  enabling automatic tax. Tax enrollment does not register the business with a state.
+- Pirate Ship imports paid orders for manual label purchase and printing. It does not
+  purchase labels automatically.

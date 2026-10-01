@@ -1956,12 +1956,11 @@ button:disabled {
 .book-total-card div:last-of-type { padding-top: 6px; border-top: 1px solid rgba(23,32,51,.18); }
 .book-total-card div:last-of-type strong { color: var(--rose); font-size: 1.28rem; }
 .book-total-card small { color: rgba(23,32,51,.62); font-size: .72rem; line-height: 1.4; }
-.payment-link-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.payment-link-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .payment-link,
 .copy-order-button { display: grid; min-height: 46px; place-items: center; padding: 10px 12px; border: 2px solid var(--ink); border-radius: 16px; color: var(--ink); cursor: pointer; font: inherit; font-size: .84rem; font-weight: 900; text-align: center; text-decoration: none; box-shadow: 4px 4px 0 var(--ink); }
 .cashapp-link { background: #00d632; }
 .paypal-link { background: #ffd447; }
-.venmo-link { background: #008cce; color: white; }
 .payment-link-grid .copy-order-button { grid-column: 1 / -1; }
 .copy-order-button { background: white; }
 .payment-link.is-disabled { opacity: .56; filter: grayscale(.3); }
@@ -2124,7 +2123,3 @@ button:disabled {
 .cms-photo-gallery img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 .cms-photo-gallery figcaption { padding: 20px; }
 @media (max-width: 780px) { .cms-photo-gallery { grid-template-columns: 1fr; } }
-
-.venmo-help { display: grid; gap: 10px; }
-.copy-amount-button { min-height: 44px; padding: 10px 14px; border: 2px solid #008cce; border-radius: 12px; background: white; color: #005780; font: inherit; font-size: .85rem; font-weight: 800; cursor: pointer; }
-.copy-amount-button:disabled { opacity: .55; cursor: not-allowed; }

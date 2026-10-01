@@ -38,7 +38,7 @@ for (const width of [1440, 390]) {
     await page.locator('[data-shipping-field="zip"]').fill('75703');
     await expect(page.locator('[data-order-total]')).toHaveText('$23.50');
     await expect(page.locator('[data-paypal-link]')).toHaveAttribute('href', /23.50$/);
-    await expect(page.locator('[data-venmo-link]')).toHaveAttribute('aria-disabled', 'false');
+    await expect(page.locator('[data-venmo-link]')).toHaveCount(0);
     await page.locator('[data-book-quantity]').fill('2');
     await page.locator('[data-book-format][value="hardcover"]').check();
     await expect(page.locator('[data-order-total]')).toHaveText('$49.00');
@@ -62,7 +62,7 @@ test('failed content service does not allow payment at stale prices', async ({ p
   await page.locator('[data-shipping-field="state"]').fill('TX');
   await page.locator('[data-shipping-field="zip"]').fill('75703');
   await expect(page.locator('[data-checkout-status]')).toContainText('Verifying current book prices');
-  for (const selector of ['[data-cashapp-link]', '[data-paypal-link]', '[data-venmo-link]']) {
+  for (const selector of ['[data-cashapp-link]', '[data-paypal-link]']) {
     await expect(page.locator(selector)).toHaveAttribute('aria-disabled', 'true');
   }
   await expect(page.locator('.hero h1')).toHaveText("Rider's Magic Mark");
@@ -110,7 +110,7 @@ test('configured admin loads managed sign-in on a deep route', async ({ page }) 
  });
 
 for (const width of [1440, 390]) {
-  test('expanded shipping fields and copied Venmo amount at ' + width, async ({ page }) => {
+  test('expanded shipping fields and copied order summary at ' + width, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.addInitScript(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async (text) => { window.copiedCheckoutText = text; } } }));
     await mockContent(page);
@@ -127,17 +127,14 @@ for (const width of [1440, 390]) {
     await page.locator('[data-shipping-field="city"]').fill('Tyler');
     await page.locator('[data-shipping-field="state"]').fill('TX');
     await page.locator('[data-shipping-field="zip"]').fill('75703');
-    await expect(page.locator('[data-copy-amount]')).toBeEnabled();
-    await expect(page.locator('[data-venmo-link]')).toHaveText('Venmo · $23.50');
-    await page.locator('[data-copy-amount]').click();
-    await expect.poll(() => page.evaluate(() => window.copiedCheckoutText)).toBe('23.50');
+    await expect(page.locator('[data-order-total]')).toHaveText('$23.50');
+    await expect(page.locator('[data-venmo-link]')).toHaveCount(0);
+    await expect(page.locator('[data-copy-amount]')).toHaveCount(0);
     expect(shippingRequests.at(-1).name).toBe('Jamie Reader');
     await page.locator('[data-copy-order]').click();
     await expect.poll(() => page.evaluate(() => window.copiedCheckoutText)).toContain('Jamie Reader');
     await page.locator('[data-book-quantity]').fill('2');
-    await expect(page.locator('[data-copy-amount]')).toHaveText('Copy Venmo amount: $42.00');
-    await page.locator('[data-copy-amount]').click();
-    await expect.poll(() => page.evaluate(() => window.copiedCheckoutText)).toBe('42.00');
+    await expect(page.locator('[data-order-total]')).toHaveText('$42.00');
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
     await page.locator('[data-shipping-field="firstName"]').scrollIntoViewIfNeeded();
     await page.screenshot({ path: process.env.TEMP + '/tisha-expanded-checkout-' + width + '.png' });

@@ -296,9 +296,7 @@ function initializeBookModal() {
   const statusElement = modal?.querySelector('[data-checkout-status]');
   const cashAppLink = modal?.querySelector('[data-cashapp-link]');
   const paypalLink = modal?.querySelector('[data-paypal-link]');
-  const venmoLink = modal?.querySelector('[data-venmo-link]');
   const copyOrderButton = modal?.querySelector('[data-copy-order]');
-  const copyAmountButton = modal?.querySelector('[data-copy-amount]');
   let lastFocusedElement = null;
   let shippingRequest = null;
   let checkoutSequence = 0;
@@ -376,8 +374,7 @@ function initializeBookModal() {
   };
 
   const setPaymentEnabled = (isEnabled) => {
-    if (copyAmountButton) copyAmountButton.disabled = !isEnabled;
-    [cashAppLink, paypalLink, venmoLink].forEach((link) => {
+    [cashAppLink, paypalLink].forEach((link) => {
       if (!link) return;
       link.classList.toggle('is-disabled', !isEnabled);
       link.setAttribute('aria-disabled', String(!isEnabled));
@@ -443,8 +440,6 @@ function initializeBookModal() {
 
     if (cashAppLink) cashAppLink.href = canPay ? `https://cash.app/$tishashipleyauthor/${total.toFixed(2)}` : 'https://cash.app/$tishashipleyauthor';
     if (paypalLink) paypalLink.href = canPay ? `https://www.paypal.com/paypalme/Tishashipley/${total.toFixed(2)}` : 'https://www.paypal.com/paypalme/Tishashipley';
-    if (venmoLink) venmoLink.textContent = canPay ? `Venmo · ${currency.format(total)}` : 'Venmo';
-    if (copyAmountButton) copyAmountButton.textContent = canPay ? `Copy Venmo amount: ${currency.format(total)}` : 'Copy Venmo amount';
     setPaymentEnabled(canPay);
 
     currentCheckout = {
@@ -559,17 +554,6 @@ function initializeBookModal() {
   shippingFields.forEach((field) => field.addEventListener('input', () => scheduleCheckoutUpdate()));
   cashAppLink?.addEventListener('click', handlePaymentClick);
   paypalLink?.addEventListener('click', handlePaymentClick);
-  venmoLink?.addEventListener('click', handlePaymentClick);
-  copyAmountButton?.addEventListener('click', async () => {
-    const checkout = currentCheckout;
-    if (!checkout?.canPay) return;
-    try {
-      await navigator.clipboard.writeText(checkout.total.toFixed(2));
-      if (statusElement) statusElement.textContent = `${currency.format(checkout.total)} copied. Open Venmo and paste it into the amount field.`;
-    } catch {
-      if (statusElement) statusElement.textContent = `Copy was unavailable. Enter ${currency.format(checkout.total)} in Venmo.`;
-    }
-  });
   copyOrderButton?.addEventListener('click', async () => {
     const checkout = currentCheckout?.canPay ? currentCheckout : await updateCheckout();
     if (!checkout?.canPay) {

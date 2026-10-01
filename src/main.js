@@ -284,7 +284,6 @@ function initializeToolkitModal() {
 
 function initializeBookModal() {
   const modal = document.querySelector('.book-modal');
-  const form = modal?.querySelector('[data-book-checkout]');
   const openButtons = document.querySelectorAll('[data-open-book]');
   const closeButtons = document.querySelectorAll('[data-close-book]');
   const formatInputs = modal?.querySelectorAll('[data-book-format]') ?? [];
@@ -295,22 +294,15 @@ function initializeBookModal() {
   const totalElement = modal?.querySelector('[data-order-total]');
   const shippingNoteElement = modal?.querySelector('[data-shipping-note]');
   const statusElement = modal?.querySelector('[data-checkout-status]');
-  const stripeButton = modal?.querySelector('[data-stripe-checkout]');
-  const squareFallback = modal?.querySelector('[data-square-fallback]');
-  const paymentNote = modal?.querySelector('[data-payment-note]');
-  const stripeShell = modal?.querySelector('[data-stripe-shell]');
-  const stripeContainer = modal?.querySelector('[data-stripe-checkout-container]');
-  const editOrderButton = modal?.querySelector('[data-edit-order]');
-  const successPanel = modal?.querySelector('[data-checkout-success]');
+  const squareLink = modal?.querySelector('[data-square-link]');
+  const cashAppLink = modal?.querySelector('[data-cashapp-link]');
+  const paypalLink = modal?.querySelector('[data-paypal-link]');
   const copyOrderButton = modal?.querySelector('[data-copy-order]');
   let lastFocusedElement = null;
   let shippingRequest = null;
   let checkoutSequence = 0;
   let currentCheckout = null;
   let quoteTimer = null;
-  let embeddedCheckout = null;
-  let checkoutStarting = false;
-  let stripeAvailable = false;
   if (!modal || !openButtons.length) return;
 
   const prices = {
@@ -349,13 +341,9 @@ function initializeBookModal() {
     quantity: getQuantity(),
     state: getFieldValue('state').toUpperCase(),
     zip: getFieldValue('zip'),
-    firstName: getFieldValue('firstName'),
-    lastName: getFieldValue('lastName'),
     name: getCustomerName(),
     email: getFieldValue('email'),
-    phone: getFieldValue('phone'),
     street: getFieldValue('street'),
-    street2: getFieldValue('street2'),
     city: getFieldValue('city'),
   });
 
@@ -391,16 +379,20 @@ function initializeBookModal() {
   };
 
   const setPaymentEnabled = (isEnabled) => {
-    if (stripeButton) stripeButton.disabled = !stripeAvailable || !isEnabled || checkoutStarting;
+    [cashAppLink, paypalLink].forEach((link) => {
+      if (!link) return;
+      link.classList.toggle('is-disabled', !isEnabled);
+      link.setAttribute('aria-disabled', String(!isEnabled));
+    });
   };
 
-  const updateSquareFallback = (format) => {
-    if (!squareFallback) return;
+  const updateSquareLink = (format) => {
+    if (!squareLink) return;
     const formatLabel = format === 'hardcover' ? 'Hard-cover' : 'Soft-cover';
-    squareFallback.href = squareLinks[format];
-    squareFallback.textContent = `Pay by card with Square · ${formatLabel}`;
-    squareFallback.classList.toggle('is-disabled', !catalog.ready);
-    squareFallback.setAttribute('aria-disabled', String(!catalog.ready));
+    squareLink.href = squareLinks[format];
+    squareLink.textContent = `Pay by card with Square · ${formatLabel}`;
+    squareLink.classList.toggle('is-disabled', !catalog.ready);
+    squareLink.setAttribute('aria-disabled', String(!catalog.ready));
   };
 
   const buildOrderSummary = ({ format, quantity, subtotal, shipping, total, shippingSource, carrier }) => {
@@ -433,7 +425,7 @@ function initializeBookModal() {
     const subtotal = prices[format] * quantity;
     const shipping = shippingRate?.amount ?? null;
     const total = subtotal + (shipping ?? 0);
-    const canPay = catalog.ready && shipping !== null && !loading && shippingRate?.source === 'shippo' && form?.checkValidity();
+    const canPay = catalog.ready && shipping !== null && !loading;
     const carrier = shippingRate?.provider && shippingRate?.service
       ? `${shippingRate.provider} ${shippingRate.service}`
       : shippingRate?.provider || '';
@@ -454,15 +446,15 @@ function initializeBookModal() {
       } else if (message) {
         statusElement.textContent = message;
       } else if (canPay) {
-        statusElement.textContent = `Shipping confirmed. Continue to secure payment; Stripe will calculate and display the final tax before you pay.`;
-      } else if (shippingRate?.source === 'shippo') {
-        statusElement.textContent = 'Complete the name, email, and shipping address to continue to payment.';
+        statusElement.textContent = `${shippingRate?.source === 'shippo' ? 'Live' : 'Estimated'} total: ${currency.format(total)}. Use this amount when paying, then include your copied order summary in the note or send it to ridersmagicmark@gmail.com.`;
       } else {
         statusElement.textContent = 'Enter a state and ZIP to calculate shipping before payment.';
       }
     }
 
-    updateSquareFallback(format);
+    if (cashAppLink) cashAppLink.href = canPay ? `https://cash.app/$tishashipleyauthor/${total.toFixed(2)}` : 'https://cash.app/$tishashipleyauthor';
+    if (paypalLink) paypalLink.href = canPay ? `https://www.paypal.com/paypalme/Tishashipley/${total.toFixed(2)}` : 'https://www.paypal.com/paypalme/Tishashipley';
+    updateSquareLink(format);
     setPaymentEnabled(canPay);
 
     currentCheckout = {
@@ -473,9 +465,7 @@ function initializeBookModal() {
       total,
       canPay,
       shippingSource: shippingRate?.source ?? '',
-      rateId: shippingRate?.rateId ?? '',
       carrier,
-      input,
     };
 
     return currentCheckout;
@@ -544,6 +534,19 @@ function initializeBookModal() {
     quoteTimer = window.setTimeout(updateCheckout, delay);
   };
 
+  const handlePaymentClick = (event) => {
+    const checkout = currentCheckout;
+    if (checkout?.canPay) return;
+    event.preventDefault();
+    statusElement?.focus?.();
+  };
+
+  const handleSquareClick = (event) => {
+    if (catalog.ready) return;
+    event.preventDefault();
+    statusElement?.focus?.();
+  };
+
   const openModal = () => {
     lastFocusedElement = document.activeElement;
     updateCheckout();
@@ -570,61 +573,9 @@ function initializeBookModal() {
   formatInputs.forEach((input) => input.addEventListener('change', () => scheduleCheckoutUpdate(0)));
   quantityInput?.addEventListener('input', () => scheduleCheckoutUpdate(0));
   shippingFields.forEach((field) => field.addEventListener('input', () => scheduleCheckoutUpdate()));
-  squareFallback?.addEventListener('click', (event) => {
-    if (catalog.ready) return;
-    event.preventDefault();
-  });
-  form?.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    if (checkoutStarting) return;
-    if (!form.reportValidity()) return;
-    const checkout = currentCheckout?.canPay ? currentCheckout : await updateCheckout();
-    if (!checkout?.canPay) {
-      if (statusElement && !statusElement.textContent.includes('Shippo')) {
-        statusElement.textContent = 'A live shipping rate is required before secure payment can begin.';
-      }
-      return;
-    }
-    if (!window.Stripe) {
-      if (statusElement) statusElement.textContent = 'Secure payment could not load. Check your connection and try again.';
-      return;
-    }
-    checkoutStarting = true;
-    setPaymentEnabled(false);
-    if (stripeButton) stripeButton.textContent = 'Opening secure payment…';
-    if (statusElement) statusElement.textContent = 'Creating your secure checkout…';
-    try {
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...checkout.input, attemptId: crypto.randomUUID() }),
-      });
-      const payload = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(payload.message || 'Secure checkout could not start.');
-      const stripe = window.Stripe(payload.publishableKey);
-      embeddedCheckout = await stripe.initEmbeddedCheckout({ clientSecret: payload.clientSecret });
-      form.hidden = true;
-      if (successPanel) successPanel.hidden = true;
-      if (stripeShell) stripeShell.hidden = false;
-      embeddedCheckout.mount(stripeContainer);
-      modal.querySelector('.book-offer-copy')?.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (error) {
-      if (statusElement) statusElement.textContent = error.message || 'Secure checkout could not start. Please try again.';
-    } finally {
-      checkoutStarting = false;
-      if (stripeButton) stripeButton.textContent = 'Continue to secure payment';
-      setPaymentEnabled(Boolean(currentCheckout?.canPay));
-    }
-  });
-  editOrderButton?.addEventListener('click', () => {
-    embeddedCheckout?.destroy();
-    embeddedCheckout = null;
-    if (stripeContainer) stripeContainer.replaceChildren();
-    if (stripeShell) stripeShell.hidden = true;
-    if (successPanel) successPanel.hidden = true;
-    if (form) form.hidden = false;
-    updateCheckout();
-  });
+  squareLink?.addEventListener('click', handleSquareClick);
+  cashAppLink?.addEventListener('click', handlePaymentClick);
+  paypalLink?.addEventListener('click', handlePaymentClick);
   copyOrderButton?.addEventListener('click', async () => {
     const checkout = currentCheckout?.canPay ? currentCheckout : await updateCheckout();
     if (!checkout?.canPay) {
@@ -643,47 +594,7 @@ function initializeBookModal() {
     if (event.key === 'Escape' && !modal.hidden) closeModal();
   });
 
-  const showReturnedCheckout = async () => {
-    const params = new URLSearchParams(window.location.search);
-    const sessionId = params.get('session_id');
-    if (params.get('checkout') !== 'complete' || !sessionId) return;
-    if (form) form.hidden = true;
-    if (stripeShell) stripeShell.hidden = true;
-    if (successPanel) successPanel.hidden = false;
-    try {
-      const response = await fetch(`/api/checkout-status?session_id=${encodeURIComponent(sessionId)}`);
-      const payload = await response.json().catch(() => ({}));
-      if (!response.ok || !payload.paid) {
-        const message = successPanel?.querySelector('p');
-        if (message) message.textContent = 'Your payment is still processing. A receipt will be emailed as soon as Stripe confirms it.';
-      }
-    } catch {
-      const message = successPanel?.querySelector('p');
-      if (message) message.textContent = 'Your payment is being verified. Watch your email for the confirmation receipt.';
-    }
-  };
-
-  const loadCheckoutAvailability = async () => {
-    try {
-      const response = await fetch('/api/checkout-config');
-      const payload = await response.json().catch(() => ({}));
-      stripeAvailable = response.ok && payload.available === true;
-    } catch {
-      stripeAvailable = false;
-    }
-    if (stripeButton) stripeButton.hidden = !stripeAvailable;
-    if (squareFallback) squareFallback.hidden = stripeAvailable;
-    if (paymentNote) {
-      paymentNote.textContent = stripeAvailable
-        ? 'Secure payment is processed by Stripe. Final tax is calculated before you pay; card information never passes through this website.'
-        : 'Square securely collects payment, shipping information, and tax while the embedded Stripe checkout is being activated.';
-    }
-    setPaymentEnabled(Boolean(currentCheckout?.canPay));
-  };
-
   renderCheckout({ input: getCheckoutInput() });
-  loadCheckoutAvailability();
-  showReturnedCheckout();
 }
 
 function initializeEventTabs() {

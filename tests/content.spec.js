@@ -15,11 +15,6 @@ function content(overrides = {}) {
 }
 
 async function mockContent(page, data = content()) {
-  await page.route('https://js.stripe.com/v3/**', (route) => route.fulfill({
-    contentType: 'application/javascript',
-    body: `window.Stripe = () => ({ initEmbeddedCheckout: async ({ clientSecret }) => ({ mount(target) { const element = typeof target === 'string' ? document.querySelector(target) : target; element.textContent = 'Secure Stripe checkout ' + clientSecret; }, destroy() {} }) });`,
-  }));
-  await page.route('**/api/checkout-config', (route) => route.fulfill({ json: { available: true } }));
   await page.route('https://dashboardtest.apicdn.sanity.io/**', async (route) => {
     expect(new URL(route.request().url()).searchParams.get('perspective')).toBe('published');
     await route.fulfill({ json: { result: data } });
@@ -42,13 +37,15 @@ for (const width of [1440, 390]) {
     await page.locator('[data-shipping-field="state"]').fill('TX');
     await page.locator('[data-shipping-field="zip"]').fill('75703');
     await expect(page.locator('[data-order-total]')).toHaveText('$23.50');
-    await expect(page.locator('[data-stripe-checkout]')).toBeDisabled();
-    await expect(page.locator('[data-square-fallback]')).toBeHidden();
-    await expect(page.locator('[data-paypal-link], [data-venmo-link]')).toHaveCount(0);
+    await expect(page.locator('[data-square-link]')).toHaveAttribute('href', 'https://square.link/u/ZV1vr14t');
+    await expect(page.locator('[data-paypal-link]')).toHaveAttribute('href', /23.50$/);
+    await expect(page.locator('[data-venmo-link]')).toHaveCount(0);
     await page.locator('[data-book-quantity]').fill('2');
     await page.locator('[data-book-format][value="hardcover"]').check();
+    await expect(page.locator('[data-square-link]')).toHaveAttribute('href', 'https://square.link/u/uq2dEXqy');
+    await expect(page.locator('[data-square-link]')).toContainText('Hard-cover');
     await expect(page.locator('[data-order-total]')).toHaveText('$49.00');
-    await expect(page.locator('[data-cashapp-link]')).toHaveCount(0);
+    await expect(page.locator('[data-cashapp-link]')).toHaveAttribute('href', /49.00$/);
     await page.locator('.book-modal-close').click();
     await page.locator('[data-event-tab="past"]').click();
     await expect(page.locator('.cms-photo-gallery img')).toHaveAttribute('alt', 'Rider and Tisha at a reading');
@@ -68,7 +65,10 @@ test('failed content service does not allow payment at stale prices', async ({ p
   await page.locator('[data-shipping-field="state"]').fill('TX');
   await page.locator('[data-shipping-field="zip"]').fill('75703');
   await expect(page.locator('[data-checkout-status]')).toContainText('Verifying current book prices');
-  await expect(page.locator('[data-stripe-checkout]')).toBeDisabled();
+  await expect(page.locator('[data-square-link]')).toHaveAttribute('aria-disabled', 'true');
+  for (const selector of ['[data-cashapp-link]', '[data-paypal-link]']) {
+    await expect(page.locator(selector)).toHaveAttribute('aria-disabled', 'true');
+  }
   await expect(page.locator('.hero h1')).toHaveText("Rider's Magic Mark");
 });
 
@@ -104,13 +104,13 @@ test('configured admin loads managed sign-in on a deep route', async ({ page }) 
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,nofollow');
 });
 
- test('invalid published prices keep secure checkout disabled', async ({ page }) => {
+ test('invalid published prices keep all payment links disabled', async ({ page }) => {
   await mockContent(page, content({ settings: { ...defaultSettings, paperbackPrice: -3 } }));
   await page.goto('/#purchase-book');
   await page.locator('[data-shipping-field="state"]').fill('TX');
   await page.locator('[data-shipping-field="zip"]').fill('75703');
   await expect(page.locator('[data-checkout-status]')).toContainText('Verifying current book prices');
-  await expect(page.locator('[data-stripe-checkout]')).toBeDisabled();
+  await expect(page.locator('[data-cashapp-link]')).toHaveAttribute('aria-disabled', 'true');
  });
 
 for (const width of [1440, 390]) {
@@ -132,7 +132,6 @@ for (const width of [1440, 390]) {
     await page.locator('[data-shipping-field="state"]').fill('TX');
     await page.locator('[data-shipping-field="zip"]').fill('75703');
     await expect(page.locator('[data-order-total]')).toHaveText('$23.50');
-    await expect(page.locator('[data-stripe-checkout]')).toBeEnabled();
     await expect(page.locator('[data-venmo-link]')).toHaveCount(0);
     await expect(page.locator('[data-copy-amount]')).toHaveCount(0);
     expect(shippingRequests.at(-1).name).toBe('Jamie Reader');
@@ -145,27 +144,3 @@ for (const width of [1440, 390]) {
     await page.screenshot({ path: process.env.TEMP + '/tisha-expanded-checkout-' + width + '.png' });
   });
 }
-
-test('complete order details open embedded Stripe checkout', async ({ page }) => {
-  await mockContent(page);
-  let checkoutRequest;
-  await page.route('**/api/create-checkout-session', async (route) => {
-    checkoutRequest = route.request().postDataJSON();
-    await route.fulfill({ json: { publishableKey: 'pk_test_example', clientSecret: 'cs_test_secret_example', sessionId: 'cs_test_example' } });
-  });
-  await page.goto('/#purchase-book');
-  await page.locator('[data-shipping-field="firstName"]').fill('Jamie');
-  await page.locator('[data-shipping-field="lastName"]').fill('Reader');
-  await page.locator('[data-shipping-field="email"]').fill('reader@example.com');
-  await page.locator('[data-shipping-field="street"]').fill('123 Test Street');
-  await page.locator('[data-shipping-field="city"]').fill('Tyler');
-  await page.locator('[data-shipping-field="state"]').fill('TX');
-  await page.locator('[data-shipping-field="zip"]').fill('75703');
-  await expect(page.locator('[data-stripe-checkout]')).toBeEnabled();
-  await page.locator('[data-stripe-checkout]').click();
-  await expect(page.locator('[data-stripe-shell]')).toBeVisible();
-  await expect(page.locator('[data-stripe-checkout-container]')).toContainText('cs_test_secret_example');
-  expect(checkoutRequest.firstName).toBe('Jamie');
-  expect(checkoutRequest.lastName).toBe('Reader');
-  expect(checkoutRequest.attemptId).toMatch(/^[a-f0-9-]{36}$/);
-});

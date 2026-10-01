@@ -21,7 +21,6 @@
       href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Inter:wght@400;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <script src="https://js.stripe.com/v3/" defer></script>
   </head>
   <body>
     <canvas id="magic-world" aria-hidden="true"></canvas>
@@ -661,10 +660,10 @@
                 <input type="number" min="1" max="10" value="1" inputmode="numeric" data-book-quantity />
               </label>
               <label>Ship-to state
-                <input type="text" maxlength="2" placeholder="TX" autocomplete="address-level1" data-shipping-field="state" required />
+                <input type="text" maxlength="2" placeholder="TX" autocomplete="address-level1" data-shipping-field="state" />
               </label>
               <label>Ship-to ZIP
-                <input type="text" inputmode="numeric" maxlength="10" placeholder="75703" autocomplete="postal-code" data-shipping-field="zip" required />
+                <input type="text" inputmode="numeric" maxlength="10" placeholder="75703" autocomplete="postal-code" data-shipping-field="zip" />
               </label>
             </div>
 
@@ -672,25 +671,19 @@
               <legend>Shipping information</legend>
               <div class="book-address-grid">
                 <label>First name
-                  <input type="text" name="firstName" placeholder="First name" autocomplete="given-name" data-shipping-field="firstName" required />
+                  <input type="text" name="firstName" placeholder="First name" autocomplete="given-name" data-shipping-field="firstName" />
                 </label>
                 <label>Last name
-                  <input type="text" name="lastName" placeholder="Last name" autocomplete="family-name" data-shipping-field="lastName" required />
+                  <input type="text" name="lastName" placeholder="Last name" autocomplete="family-name" data-shipping-field="lastName" />
                 </label>
                 <label class="book-address-wide">Email
-                  <input type="email" placeholder="you@example.com" autocomplete="email" data-shipping-field="email" required />
+                  <input type="email" placeholder="you@example.com" autocomplete="email" data-shipping-field="email" />
                 </label>
                 <label class="book-address-wide">Street address
-                  <input type="text" placeholder="Address" autocomplete="address-line1" data-shipping-field="street" required />
-                </label>
-                <label class="book-address-wide">Apartment, suite, or unit <small>Optional</small>
-                  <input type="text" placeholder="Apartment, suite, or unit" autocomplete="address-line2" data-shipping-field="street2" />
+                  <input type="text" placeholder="Address" autocomplete="street-address" data-shipping-field="street" />
                 </label>
                 <label>City
-                  <input type="text" placeholder="City" autocomplete="address-level2" data-shipping-field="city" required />
-                </label>
-                <label>Phone <small>For delivery questions</small>
-                  <input type="tel" placeholder="(555) 555-5555" autocomplete="tel" data-shipping-field="phone" />
+                  <input type="text" placeholder="City" autocomplete="address-level2" data-shipping-field="city" />
                 </label>
               </div>
             </fieldset>
@@ -703,24 +696,15 @@
             </div>
 
             <div class="payment-link-grid">
-              <button class="stripe-checkout-button" type="submit" data-stripe-checkout hidden disabled>Continue to secure payment</button>
-              <a class="payment-link square-link" href="https://square.link/u/ZV1vr14t" target="_blank" rel="noopener" data-square-fallback aria-disabled="false">Pay by card with Square · Soft-cover</a>
+              <a class="payment-link square-link" href="https://square.link/u/ZV1vr14t" target="_blank" rel="noopener" data-square-link aria-disabled="false">Pay by card with Square · Soft-cover</a>
+              <a class="payment-link cashapp-link is-disabled" href="https://cash.app/$tishashipleyauthor" target="_blank" rel="noopener" data-cashapp-link aria-disabled="true">Cash App</a>
+              <a class="payment-link paypal-link is-disabled" href="https://www.paypal.com/paypalme/Tishashipley" target="_blank" rel="noopener" data-paypal-link aria-disabled="true">PayPal</a>
               <button class="copy-order-button" type="button" data-copy-order>Copy order summary</button>
             </div>
-            <p class="order-contact-note" data-payment-note>Square securely collects payment, shipping information, and tax while the embedded Stripe checkout is being activated.</p>
+            <p class="order-contact-note">Square securely collects your delivery address and calculates final shipping and tax. Confirm your quantity on the Square checkout page.</p>
             <p class="order-contact-note">Order questions and receipt details can be sent to <a href="mailto:ridersmagicmark@gmail.com">ridersmagicmark@gmail.com</a>.</p>
             <p class="checkout-status" data-checkout-status>Enter a state and ZIP to estimate shipping before payment.</p>
           </form>
-          <section class="stripe-checkout-shell" data-stripe-shell hidden>
-            <button class="stripe-edit-order" type="button" data-edit-order>← Edit order</button>
-            <div data-stripe-checkout-container></div>
-          </section>
-          <section class="checkout-success" data-checkout-success hidden>
-            <span aria-hidden="true">✓</span>
-            <h3>Thank you for your order!</h3>
-            <p>Your payment is confirmed. A receipt is on its way to your email, and the shipping details have been sent for fulfillment.</p>
-            <p>Books will ship the week of November 20th.</p>
-          </section>
         </div>
       </div>
     </div>

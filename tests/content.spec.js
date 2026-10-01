@@ -107,7 +107,7 @@ for (const width of [1440, 390]) {
     await expect(page.locator('[data-square-link]')).toBeVisible();
     await expect(page.locator('[data-square-link]')).toContainText('Continue to Square');
     await expect(page.getByText('Choose your quantity and enter your email, delivery address, and payment securely on Square.')).toBeVisible();
-    await expect(page.getByText(/sent to Pirate Ship/)).toBeVisible();
+    await expect(page.getByText(/send tracking information when it ships/)).toBeVisible();
     await expect(page.locator('[data-venmo-link]')).toHaveCount(0);
     await expect(page.locator('[data-cashapp-link], [data-paypal-link], [data-shipping-field], [data-copy-order]')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);

@@ -7,14 +7,11 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "cms:seed": "node --env-file-if-exists=.env.local scripts/seed-content.mjs",
-    "test": "playwright test"
+    "test": "playwright test",
+    "test:api": "node --test tests/*.test.mjs"
   },
   "dependencies": {
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "sanity": "6.16.0",
-    "styled-components": "6.5.3",
+    "@vercel/blob": "^2.8.0",
     "three": "^0.166.1"
   },
   "devDependencies": {

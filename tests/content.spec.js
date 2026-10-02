@@ -15,10 +15,7 @@ function content(overrides = {}) {
 }
 
 async function mockContent(page, data = content()) {
-  await page.route('https://dashboardtest.apicdn.sanity.io/**', async (route) => {
-    expect(new URL(route.request().url()).searchParams.get('perspective')).toBe('published');
-    await route.fulfill({ json: { result: data } });
-  });
+  await page.route('**/api/content', (route) => route.fulfill({ json: data }));
 }
 
 for (const width of [1440, 390]) {
@@ -54,7 +51,7 @@ for (const width of [1440, 390]) {
 }
 
 test('failed content service does not allow payment at stale prices', async ({ page }) => {
-  await page.route('https://dashboardtest.apicdn.sanity.io/**', (route) => route.fulfill({ status: 503, body: '{}' }));
+  await page.route('**/api/content', (route) => route.fulfill({ status: 503, body: '{}' }));
   await page.goto('/#purchase-book');
   await expect(page.locator('[data-checkout-status]')).toContainText('Verifying current book prices');
   await expect(page.locator('[data-square-link]')).toHaveAttribute('aria-disabled', 'true');
@@ -82,14 +79,14 @@ test('every editable text selector resolves on its page', async ({ page }) => {
   }
 });
 
-test('configured admin loads managed sign-in on a deep route', async ({ page }) => {
-  test.setTimeout(90000);
-  page.on('pageerror', (error) => console.log('Admin runtime:', error.message));
-  await page.route('**/auth/providers*', (route) => route.fulfill({ json: { providers: [{ name: 'google', title: 'Google', url: 'https://api.sanity.io/v1/auth/login/google' }] } }));
-  await page.route('**/users/me*', (route) => route.fulfill({ status: 401, json: { error: 'Unauthorized' } }));
+test('authenticated author loads the custom dashboard on a deep route', async ({ page }) => {
+  await page.route('**/api/admin/session', (route) => route.fulfill({ json: { authenticated: true, configured: true } }));
+  await page.route('**/api/admin/content', (route) => route.fulfill({ json: content() }));
   await page.goto('/admin/structure');
-  await expect(page.locator('#studio')).toBeVisible({ timeout: 60000 });
-  await expect(page.getByText('Google', { exact: true }).first()).toBeVisible({ timeout: 60000 });
+  await expect(page.getByRole('heading', { name: 'Update the website' })).toBeVisible();
+  await expect(page.getByLabel('Hard-cover price')).toHaveValue('22');
+  await expect(page.getByRole('heading', { name: 'Featured media' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Save website changes' }).first()).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,nofollow');
 });
 

@@ -3,6 +3,7 @@ dist/
 .env*
 .codex-*.log
 *.local
+.vercel/
 
 playwright-report/
 test-results/

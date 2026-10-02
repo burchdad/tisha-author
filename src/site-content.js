@@ -1,18 +1,7 @@
 import textFields from '../cms/text-fields.json';
 import { defaultSettings, photoSlots } from '../cms/defaults.js';
 
-const projectId = import.meta.env.VITE_SANITY_PROJECT_ID;
-const dataset = import.meta.env.VITE_SANITY_DATASET || 'production';
-export const catalog = { ...defaultSettings, ready: !projectId };
-
-export const contentQuery = `{
-  "settings": *[_id == "siteSettings"][0],
-  "copy": *[_id == "siteCopy"][0],
-  "curricula": *[_type == "curriculum"] | order(order asc, title asc) {title, description, placement, "url": coalesce(pdf.asset->url, existingUrl)},
-  "media": *[_type == "mediaLink"] | order(order asc, title asc) {title, description, category, url},
-  "photos": *[_type == "sitePhoto"] {placement, alt, "url": coalesce(image.asset->url, existingUrl)},
-  "gallery": *[_type == "eventPhoto"] | order(order asc, date desc) {title, description, alt, date, "url": image.asset->url}
-}`;
+export const catalog = { ...defaultSettings, ready: false };
 
 export function safeUrl(value) {
   if (typeof value !== 'string' || /[\u0000-\u0020\\]/.test(value)) return null;
@@ -126,15 +115,10 @@ export function applySiteContent(data) {
 }
 
 export async function loadSiteContent() {
-  if (!projectId) return;
   try {
-    const url = new URL('https://' + projectId + '.apicdn.sanity.io/v2026-09-01/data/query/' + dataset);
-    url.searchParams.set('query', contentQuery);
-    url.searchParams.set('perspective', 'published');
-    const response = await fetch(url, { signal: AbortSignal.timeout(7000), credentials: 'omit' });
+    const response = await fetch('/api/content', { signal: AbortSignal.timeout(7000), credentials: 'same-origin' });
     if (!response.ok) throw new Error('Content unavailable');
-    const payload = await response.json();
-    applySiteContent(payload.result);
+    applySiteContent(await response.json());
   } catch {
     catalog.ready = false;
     console.warn('Published content could not load. The original site content remains visible; checkout is paused until prices can be verified.');

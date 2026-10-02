@@ -1,90 +1,63 @@
 # Author dashboard
 
-The site embeds Sanity Studio at /admin. Sanity handles sign-in, account invitations,
-drafts, publishing, file storage, and permissions. It is not a custom password system.
-The initial testing account is stephen.burch@ghostai.solutions. Invite
-ridersmagicmark@gmail.com as Tisha's author account before handoff.
+The private dashboard at `/admin` is part of this website. It uses a single author
+login, an HMAC-signed HTTP-only session cookie, Vercel Functions, and Vercel Blob.
+There is no third-party CMS account or separate editing website.
 
 ## One-time activation
 
-1. Create or select a Sanity project at https://www.sanity.io/manage and create a
-   **public** dataset named production. Only website content belongs here, never
-   customer addresses, orders, credentials, or payment details.
-2. Add the exact live website origins to the project's API CORS settings, allowing
-   credentials for origins hosting /admin. Add http://127.0.0.1:4175 for local testing
-   if needed. Do not allow platform-wide wildcards.
-3. Invite stephen.burch@ghostai.solutions using the least-privileged available role
-   that can edit and publish content. Invite Tisha separately when testing is complete.
-   Removing a member revokes access through Sanity.
-4. Set these nonsecret build variables in Vercel and locally:
-   - VITE_SANITY_PROJECT_ID: the project's ID
-   - VITE_SANITY_DATASET: production
-5. Generate a temporary Sanity write token for initialization. Set SANITY_API_TOKEN
-   in the local environment only. Run npm run cms:seed with Node 22.12+.
-   The seed creates missing documents and never overwrites existing edits. It uses
-   the existing public curriculum PDFs and photo URLs, so no re-upload is required.
-   Revoke the temporary token after seeding. Never prefix a secret with VITE_.
-6. Redeploy after setting the build variables. Open /admin, sign in, and verify
-   an edit, draft, publish, image upload, and PDF upload with the real account.
-   Until these steps are complete, the dashboard is not activated.
+Set these server-only variables for Production, Preview, and Development in Vercel:
 
-No Sanity token is needed by public readers. Only published documents are queried.
-The ordinary site retains its original content if Sanity is unavailable; once CMS
-is configured, payment links stay disabled if current prices cannot be verified.
-Without a project ID, the original checkout continues working normally.
+- `ADMIN_EMAIL`: initially `stephen.burch@ghostai.solutions`
+- `ADMIN_PASSWORD`: a unique password stored in a password manager
+- `ADMIN_AUTH_SECRET`: at least 32 cryptographically random bytes
+- A Vercel Blob store connected to the project. Current Vercel projects receive
+  `BLOB_STORE_ID`, `BLOB_WEBHOOK_PUBLIC_KEY`, and a short-lived OIDC token at runtime.
+  A legacy `BLOB_READ_WRITE_TOKEN` also works if the project uses token authentication.
 
-## Tisha's workflow
+Never prefix these variables with `VITE_`, commit them, or place them in browser
+code. Redeploy after changing them. Test login, an edit, and one small upload before
+handing the account to Tisha. At handoff, change `ADMIN_EMAIL` and `ADMIN_PASSWORD`
+together and redeploy. Changing either immediately invalidates existing sessions.
 
-- **Website text:** edit the main home-page and curriculum-page headings and paragraphs.
-- **Prices & shipping:** edit the two book prices and shared shipping announcement.
-- **Curriculum PDFs:** replace a PDF, edit its description, or add another curriculum.
-  Choose Companion, Gratitude, or More curriculum downloads for placement.
-- **Podcasts, blogs & features:** add a title, HTTPS link, category, and optional description.
-- **Website photos:** replace the author portrait, illustrator portrait, or school visit photo.
-- **In the Wild: photos:** add event photos with captions and accessible descriptions.
+## What the author can update
 
-Changes remain drafts until Publish. Refresh the public website after publishing;
-the content CDN may take a short time to update. Drafts never appear publicly.
-Review changes before publishing. Sanity provides discard/restore actions.
-Layouts, animations, and payment-account destinations stay in code.
+- Website headings, introductions, biographies, and checkout description
+- Soft-cover and hard-cover prices displayed on the website
+- The shared shipping announcement
+- Curriculum titles, descriptions, placements, and PDF files
+- Podcast, blog, article, and feature links
+- Author, illustrator, and school-visit photographs
+- “Rider's Magic Mark in the Wild” photographs and captions
+
+The dashboard validates prices, URLs, content length, file types, and file size.
+Uploads accept JPEG, PNG, WebP, GIF, and PDF files up to 15 MB. The public site reads
+the latest saved content through `/api/content`; the original website content is the
+fallback before the first save.
+
+The dashboard does not store orders, customer addresses, or payment-card data.
 
 ## Square
 
 The website sends soft-cover orders to `https://square.link/u/ZV1vr14t` and hard-cover
-orders to `https://square.link/u/uq2dEXqy`. Square is the authoritative checkout for
-quantity, shipping, tax, customer information, payment, and receipts. Prices edited
-in Sanity must also be updated in the matching Square item before publishing.
+orders to `https://square.link/u/uq2dEXqy`. Square remains authoritative for quantity,
+shipping, tax, customer information, payment, and receipts. A price change in this
+dashboard changes only the price displayed on the website. Update the corresponding
+Square item before saving the website change.
 
-Each Square item must have **Shipping** enabled as its fulfillment method so checkout
-requires a complete delivery address. Configure the quantity option, shipping charge,
-automatic tax settings, and new-order email notifications in Square Dashboard.
+Each Square item must have Shipping enabled so checkout requires a delivery address.
+Enable new-order emails for the appropriate Square owner or full-access team member.
+Pirate Ship can import paid Square orders and their delivery addresses for label
+purchase. See `docs/SQUARE-PIRATE-SHIP.md` for the account-side checklist.
 
-Pirate Ship connects directly to Square. It imports paid Square orders and their
-delivery addresses; after a label is purchased, Pirate Ship sends tracking and the
-fulfillment update back to Square. Pirate Ship does not calculate or display live
-shipping rates during Square checkout. Setup instructions are in
-`docs/SQUARE-PIRATE-SHIP.md`.
+## Security and recovery
 
-## Validation and limits
+Sessions expire after eight hours and use `HttpOnly`, `Secure`, and `SameSite=Strict`.
+Mutations require a matching request origin. Files are public because the public site
+must display them; dashboard credentials and content-management tokens stay on the
+server. To revoke access, rotate `ADMIN_PASSWORD` or `ADMIN_AUTH_SECRET` and redeploy.
 
-- npm run build builds both the public site and the separately loaded admin app.
-- Test both without CMS variables and with a configured project.
-- Test CMS downtime and malformed prices: the Square links must remain disabled.
-- Hosted login, actual asset upload, and persistence require a real Sanity project
-  and cannot be certified using mocked API responses.
-- Content is loaded in the browser. Initial HTML remains the original copy, so
-  search crawlers that do not execute JavaScript may see that original copy.
-- This dashboard edits website content; order management remains in the payment
-  provider. It does not process or store payment cards.
-
-## Checkout configuration
-
-- Current requested book prices: soft-cover $13.99; hard-cover $15.99.
-- Square payment-link transaction notifications should be enabled for
-  ridersmagicmark@gmail.com. Because Square sends transactional notifications to
-  the account owner and full-access team members, make that address the appropriate
-  Square team login or configure forwarding from the current Square account email.
-- Confirm Tisha's Square sales-tax enrollments and collection jurisdictions before
-  enabling automatic tax. Tax enrollment does not register the business with a state.
-- Pirate Ship imports paid orders for manual label purchase and printing. It does not
-  purchase labels automatically.
+Each save writes a complete, validated content snapshot and removes the previous
+snapshot. Source-controlled defaults remain available for recovery. Uploaded files
+are retained even if an editor removes their URL from the page; delete unused files
+from the Vercel Blob dashboard during periodic maintenance.

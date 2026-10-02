@@ -1,12 +1,14 @@
 import { del, list, put } from '@vercel/blob';
 import { defaultCurricula, defaultMedia, defaultPhotos, defaultSettings } from '../cms/defaults.js';
 import textFields from '../cms/text-fields.json' with { type: 'json' };
+import toolkitGroups from '../cms/toolkit-resources.json' with { type: 'json' };
 
 const CONTENT_PREFIX = 'site-content/';
 const MAX_ITEMS = 100;
 const placements = new Set(['companion', 'gratitude', 'additional']);
 const categories = new Set(['podcast', 'blog', 'feature']);
 const photoPlacements = new Set(['author', 'illustrator', 'visit']);
+const toolkitCategories = new Set(toolkitGroups.map((group) => group.category));
 
 function hasBlobCredentials() {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN || (process.env.BLOB_STORE_ID && process.env.VERCEL_OIDC_TOKEN));
@@ -43,6 +45,7 @@ export function defaultContent() {
     media: defaultMedia.map((item) => ({ title: item.title, description: item.description || '', category: item.category, url: item.url })),
     photos: defaultPhotos.map((item) => ({ placement: item.placement, alt: item.alt, url: item.existingUrl })),
     gallery: [],
+    toolkit: toolkitGroups.flatMap((group) => group.resources.map((item) => ({ ...item, category: group.category }))),
   };
 }
 
@@ -80,7 +83,12 @@ export function normalizeContent(input) {
     date: /^\d{4}-\d{2}-\d{2}$/.test(item?.date || '') ? item.date : '', url: url(item?.url),
   })).filter((item) => item.url);
 
-  return { settings: { shippingMessage, paperbackPrice, hardcoverPrice }, copy, curricula, media, photos, gallery };
+  const toolkit = array(input?.toolkit ?? defaults.toolkit).map((item) => ({
+    title: text(item?.title, 200), tag: text(item?.tag, 80),
+    category: toolkitCategories.has(item?.category) ? item.category : 'activities', url: url(item?.url),
+  })).filter((item) => item.title && item.url);
+
+  return { settings: { shippingMessage, paperbackPrice, hardcoverPrice }, copy, curricula, media, photos, gallery, toolkit };
 }
 
 export async function readContent() {

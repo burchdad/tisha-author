@@ -26,6 +26,8 @@ together and redeploy. Changing either immediately invalidates existing sessions
 - Soft-cover and hard-cover prices displayed on the website
 - The shared shipping announcement
 - Curriculum titles, descriptions, placements, and PDF files
+- Teacher Toolkit wording, resource categories, links, and downloadable files
+- Invite the Author wording and the four school-visit options
 - Podcast, blog, article, and feature links
 - Author, illustrator, and school-visit photographs
 - “Rider's Magic Mark in the Wild” photographs and captions
@@ -36,6 +38,8 @@ the latest saved content through `/api/content`; the original website content is
 fallback before the first save.
 
 The dashboard does not store orders, customer addresses, or payment-card data.
+School-visit inquiries continue to be delivered by the server to
+`ridersmagicmark@gmail.com`; the public dashboard content cannot redirect them.
 
 ## Square
 

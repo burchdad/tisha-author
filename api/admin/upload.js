@@ -14,7 +14,7 @@ export default async function handler(request, response) {
       getSignedToken: async (pathname) => {
         const fileName = pathname.split('/').pop();
         if (!pathname.startsWith('uploads/') || pathname.includes('..') || !fileName || !/^[a-zA-Z0-9._-]{1,180}$/.test(fileName)) throw new Error('Invalid file name.');
-        const allowedContentTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'application/pdf'];
+        const allowedContentTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'application/pdf', 'application/zip', 'application/x-zip-compressed', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
         const maximumSizeInBytes = 15 * 1024 * 1024;
         return {
           token: await issueSignedToken({ pathname, operations: ['put'], allowedContentTypes, maximumSizeInBytes }),

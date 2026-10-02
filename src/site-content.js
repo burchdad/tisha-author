@@ -60,6 +60,23 @@ function renderMedia(items) {
   });
 }
 
+function renderToolkit(items) {
+  document.querySelectorAll('[data-toolkit-category]').forEach((group) => {
+    const grid = group.querySelector('.modal-resource-grid');
+    if (!grid) return;
+    const matching = items.filter((item) => item.category === group.dataset.toolkitCategory && safeUrl(item.url));
+    grid.replaceChildren(...matching.map((item) => {
+      const link = externalLink(item.title, safeUrl(item.url));
+      link.prepend(element('span', item.tag || 'Resource'));
+      if (/^\/(?!\/).+\.(?:pdf|docx?|zip)$/i.test(item.url)) {
+        link.removeAttribute('target'); link.removeAttribute('rel'); link.setAttribute('download', '');
+      }
+      return link;
+    }));
+    if (!matching.length) grid.append(element('p', 'New resources will be added here.', 'resource-coming-soon'));
+  });
+}
+
 export function applySiteContent(data) {
   const settings = data?.settings;
   // Prices must be verified together; never enable checkout with a partial catalog.
@@ -73,6 +90,11 @@ export function applySiteContent(data) {
     if (typeof data.copy?.[field.name] !== 'string') continue;
     document.querySelectorAll(field.selector).forEach((node) => { node.textContent = data.copy[field.name]; });
   }
+  const visitOptions = ['readingTitle', 'workshopTitle', 'trainingTitle', 'signingTitle'];
+  document.querySelectorAll('[data-invite-form] select[name="interest"] option').forEach((option, index) => {
+    const value = data.copy?.[visitOptions[index]];
+    if (typeof value === 'string' && value.trim()) option.textContent = value;
+  });
   document.querySelectorAll('.preorder-notice').forEach((node) => { node.textContent = catalog.shippingMessage; });
   const footer = document.querySelector('.footer-message');
   if (footer) footer.textContent = 'Pre-order your book now. ' + catalog.shippingMessage;
@@ -83,6 +105,7 @@ export function applySiteContent(data) {
   }
   if (Array.isArray(data.curricula)) renderCurricula(data.curricula);
   if (Array.isArray(data.media)) renderMedia(data.media);
+  if (Array.isArray(data.toolkit)) renderToolkit(data.toolkit);
   for (const photo of data.photos || []) {
     const slot = photoSlots.find((entry) => entry.name === photo.placement);
     if (!slot || !safeUrl(photo.url)) continue;

@@ -8,6 +8,8 @@ const dashboard = document.querySelector('#dashboard');
 const logoutButton = document.querySelector('#logout');
 const saveStatus = document.querySelector('[data-save-status]');
 let content;
+const inviteCopyNames = new Set(['schoolEyebrow', 'schoolHeading', 'schoolIntro', 'readingTitle', 'readingDescription', 'workshopTitle', 'workshopDescription', 'trainingTitle', 'trainingDescription', 'signingTitle', 'signingDescription', 'schoolClosing']);
+const toolkitCopyNames = new Set(['toolkitHeading', 'toolkitIntro', 'toolkitFeatureHeading', 'toolkitFeatureIntro', 'toolkitModalHeading', 'toolkitModalIntro']);
 
 const escape = (value = '') => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 const field = (label, name, value = '', options = {}) => {
@@ -26,15 +28,21 @@ async function api(path, options = {}) {
 
 function setStatus(node, message, state = '') { node.textContent = message; node.dataset.state = state; }
 
-function renderCopy() {
-  document.querySelector('#copy-fields').innerHTML = textFields.map((item) =>
+function copyFields(names) {
+  return textFields.filter((item) => names ? names.has(item.name) : !inviteCopyNames.has(item.name) && !toolkitCopyNames.has(item.name)).map((item) =>
     field(item.title, item.name, content.copy[item.name], { multiline: content.copy[item.name]?.length > 80, max: 5000 })
   ).join('');
 }
 
-function uploadControl(kind, index, url, accepts) {
+function renderCopy() {
+  document.querySelector('#copy-fields').innerHTML = copyFields();
+  document.querySelector('#invite-fields').innerHTML = copyFields(inviteCopyNames);
+  document.querySelector('#toolkit-copy-fields').innerHTML = copyFields(toolkitCopyNames);
+}
+
+function uploadControl(kind, index, url, accepts, uploadLabel) {
   return `<label>File URL<input name="url" type="text" value="${escape(url)}" required></label>
-    <label class="upload-label">Upload ${accepts === 'application/pdf' ? 'PDF' : 'photo'}<input class="file-input" type="file" accept="${accepts}" data-upload-kind="${kind}" data-upload-index="${index}"><span class="upload-progress" aria-live="polite"></span></label>`;
+    <label class="upload-label">Upload ${uploadLabel}<input class="file-input" type="file" accept="${accepts}" data-upload-kind="${kind}" data-upload-index="${index}"><span class="upload-progress" aria-live="polite"></span></label>`;
 }
 
 function renderCurricula() {
@@ -42,7 +50,7 @@ function renderCurricula() {
     <div class="card-heading"><h3>Curriculum ${index + 1}</h3><button class="remove" type="button" data-remove="curricula" data-index="${index}">Remove</button></div>
     <div class="field-grid">${field('Title', 'title', item.title, { required: true })}${field('Description', 'description', item.description, { multiline: true })}
       <label>Placement<select name="placement"><option value="companion" ${item.placement === 'companion' ? 'selected' : ''}>Curriculum companion</option><option value="gratitude" ${item.placement === 'gratitude' ? 'selected' : ''}>Gratitude curriculum</option><option value="additional" ${item.placement === 'additional' ? 'selected' : ''}>More downloads</option></select></label>
-      ${uploadControl('curricula', index, item.url, 'application/pdf')}</div></article>`).join('') || '<p class="empty">No curriculum files yet.</p>';
+      ${uploadControl('curricula', index, item.url, 'application/pdf', 'PDF')}</div></article>`).join('') || '<p class="empty">No curriculum files yet.</p>';
 }
 
 function renderMedia() {
@@ -57,13 +65,26 @@ function renderPhotos() {
   const names = { author: 'Author portrait', illustrator: 'Illustrator portrait', visit: 'School visit photo' };
   document.querySelector('#photos-list').innerHTML = content.photos.map((item, index) => `<article class="editor-card" data-kind="photos" data-index="${index}">
     <div class="card-heading"><h3>${names[item.placement] || 'Website photo'}</h3></div><img class="preview" src="${escape(item.url)}" alt=""><input type="hidden" name="placement" value="${escape(item.placement)}">
-    <div class="field-grid">${field('Image description for accessibility', 'alt', item.alt)}${uploadControl('photos', index, item.url, 'image/jpeg,image/png,image/webp,image/gif')}</div></article>`).join('');
+    <div class="field-grid">${field('Image description for accessibility', 'alt', item.alt)}${uploadControl('photos', index, item.url, 'image/jpeg,image/png,image/webp,image/gif', 'photo')}</div></article>`).join('');
 }
 
 function renderGallery() {
   document.querySelector('#gallery-list').innerHTML = content.gallery.map((item, index) => `<article class="editor-card" data-kind="gallery" data-index="${index}">
     <div class="card-heading"><h3>Gallery photo ${index + 1}</h3><button class="remove" type="button" data-remove="gallery" data-index="${index}">Remove</button></div>${item.url ? `<img class="preview" src="${escape(item.url)}" alt="">` : ''}
-    <div class="field-grid">${field('Title', 'title', item.title)}${field('Date', 'date', item.date, { type: 'date' })}${field('Caption', 'description', item.description, { multiline: true })}${field('Image description for accessibility', 'alt', item.alt)}${uploadControl('gallery', index, item.url, 'image/jpeg,image/png,image/webp,image/gif')}</div></article>`).join('') || '<p class="empty">No event photos yet. Choose “Add gallery photo” to begin.</p>';
+    <div class="field-grid">${field('Title', 'title', item.title)}${field('Date', 'date', item.date, { type: 'date' })}${field('Caption', 'description', item.description, { multiline: true })}${field('Image description for accessibility', 'alt', item.alt)}${uploadControl('gallery', index, item.url, 'image/jpeg,image/png,image/webp,image/gif', 'photo')}</div></article>`).join('') || '<p class="empty">No event photos yet. Choose “Add gallery photo” to begin.</p>';
+}
+
+function renderToolkit() {
+  const categoryNames = { curriculum: 'Curriculum', activities: 'Activities', 'gratitude-journal': 'Gratitude Journal', coloring: 'Coloring Pages', certificates: 'Certificates', poems: 'Poems', family: 'Family', teachers: 'Teacher Things' };
+  const cards = (content.toolkit || []).map((item, index) => ({ category: item.category, html: `<article class="editor-card" data-kind="toolkit" data-index="${index}">
+    <div class="card-heading"><h3>Toolkit resource ${index + 1}</h3><button class="remove" type="button" data-remove="toolkit" data-index="${index}">Remove</button></div>
+    <div class="field-grid">${field('Title', 'title', item.title, { required: true })}${field('Short label', 'tag', item.tag)}
+      <label>Category<select name="category">${Object.entries(categoryNames).map(([value, label]) => `<option value="${value}" ${item.category === value ? 'selected' : ''}>${label}</option>`).join('')}</select></label>
+      ${uploadControl('toolkit', index, item.url, '.pdf,.doc,.docx,.zip', 'file')}</div></article>` }));
+  document.querySelector('#toolkit-list').innerHTML = Object.entries(categoryNames).map(([category, label]) => {
+    const matching = cards.filter((card) => card.category === category);
+    return `<details class="toolkit-category"><summary>${label}<span>${matching.length} resource${matching.length === 1 ? '' : 's'}</span></summary><div class="category-cards">${matching.map((card) => card.html).join('') || '<p class="empty">No resources in this category.</p>'}</div></details>`;
+  }).join('');
 }
 
 function render() {
@@ -71,7 +92,7 @@ function render() {
   form.elements.paperbackPrice.value = content.settings.paperbackPrice;
   form.elements.hardcoverPrice.value = content.settings.hardcoverPrice;
   form.elements.shippingMessage.value = content.settings.shippingMessage;
-  renderCopy(); renderCurricula(); renderMedia(); renderPhotos(); renderGallery();
+  renderCopy(); renderToolkit(); renderCurricula(); renderMedia(); renderPhotos(); renderGallery();
 }
 
 function valuesForCard(card) {
@@ -87,6 +108,7 @@ function collect() {
     media: [...document.querySelectorAll('[data-kind="media"]')].map(valuesForCard),
     photos: [...document.querySelectorAll('[data-kind="photos"]')].map(valuesForCard),
     gallery: [...document.querySelectorAll('[data-kind="gallery"]')].map(valuesForCard),
+    toolkit: [...document.querySelectorAll('[data-kind="toolkit"]')].map(valuesForCard),
   };
 }
 
@@ -113,6 +135,7 @@ document.addEventListener('click', (event) => {
     if (add.dataset.add === 'curricula') content.curricula.push({ title: '', description: '', placement: 'additional', url: '' });
     if (add.dataset.add === 'media') content.media.push({ title: '', description: '', category: 'podcast', url: '' });
     if (add.dataset.add === 'gallery') content.gallery.push({ title: '', description: '', alt: '', date: '', url: '' });
+    if (add.dataset.add === 'toolkit') content.toolkit.push({ title: '', tag: 'Resource', category: 'activities', url: '' });
     render(); document.querySelector(`#${add.dataset.add}-list .editor-card:last-of-type`)?.scrollIntoView({ behavior: 'smooth' });
   }
   const remove = event.target.closest('[data-remove]');

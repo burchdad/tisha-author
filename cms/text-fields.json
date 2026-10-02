@@ -98,6 +98,125 @@
     "initialValue": "Turn the book into a live, memorable school experience"
   },
   {
+    "name": "schoolEyebrow",
+    "title": "Invite the Author: label",
+    "selector": "#schools .invite-copy > .eyebrow",
+    "page": "index.html",
+    "initialValue": "Invite Dr. Shipley to your school"
+  },
+  {
+    "name": "schoolIntro",
+    "title": "Invite the Author: introduction",
+    "selector": "#schools .invite-copy > p:nth-of-type(2)",
+    "page": "index.html",
+    "initialValue": "Each experience is thoughtfully designed to support Social Emotional Learning, encourage children to recognize their strengths, celebrate what makes them unique, and build confidence through connection and conversation."
+  },
+  {
+    "name": "readingTitle",
+    "title": "Visit option: Author Readings title",
+    "selector": "#schools .visit-options article:nth-child(1) h3",
+    "page": "index.html",
+    "initialValue": "Author Readings"
+  },
+  {
+    "name": "readingDescription",
+    "title": "Visit option: Author Readings description",
+    "selector": "#schools .visit-options article:nth-child(1) p",
+    "page": "index.html",
+    "initialValue": "An engaging opportunity for students to hear the story directly from the author and discover the inspiration behind Rider's journey."
+  },
+  {
+    "name": "workshopTitle",
+    "title": "Visit option: Classroom Workshops title",
+    "selector": "#schools .visit-options article:nth-child(2) h3",
+    "page": "index.html",
+    "initialValue": "Classroom Workshops"
+  },
+  {
+    "name": "workshopDescription",
+    "title": "Visit option: Classroom Workshops description",
+    "selector": "#schools .visit-options article:nth-child(2) p",
+    "page": "index.html",
+    "initialValue": "Age-appropriate sessions that connect the story to gratitude, identity, kindness, confidence, and belonging."
+  },
+  {
+    "name": "trainingTitle",
+    "title": "Visit option: Educator Trainings title",
+    "selector": "#schools .visit-options article:nth-child(3) h3",
+    "page": "index.html",
+    "initialValue": "Educator Trainings"
+  },
+  {
+    "name": "trainingDescription",
+    "title": "Visit option: Educator Trainings description",
+    "selector": "#schools .visit-options article:nth-child(3) p",
+    "page": "index.html",
+    "initialValue": "Professional learning focused on integrating Social Emotional Learning, gratitude practices, and confidence-building strategies."
+  },
+  {
+    "name": "signingTitle",
+    "title": "Visit option: Book-Signing Moments title",
+    "selector": "#schools .visit-options article:nth-child(4) h3",
+    "page": "index.html",
+    "initialValue": "Book-Signing Moments"
+  },
+  {
+    "name": "signingDescription",
+    "title": "Visit option: Book-Signing Moments description",
+    "selector": "#schools .visit-options article:nth-child(4) p",
+    "page": "index.html",
+    "initialValue": "Special opportunities for students, families, and educators to celebrate with a signed copy and personal connection to the story."
+  },
+  {
+    "name": "schoolClosing",
+    "title": "Invite the Author: closing note",
+    "selector": "#schools .invite-copy > p:nth-of-type(3)",
+    "page": "index.html",
+    "initialValue": "Every visit can be customized to meet your students' needs, learning goals, and school culture."
+  },
+  {
+    "name": "toolkitHeading",
+    "title": "Teacher Toolkit: heading",
+    "selector": "#teacher-toolkit h2",
+    "page": "index.html",
+    "initialValue": "Ready-to-grow resources"
+  },
+  {
+    "name": "toolkitIntro",
+    "title": "Teacher Toolkit: introduction",
+    "selector": "#teacher-toolkit .section-heading > p:last-child",
+    "page": "index.html",
+    "initialValue": "A selective library of curriculum, classroom pages, certificates, poems, reflection cards, coloring pages, and gratitude activities can open whenever teachers need it."
+  },
+  {
+    "name": "toolkitFeatureHeading",
+    "title": "Teacher Toolkit: feature heading",
+    "selector": "#teacher-toolkit .toolkit-feature h3",
+    "page": "index.html",
+    "initialValue": "Pick only what fits the lesson"
+  },
+  {
+    "name": "toolkitFeatureIntro",
+    "title": "Teacher Toolkit: feature description",
+    "selector": "#teacher-toolkit .toolkit-feature p",
+    "page": "index.html",
+    "initialValue": "Open the toolkit to choose individual worksheets, poems, certificates, reflection cards, and teacher encouragement pieces. No one has to download everything at once."
+  },
+  {
+    "name": "toolkitModalHeading",
+    "title": "Teacher Toolkit window: heading",
+    "selector": "#toolkit-modal-title",
+    "page": "index.html",
+    "initialValue": "Choose what you want to download"
+  },
+  {
+    "name": "toolkitModalIntro",
+    "title": "Teacher Toolkit window: introduction",
+    "selector": ".toolkit-modal-header p:last-child",
+    "page": "index.html",
+    "initialValue": "Every resource is optional, so teachers and families can grab the exact printable that fits the moment."
+  },
+  {
     "name": "mediaHeading",
     "title": "Featured media: heading",
     "selector": "#featured-media h2",

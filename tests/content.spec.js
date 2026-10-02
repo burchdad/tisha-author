@@ -1,15 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { defaultSettings, defaultCurricula, defaultPhotos } from '../cms/defaults.js';
 import textFields from '../cms/text-fields.json' with { type: 'json' };
+import toolkitGroups from '../cms/toolkit-resources.json' with { type: 'json' };
 
 function content(overrides = {}) {
   return {
     settings: { ...defaultSettings, paperbackPrice: 18.5, hardcoverPrice: 22, shippingMessage: 'Books ship the week of November 20th.' },
-    copy: { homeIntro: 'An updated introduction from the author.' },
+    copy: { homeIntro: 'An updated introduction from the author.', schoolHeading: 'Bring Rider to your school.' },
     curricula: defaultCurricula.map((item) => ({ ...item, url: item.existingUrl })),
     media: [{ category: 'podcast', title: 'A new podcast episode', url: 'https://example.com/episode', description: 'Episode description.' }],
     photos: defaultPhotos.map((item) => ({ ...item, url: item.placement === 'author' ? '/story/tisha-laying-down.jpg' : item.existingUrl })),
     gallery: [{ title: 'A reading with Rider', description: 'Our latest event.', alt: 'Rider and Tisha at a reading', url: '/story/tisha-laying-down.jpg' }],
+    toolkit: toolkitGroups.flatMap((group) => group.resources.map((item) => ({ ...item, category: group.category }))),
     ...overrides,
   };
 }
@@ -30,6 +32,10 @@ for (const width of [1440, 390]) {
     await expect(page.locator('.footer-message')).toContainText('November 20th');
     await expect(page.getByRole('link', { name: 'Author Login' })).toHaveAttribute('href', '/admin');
     await expect(page.getByRole('link', { name: 'A new podcast episode' })).toHaveAttribute('href', 'https://example.com/episode');
+    await expect(page.locator('#schools h2')).toHaveText('Bring Rider to your school.');
+    await page.locator('[data-open-toolkit]').first().evaluate((el) => el.click());
+    await expect(page.getByRole('link', { name: 'Being Special & Grateful' })).toHaveAttribute('href', '/toolkit/being-special-grateful-worksheet.docx');
+    await page.locator('[data-close-toolkit]').last().click();
     await page.locator('[data-open-book]').first().evaluate((el) => el.click());
     await expect(page.locator('[data-square-link]')).toHaveAttribute('href', 'https://square.link/u/ZV1vr14t');
     await expect(page.locator('[data-venmo-link]')).toHaveCount(0);
@@ -86,6 +92,9 @@ test('authenticated author loads the custom dashboard on a deep route', async ({
   await expect(page.getByRole('heading', { name: 'Update the website' })).toBeVisible();
   await expect(page.getByLabel('Hard-cover price')).toHaveValue('22');
   await expect(page.getByRole('heading', { name: 'Featured media' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Invite the Author' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Teacher Toolkit' })).toBeVisible();
+  await expect(page.locator('details.toolkit-category')).toHaveCount(8);
   await expect(page.getByRole('button', { name: 'Save website changes' }).first()).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,nofollow');
 });

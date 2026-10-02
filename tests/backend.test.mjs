@@ -28,6 +28,7 @@ test('content is normalized and unsafe URLs are removed', () => {
   assert.equal(result.settings.hardcoverPrice, 15.99);
   assert.equal(result.media.some((item) => item.title === 'Bad link'), false);
   assert.equal(result.gallery[0].date, '2026-10-02');
+  assert.ok(result.toolkit.length > 50);
 });
 
 test('invalid catalog prices are rejected', () => {

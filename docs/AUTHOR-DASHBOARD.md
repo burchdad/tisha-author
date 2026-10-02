@@ -2,7 +2,8 @@
 
 The site embeds Sanity Studio at /admin. Sanity handles sign-in, account invitations,
 drafts, publishing, file storage, and permissions. It is not a custom password system.
-The initial testing account is stephen.burch@ghostai.solutions.
+The initial testing account is stephen.burch@ghostai.solutions. Invite
+ridersmagicmark@gmail.com as Tisha's author account before handoff.
 
 ## One-time activation
 
@@ -79,7 +80,10 @@ shipping rates during Square checkout. Setup instructions are in
 ## Checkout configuration
 
 - Current requested book prices: soft-cover $13.99; hard-cover $15.99.
-- Square should send new-order notifications to Tisha's chosen fulfillment email.
+- Square payment-link transaction notifications should be enabled for
+  ridersmagicmark@gmail.com. Because Square sends transactional notifications to
+  the account owner and full-access team members, make that address the appropriate
+  Square team login or configure forwarding from the current Square account email.
 - Confirm Tisha's Square sales-tax enrollments and collection jurisdictions before
   enabling automatic tax. Tax enrollment does not register the business with a state.
 - Pirate Ship imports paid orders for manual label purchase and printing. It does not

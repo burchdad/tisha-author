@@ -31,6 +31,7 @@ for (const width of [1440, 390]) {
     await expect(page.locator('.hero-lede')).toHaveText('An updated introduction from the author.');
     await expect(page.locator('.author-photo img')).toHaveAttribute('src', '/story/tisha-laying-down.jpg');
     await expect(page.locator('.footer-message')).toContainText('November 20th');
+    await expect(page.getByRole('link', { name: 'Author Login' })).toHaveAttribute('href', '/admin');
     await expect(page.getByRole('link', { name: 'A new podcast episode' })).toHaveAttribute('href', 'https://example.com/episode');
     await page.locator('[data-open-book]').first().evaluate((el) => el.click());
     await expect(page.locator('[data-square-link]')).toHaveAttribute('href', 'https://square.link/u/ZV1vr14t');

@@ -22,7 +22,10 @@ For each book item and payment link:
    shipping policy chosen by the client.
 5. Review Square's automatic US tax settings and add only the jurisdictions where
    the business is registered to collect sales tax.
-6. Enable new-order email notifications for Tisha's fulfillment email.
+6. Enable payment-link transaction email notifications and make sure they reach
+   `ridersmagicmark@gmail.com`. Square normally sends transactional notifications to
+   the account owner or full-access team members; use that address for the appropriate
+   Square team login or forward notifications from the current Square account email.
 7. Place one test order for each link and verify that the Square order contains the
    buyer's full name, email, postal address, item, quantity, shipping charge, and tax.
 

@@ -9,7 +9,7 @@
   <body>
     <header class="admin-header">
       <a class="brand" href="/">Rider's Magic Mark</a>
-      <div class="header-actions"><a href="/" target="_blank" rel="noopener">View website</a><button id="logout" class="text-button" type="button" hidden>Sign out</button></div>
+      <div class="header-actions"><a href="/" target="_blank" rel="noopener">View website</a></div>
     </header>
     <main>
       <section id="login-panel" class="login-panel" aria-labelledby="login-title">
@@ -22,8 +22,13 @@
         </form>
       </section>
       <section id="dashboard" hidden>
+        <nav class="section-nav" aria-label="Dashboard sections">
+          <div class="sidebar-brand"><span class="sidebar-mark" aria-hidden="true">R</span><div><strong>AUTHOR ADMIN</strong><small>Website updates</small></div></div>
+          <div class="sidebar-rule"></div>
+          <a href="#book-details">Book details</a><a href="#website-copy">Website text</a><a href="#invite-author">Invite the Author</a><a href="#teacher-toolkit">Teacher Toolkit</a><a href="#curricula">Curricula</a><a href="#media">Featured media</a><a href="#site-photos">Site photos</a><a href="#gallery">In the Wild</a>
+          <div class="sidebar-actions"><a href="/" target="_blank" rel="noopener">View public website</a><button id="logout" type="button">Sign out</button></div>
+        </nav>
         <div class="dashboard-heading"><div><p class="eyebrow">AUTHOR DASHBOARD</p><h1>Update the website</h1><p>Save once when you finish. Uploaded files become public only when their URL is saved here.</p></div><button class="primary" data-save type="button">Save website changes</button></div>
-        <nav class="section-nav" aria-label="Dashboard sections"><a href="#book-details">Book details</a><a href="#website-copy">Website text</a><a href="#invite-author">Invite the Author</a><a href="#teacher-toolkit">Teacher Toolkit</a><a href="#curricula">Curricula</a><a href="#media">Media</a><a href="#site-photos">Site photos</a><a href="#gallery">In the Wild</a></nav>
         <form id="content-form">
           <section class="editor-section" id="book-details">
             <div class="section-title"><div><h2>Book details</h2><p>Prices shown on this website and the shared shipping message.</p></div></div>

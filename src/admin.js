@@ -114,7 +114,7 @@ function collect() {
 
 async function loadDashboard() {
   content = await api('/api/admin/content'); render();
-  loginPanel.hidden = true; dashboard.hidden = false; logoutButton.hidden = false;
+  loginPanel.hidden = true; dashboard.hidden = false; document.body.classList.add('dashboard-active');
 }
 
 loginForm.addEventListener('submit', async (event) => {
@@ -171,8 +171,16 @@ document.querySelectorAll('[data-save]').forEach((button) => button.addEventList
 
 logoutButton.addEventListener('click', async () => {
   await api('/api/admin/logout', { method: 'POST' }).catch(() => {});
-  content = null; dashboard.hidden = true; logoutButton.hidden = true; loginPanel.hidden = false;
+  content = null; dashboard.hidden = true; loginPanel.hidden = false; document.body.classList.remove('dashboard-active');
 });
+
+const sectionLinks = [...document.querySelectorAll('.section-nav > a[href^="#"]')];
+const sectionObserver = new IntersectionObserver((entries) => {
+  const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+  if (!visible) return;
+  sectionLinks.forEach((link) => link.toggleAttribute('aria-current', link.hash === `#${visible.target.id}`));
+}, { rootMargin: '-15% 0px -70% 0px' });
+document.querySelectorAll('.editor-section').forEach((section) => sectionObserver.observe(section));
 
 try {
   const session = await api('/api/admin/session');

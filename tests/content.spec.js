@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { defaultSettings, defaultCurricula, defaultPhotos } from '../cms/defaults.js';
+import { defaultSettings, defaultCurricula, defaultPhotos, defaultSocial, defaultEvents } from '../cms/defaults.js';
 import textFields from '../cms/text-fields.json' with { type: 'json' };
 import toolkitGroups from '../cms/toolkit-resources.json' with { type: 'json' };
 
@@ -12,6 +12,8 @@ function content(overrides = {}) {
     photos: defaultPhotos.map((item) => ({ ...item, url: item.placement === 'author' ? '/story/tisha-laying-down.jpg' : item.existingUrl })),
     gallery: [{ title: 'A reading with Rider', description: 'Our latest event.', alt: 'Rider and Tisha at a reading', url: '/story/tisha-laying-down.jpg' }],
     toolkit: toolkitGroups.flatMap((group) => group.resources.map((item) => ({ ...item, category: group.category }))),
+    social: defaultSocial.map((item) => ({ ...item })),
+    events: defaultEvents.map((item) => ({ ...item })),
     ...overrides,
   };
 }
@@ -33,6 +35,8 @@ for (const width of [1440, 390]) {
     await expect(page.getByRole('link', { name: 'Author Login' })).toHaveAttribute('href', '/admin');
     await expect(page.getByRole('link', { name: 'A new podcast episode' })).toHaveAttribute('href', 'https://example.com/episode');
     await expect(page.locator('#schools h2')).toHaveText('Bring Rider to your school.');
+    await expect(page.locator('[data-event-panel="upcoming"] h3')).toHaveText('Meet Dr. Shipley and Rider');
+    await expect(page.locator('.social-links a').first()).toHaveAttribute('href', /facebook\.com/);
     await page.locator('[data-open-toolkit]').first().evaluate((el) => el.click());
     await expect(page.getByRole('link', { name: 'Being Special & Grateful' })).toHaveAttribute('href', '/toolkit/being-special-grateful-worksheet.docx');
     await page.locator('[data-close-toolkit]').last().click();
@@ -88,15 +92,28 @@ test('every editable text selector resolves on its page', async ({ page }) => {
 test('authenticated author loads the custom dashboard on a deep route', async ({ page }) => {
   await page.route('**/api/admin/session', (route) => route.fulfill({ json: { authenticated: true, configured: true } }));
   await page.route('**/api/admin/content', (route) => route.fulfill({ json: content() }));
+  await page.route('**/api/admin/revisions', (route) => route.fulfill({ json: { revisions: [{ id: 'site-content/1.json', createdAt: '2026-10-02T12:00:00.000Z' }] } }));
   await page.goto('/admin/structure');
   await expect(page.getByRole('heading', { name: 'Update the website' })).toBeVisible();
   await expect(page.getByLabel('Hard-cover price')).toHaveValue('22');
   await expect(page.getByRole('heading', { name: 'Featured media' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Invite the Author' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Teacher Toolkit' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Upcoming events' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Social links' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Revision history' })).toBeVisible();
   await expect(page.locator('details.toolkit-category')).toHaveCount(8);
   await expect(page.getByRole('button', { name: 'Save website changes' }).first()).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,nofollow');
+});
+
+test('dashboard marks edits as unsaved', async ({ page }) => {
+  await page.route('**/api/admin/session', (route) => route.fulfill({ json: { authenticated: true, configured: true } }));
+  await page.route('**/api/admin/content', (route) => route.fulfill({ json: content() }));
+  await page.route('**/api/admin/revisions', (route) => route.fulfill({ json: { revisions: [] } }));
+  await page.goto('/admin');
+  await page.getByLabel('Shipping message').fill('A changed shipping message.');
+  await expect(page.locator('[data-save-status]')).toHaveText('Unsaved changes');
 });
 
  test('invalid published prices keep all payment links disabled', async ({ page }) => {

@@ -29,11 +29,13 @@ together and redeploy. Changing either immediately invalidates existing sessions
 - Teacher Toolkit wording, resource categories, links, and downloadable files
 - Invite the Author wording and the four school-visit options
 - Podcast, blog, article, and feature links
+- Upcoming events, locations, and event-detail links
+- Facebook, TikTok, Instagram, and other social links
 - Author, illustrator, and school-visit photographs
 - “Rider's Magic Mark in the Wild” photographs and captions
 
 The dashboard validates prices, URLs, content length, file types, and file size.
-Uploads accept JPEG, PNG, WebP, GIF, and PDF files up to 15 MB. The public site reads
+Uploads accept JPEG, PNG, WebP, GIF, PDF, DOC, DOCX, and ZIP files up to 15 MB. The public site reads
 the latest saved content through `/api/content`; the original website content is the
 fallback before the first save.
 
@@ -61,7 +63,9 @@ Mutations require a matching request origin. Files are public because the public
 must display them; dashboard credentials and content-management tokens stay on the
 server. To revoke access, rotate `ADMIN_PASSWORD` or `ADMIN_AUTH_SECRET` and redeploy.
 
-Each save writes a complete, validated content snapshot and removes the previous
-snapshot. Source-controlled defaults remain available for recovery. Uploaded files
+Each save writes a complete, validated content snapshot. The dashboard keeps the ten
+most recent saved versions and can restore any of them from Revision history. It also
+warns before leaving or signing out with unsaved edits. Source-controlled defaults
+remain available for recovery. Uploaded files
 are retained even if an editor removes their URL from the page; delete unused files
 from the Vercel Blob dashboard during periodic maintenance.

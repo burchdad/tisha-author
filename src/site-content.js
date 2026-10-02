@@ -77,6 +77,36 @@ function renderToolkit(items) {
   });
 }
 
+function renderSocial(items) {
+  const container = document.querySelector('.social-links');
+  if (!container) return;
+  const links = items.filter((item) => item.platform && safeUrl(item.url)).map((item) => {
+    const link = externalLink(item.platform, safeUrl(item.url));
+    link.append(element('span', `${item.label || item.platform} ↗`));
+    return link;
+  });
+  if (links.length) container.replaceChildren(...links);
+}
+
+function renderEvents(items) {
+  const container = document.querySelector('[data-event-panel="upcoming"]');
+  if (!container) return;
+  const cards = items.filter((item) => item.title).map((item) => {
+    const card = element('article', '', 'event-card featured-event');
+    card.append(element('span', item.date || 'Date coming soon', 'event-date'), element('h3', item.title));
+    if (item.description) card.append(element('p', item.description));
+    if (item.location) card.append(element('span', item.location, 'event-location'));
+    const eventUrl = safeUrl(item.url);
+    if (eventUrl) {
+      const link = externalLink('Event details ↗', eventUrl);
+      link.className = 'event-details-link';
+      card.append(link);
+    }
+    return card;
+  });
+  container.replaceChildren(...(cards.length ? cards : [element('p', 'New appearances will be announced here.', 'event-gallery-placeholder')]));
+}
+
 export function applySiteContent(data) {
   const settings = data?.settings;
   // Prices must be verified together; never enable checkout with a partial catalog.
@@ -106,6 +136,8 @@ export function applySiteContent(data) {
   if (Array.isArray(data.curricula)) renderCurricula(data.curricula);
   if (Array.isArray(data.media)) renderMedia(data.media);
   if (Array.isArray(data.toolkit)) renderToolkit(data.toolkit);
+  if (Array.isArray(data.social)) renderSocial(data.social);
+  if (Array.isArray(data.events)) renderEvents(data.events);
   for (const photo of data.photos || []) {
     const slot = photoSlots.find((entry) => entry.name === photo.placement);
     if (!slot || !safeUrl(photo.url)) continue;

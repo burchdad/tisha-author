@@ -1,5 +1,5 @@
 import { del, list, put } from '@vercel/blob';
-import { defaultCurricula, defaultMedia, defaultPhotos, defaultSettings } from '../cms/defaults.js';
+import { defaultCurricula, defaultEvents, defaultMedia, defaultPhotos, defaultSettings, defaultSocial } from '../cms/defaults.js';
 import textFields from '../cms/text-fields.json' with { type: 'json' };
 import toolkitGroups from '../cms/toolkit-resources.json' with { type: 'json' };
 
@@ -46,6 +46,8 @@ export function defaultContent() {
     photos: defaultPhotos.map((item) => ({ placement: item.placement, alt: item.alt, url: item.existingUrl })),
     gallery: [],
     toolkit: toolkitGroups.flatMap((group) => group.resources.map((item) => ({ ...item, category: group.category }))),
+    social: defaultSocial.map((item) => ({ ...item })),
+    events: defaultEvents.map((item) => ({ ...item })),
   };
 }
 
@@ -88,7 +90,16 @@ export function normalizeContent(input) {
     category: toolkitCategories.has(item?.category) ? item.category : 'activities', url: url(item?.url),
   })).filter((item) => item.title && item.url);
 
-  return { settings: { shippingMessage, paperbackPrice, hardcoverPrice }, copy, curricula, media, photos, gallery, toolkit };
+  const social = array(input?.social ?? defaults.social).map((item) => ({
+    platform: text(item?.platform, 80), label: text(item?.label, 120), url: url(item?.url),
+  })).filter((item) => item.platform && item.url);
+
+  const events = array(input?.events ?? defaults.events).map((item) => ({
+    date: text(item?.date, 100), title: text(item?.title, 200), description: text(item?.description, 1000),
+    location: text(item?.location, 200), url: url(item?.url),
+  })).filter((item) => item.title);
+
+  return { settings: { shippingMessage, paperbackPrice, hardcoverPrice }, copy, curricula, media, photos, gallery, toolkit, social, events };
 }
 
 export async function readContent() {
@@ -110,7 +121,23 @@ export async function writeContent(input) {
     ...blobOptions(),
   });
   const existing = await list({ prefix: CONTENT_PREFIX, limit: 100, ...blobOptions() });
-  const oldUrls = existing.blobs.filter((blob) => blob.pathname !== saved.pathname).map((blob) => blob.url);
+  const oldUrls = existing.blobs.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt)).slice(10).map((blob) => blob.url);
   if (oldUrls.length) await del(oldUrls, blobOptions());
   return content;
+}
+
+export async function listContentRevisions() {
+  if (!hasBlobCredentials()) return [];
+  const result = await list({ prefix: CONTENT_PREFIX, limit: 100, ...blobOptions() });
+  return result.blobs.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt)).slice(0, 10).map((blob) => ({ id: blob.pathname, createdAt: blob.uploadedAt }));
+}
+
+export async function restoreContentRevision(id) {
+  if (typeof id !== 'string' || !/^site-content\/\d+\.json$/.test(id)) throw new Error('Invalid revision.');
+  const result = await list({ prefix: CONTENT_PREFIX, limit: 100, ...blobOptions() });
+  const revision = result.blobs.find((blob) => blob.pathname === id);
+  if (!revision) throw new Error('That revision is no longer available.');
+  const response = await fetch(revision.url, { cache: 'no-store' });
+  if (!response.ok) throw new Error('That revision could not be read.');
+  return writeContent(await response.json());
 }

@@ -1903,6 +1903,7 @@ button:disabled {
 .event-tabs button, .toolkit-tabs button { appearance: none; padding: 10px 15px; border: 2px solid var(--ink); border-radius: 999px; background: white; cursor: pointer; font: inherit; font-size: .82rem; font-weight: 900; }
 .event-tabs button[aria-selected="true"], .toolkit-tabs button[aria-selected="true"] { background: var(--gold); box-shadow: 4px 4px 0 var(--ink); }
 .event-card, .event-gallery-placeholder { max-width: 780px; padding: clamp(26px, 4vw, 46px); border: 2px solid var(--ink); border-radius: 28px; background: white; box-shadow: 8px 8px 0 var(--aqua); }
+.event-details-link { display: inline-block; margin-top: 18px; font-weight: 800; }
 .event-date, .event-location { display: inline-block; padding: 7px 11px; border-radius: 999px; background: var(--rose); color: white; font-size: .78rem; font-weight: 900; }
 .event-location { background: var(--ink); }
 .event-gallery-placeholder { min-height: 220px; background: repeating-linear-gradient(135deg, white 0 18px, #fff7df 18px 36px); }

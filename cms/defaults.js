@@ -36,3 +36,14 @@ export const defaultPhotos = photoSlots.map((slot) => ({
   _id: 'photo-' + slot.name, _type: 'sitePhoto', placement: slot.name, title: slot.title,
   existingUrl: slot.url, alt: slot.alt,
 }));
+
+export const defaultSocial = [
+  { platform: 'Facebook', label: 'Rider’s Magic Mark', url: 'https://www.facebook.com/people/Riders-Magic-Mark/61590276095986/' },
+  { platform: 'TikTok', label: '@riders.magic.mark', url: 'https://www.tiktok.com/@riders.magic.mark' },
+  { platform: 'Instagram', label: '@ridersmagicmark', url: 'https://www.instagram.com/ridersmagicmark/' },
+  { platform: 'X', label: '@tishashipley', url: 'https://x.com/tishashipley' },
+];
+
+export const defaultEvents = [
+  { date: 'Dates coming soon', title: 'Meet Dr. Shipley and Rider', description: 'New signing locations and school appearances will be announced here.', location: 'Location to be announced', url: '' },
+];

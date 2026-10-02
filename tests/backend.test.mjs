@@ -24,10 +24,14 @@ test('content is normalized and unsafe URLs are removed', () => {
   source.settings.hardcoverPrice = 15.99;
   source.media.push({ title: 'Bad link', category: 'podcast', url: 'javascript:alert(1)' });
   source.gallery.push({ title: 'Reading', url: 'https://example.com/photo.jpg', date: '2026-10-02' });
+  source.social.push({ platform: 'Unsafe', url: 'javascript:alert(1)' });
+  source.events.push({ title: 'Library reading', date: 'October 12', location: 'City Library', url: 'https://example.com/event' });
   const result = normalizeContent(source);
   assert.equal(result.settings.hardcoverPrice, 15.99);
   assert.equal(result.media.some((item) => item.title === 'Bad link'), false);
   assert.equal(result.gallery[0].date, '2026-10-02');
+  assert.equal(result.social.some((item) => item.platform === 'Unsafe'), false);
+  assert.equal(result.events.at(-1).title, 'Library reading');
   assert.ok(result.toolkit.length > 50);
 });
 

@@ -9,6 +9,8 @@ There is no third-party CMS account or separate editing website.
 Set these server-only variables for Production, Preview, and Development in Vercel:
 
 - `ADMIN_EMAIL`: initially `stephen.burch@ghostai.solutions`
+- `ADMIN_EMAILS`: optional comma-separated additional login emails, currently
+  `ridersmagicmark@gmail.com`
 - `ADMIN_PASSWORD`: a unique password stored in a password manager
 - `ADMIN_AUTH_SECRET`: at least 32 cryptographically random bytes
 - A Vercel Blob store connected to the project. Current Vercel projects receive
@@ -17,8 +19,8 @@ Set these server-only variables for Production, Preview, and Development in Verc
 
 Never prefix these variables with `VITE_`, commit them, or place them in browser
 code. Redeploy after changing them. Test login, an edit, and one small upload before
-handing the account to Tisha. At handoff, change `ADMIN_EMAIL` and `ADMIN_PASSWORD`
-together and redeploy. Changing either immediately invalidates existing sessions.
+handing the account to Tisha. Add or remove addresses in `ADMIN_EMAILS` and redeploy.
+Removing an address immediately invalidates sessions created for that address.
 
 ## What the author can update
 

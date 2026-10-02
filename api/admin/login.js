@@ -7,7 +7,7 @@ export default async function handler(request, response) {
   try {
     const body = await readJson(request);
     if (!validateCredentials(body.email, body.password)) return sendJson(response, 401, { message: 'Email or password is incorrect.' });
-    response.setHeader('Set-Cookie', sessionCookie(createSession()));
+    response.setHeader('Set-Cookie', sessionCookie(createSession(body.email)));
     sendJson(response, 200, { authenticated: true });
   } catch {
     sendJson(response, 400, { message: 'Please check the form and try again.' });

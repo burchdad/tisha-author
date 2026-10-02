@@ -4,7 +4,13 @@ export const COOKIE_NAME = 'rmm_admin_session';
 const SESSION_SECONDS = 8 * 60 * 60;
 
 function configured() {
-  return Boolean(process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD && process.env.ADMIN_AUTH_SECRET);
+  return Boolean(allowedEmails().length && process.env.ADMIN_PASSWORD && process.env.ADMIN_AUTH_SECRET);
+}
+
+function allowedEmails() {
+  return [process.env.ADMIN_EMAIL, ...(process.env.ADMIN_EMAILS || '').split(',')]
+    .map((email) => String(email || '').trim().toLowerCase())
+    .filter((email, index, list) => email && list.indexOf(email) === index);
 }
 
 function equal(left, right) {
@@ -20,14 +26,17 @@ function signature(value) {
 
 export function validateCredentials(email, password) {
   if (!configured()) return false;
-  return equal(String(email).trim().toLowerCase(), process.env.ADMIN_EMAIL.trim().toLowerCase()) &&
+  const normalizedEmail = String(email).trim().toLowerCase();
+  return allowedEmails().some((allowed) => equal(normalizedEmail, allowed)) &&
     equal(password, process.env.ADMIN_PASSWORD);
 }
 
-export function createSession() {
+export function createSession(email = process.env.ADMIN_EMAIL) {
   if (!configured()) throw new Error('Admin access is not configured.');
+  const normalizedEmail = String(email || '').trim().toLowerCase();
+  if (!allowedEmails().some((allowed) => equal(normalizedEmail, allowed))) throw new Error('Admin access is not configured.');
   const expires = Math.floor(Date.now() / 1000) + SESSION_SECONDS;
-  const payload = Buffer.from(JSON.stringify({ email: process.env.ADMIN_EMAIL.toLowerCase(), expires })).toString('base64url');
+  const payload = Buffer.from(JSON.stringify({ email: normalizedEmail, expires })).toString('base64url');
   return `${payload}.${signature(payload)}`;
 }
 
@@ -44,7 +53,7 @@ export function isAuthenticated(request) {
   if (!payload || !suppliedSignature || !equal(suppliedSignature, signature(payload))) return false;
   try {
     const session = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
-    return session.email === process.env.ADMIN_EMAIL.toLowerCase() && session.expires > Date.now() / 1000;
+    return allowedEmails().some((allowed) => equal(session.email, allowed)) && session.expires > Date.now() / 1000;
   } catch {
     return false;
   }

@@ -5,13 +5,18 @@ import { defaultContent, normalizeContent } from '../server/content-store.js';
 
 test('admin credentials create a signed session and reject tampering', () => {
   process.env.ADMIN_EMAIL = 'stephen.burch@ghostai.solutions';
+  process.env.ADMIN_EMAILS = 'ridersmagicmark@gmail.com';
   process.env.ADMIN_PASSWORD = 'correct horse battery staple';
   process.env.ADMIN_AUTH_SECRET = 'a-long-random-test-secret';
   assert.equal(validateCredentials('STEPHEN.BURCH@GHOSTAI.SOLUTIONS', 'correct horse battery staple'), true);
+  assert.equal(validateCredentials('RidersMagicMark@gmail.com', 'correct horse battery staple'), true);
+  assert.equal(validateCredentials('other@example.com', 'correct horse battery staple'), false);
   assert.equal(validateCredentials('stephen.burch@ghostai.solutions', 'wrong'), false);
   const token = createSession();
   assert.equal(isAuthenticated({ headers: { cookie: `rmm_admin_session=${token}` } }), true);
   assert.equal(isAuthenticated({ headers: { cookie: `rmm_admin_session=${token}x` } }), false);
+  const clientToken = createSession('ridersmagicmark@gmail.com');
+  assert.equal(isAuthenticated({ headers: { cookie: `rmm_admin_session=${clientToken}` } }), true);
 });
 
 test('mutation origin must match the requested host', () => {

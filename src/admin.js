@@ -11,7 +11,7 @@ let content;
 let savedSnapshot = '';
 const inviteCopyNames = new Set(['schoolEyebrow', 'schoolHeading', 'schoolIntro', 'readingTitle', 'readingDescription', 'workshopTitle', 'workshopDescription', 'trainingTitle', 'trainingDescription', 'signingTitle', 'signingDescription', 'schoolClosing']);
 const toolkitCopyNames = new Set(['toolkitHeading', 'toolkitIntro', 'toolkitFeatureHeading', 'toolkitFeatureIntro', 'toolkitModalHeading', 'toolkitModalIntro']);
-const bookCopyNames = new Set(['bookDescription', 'checkoutInstructions']);
+const purchasePopupNames = new Set(['bookBadge', 'bookAuthorName', 'bookAuthorRole', 'bookEyebrow', 'bookTitle', 'bookDescription', 'bookFormatLegend', 'checkoutInstructions', 'orderContactIntro']);
 
 const escape = (value = '') => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 const field = (label, name, value = '', options = {}) => {
@@ -31,13 +31,13 @@ async function api(path, options = {}) {
 function setStatus(node, message, state = '') { node.textContent = message; node.dataset.state = state; }
 
 function copyFields(names) {
-  return textFields.filter((item) => names ? names.has(item.name) : !inviteCopyNames.has(item.name) && !toolkitCopyNames.has(item.name) && !bookCopyNames.has(item.name)).map((item) =>
+  return textFields.filter((item) => names ? names.has(item.name) : !inviteCopyNames.has(item.name) && !toolkitCopyNames.has(item.name) && !purchasePopupNames.has(item.name)).map((item) =>
     field(item.title, item.name, content.copy[item.name], { multiline: content.copy[item.name]?.length > 80, max: 5000 })
   ).join('');
 }
 
 function renderCopy() {
-  document.querySelector('#book-copy-fields').innerHTML = copyFields(bookCopyNames);
+  document.querySelector('#purchase-popup-fields').innerHTML = copyFields(purchasePopupNames);
   document.querySelector('#copy-fields').innerHTML = copyFields();
   document.querySelector('#invite-fields').innerHTML = copyFields(inviteCopyNames);
   document.querySelector('#toolkit-copy-fields').innerHTML = copyFields(toolkitCopyNames);
@@ -88,7 +88,7 @@ async function loadRevisions() {
 }
 
 function renderPhotos() {
-  const names = { author: 'Author portrait', illustrator: 'Illustrator portrait', visit: 'School visit photo' };
+  const names = { author: 'Author portrait', checkout: 'Purchase pop-up headshot', illustrator: 'Illustrator portrait', visit: 'School visit photo' };
   document.querySelector('#photos-list').innerHTML = content.photos.map((item, index) => `<article class="editor-card" data-kind="photos" data-index="${index}">
     <div class="card-heading"><h3>${names[item.placement] || 'Website photo'}</h3></div><img class="preview" src="${escape(item.url)}" alt=""><input type="hidden" name="placement" value="${escape(item.placement)}">
     <div class="field-grid">${field('Image description for accessibility', 'alt', item.alt)}${uploadControl('photos', index, item.url, 'image/jpeg,image/png,image/webp,image/gif', 'photo')}</div></article>`).join('');

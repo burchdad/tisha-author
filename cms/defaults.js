@@ -28,6 +28,7 @@ export const defaultMedia = [
 
 export const photoSlots = [
   { name: 'author', title: 'Author portrait', selector: '.author-photo img', url: '/story/tisha-shipley-author.jpg', alt: "Dr. Tisha Shipley with Rider's Magic Mark book and Rider puppet" },
+  { name: 'checkout', title: 'Purchase pop-up headshot', selector: '.author-social-chip img', url: '/story/tisha-shipley-headshot.jpg', alt: 'Dr. Tisha Shipley' },
   { name: 'illustrator', title: 'Illustrator portrait', selector: '.illustrator-photo img', url: '/story/chandrani-das.jpg', alt: 'Illustrator Chandrani Das standing outdoors' },
   { name: 'visit', title: 'School visit photo', selector: '.visit-photo img', url: '/story/tisha-laying-down.jpg', alt: "Dr. Tisha Shipley with the Rider puppet and Rider's Magic Mark book" },
 ];

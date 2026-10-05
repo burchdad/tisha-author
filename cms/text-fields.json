@@ -245,6 +245,41 @@
     "initialValue": "Follow along for book news, classroom inspiration, and moments from Rider’s journey."
   },
   {
+    "name": "bookBadge",
+    "title": "Pop-up: book badge",
+    "selector": ".book-cover-stage > span",
+    "page": "index.html",
+    "initialValue": "New book"
+  },
+  {
+    "name": "bookAuthorName",
+    "title": "Pop-up: author name",
+    "selector": ".author-social-chip strong",
+    "page": "index.html",
+    "initialValue": "Dr. Tisha Shipley"
+  },
+  {
+    "name": "bookAuthorRole",
+    "title": "Pop-up: author roles",
+    "selector": ".author-social-chip small",
+    "page": "index.html",
+    "initialValue": "Author · Educator · Podcaster"
+  },
+  {
+    "name": "bookEyebrow",
+    "title": "Pop-up: label above heading",
+    "selector": ".book-offer-copy > .eyebrow",
+    "page": "index.html",
+    "initialValue": "Bring the magic home"
+  },
+  {
+    "name": "bookTitle",
+    "title": "Pop-up: heading",
+    "selector": "#book-modal-title",
+    "page": "index.html",
+    "initialValue": "Pre-order Rider's Magic Mark"
+  },
+  {
     "name": "bookDescription",
     "title": "Checkout: book description",
     "selector": ".book-offer-copy > p:nth-of-type(2)",
@@ -252,11 +287,25 @@
     "initialValue": "A heartwarming adventure about friendship, gratitude, courage, and discovering that what makes you different may be your greatest strength."
   },
   {
+    "name": "bookFormatLegend",
+    "title": "Pop-up: book choice label",
+    "selector": ".book-format-options legend",
+    "page": "index.html",
+    "initialValue": "Choose your book"
+  },
+  {
     "name": "checkoutInstructions",
     "title": "Checkout: Square instructions",
     "selector": ".checkout-instructions",
     "page": "index.html",
     "initialValue": "Choose your quantity and enter your email, delivery address, and payment securely on Square."
+  },
+  {
+    "name": "orderContactIntro",
+    "title": "Pop-up: order contact wording",
+    "selector": ".order-contact-prefix",
+    "page": "index.html",
+    "initialValue": "Order questions and receipt details can be sent to"
   },
   {
     "name": "curriculumTitle",

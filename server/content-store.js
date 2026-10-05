@@ -7,7 +7,7 @@ const CONTENT_PREFIX = 'site-content/';
 const MAX_ITEMS = 100;
 const placements = new Set(['companion', 'gratitude', 'additional']);
 const categories = new Set(['podcast', 'blog', 'feature']);
-const photoPlacements = new Set(['author', 'illustrator', 'visit']);
+const photoPlacements = new Set(['author', 'checkout', 'illustrator', 'visit']);
 const toolkitCategories = new Set(toolkitGroups.map((group) => group.category));
 
 function hasBlobCredentials() {

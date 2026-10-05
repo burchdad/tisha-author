@@ -6,7 +6,7 @@ import toolkitGroups from '../cms/toolkit-resources.json' with { type: 'json' };
 function content(overrides = {}) {
   return {
     settings: { ...defaultSettings, paperbackPrice: 18.5, hardcoverPrice: 22, shippingMessage: 'Books ship the week of November 20th.' },
-    copy: { homeIntro: 'An updated introduction from the author.', schoolHeading: 'Bring Rider to your school.' },
+    copy: { ...Object.fromEntries(textFields.map((field) => [field.name, field.initialValue])), homeIntro: 'An updated introduction from the author.', schoolHeading: 'Bring Rider to your school.' },
     curricula: defaultCurricula.map((item) => ({ ...item, url: item.existingUrl })),
     media: [{ category: 'podcast', title: 'A new podcast episode', url: 'https://example.com/episode', description: 'Episode description.' }],
     photos: defaultPhotos.map((item) => ({ ...item, url: item.placement === 'author' ? '/story/tisha-laying-down.jpg' : item.existingUrl })),
@@ -99,6 +99,9 @@ test('authenticated author loads the custom dashboard on a deep route', async ({
   await expect(page.getByRole('heading', { name: 'Featured media' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Invite the Author' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Teacher Toolkit' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Book purchase pop-up' })).toBeVisible();
+  await expect(page.getByLabel('Pop-up: heading')).toHaveValue("Pre-order Rider's Magic Mark");
+  await expect(page.getByRole('link', { name: 'Preview pop-up' })).toHaveAttribute('href', '/#purchase-book');
   await expect(page.getByRole('heading', { name: 'Upcoming events' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Social links' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Revision history' })).toBeVisible();
@@ -148,4 +151,5 @@ test('dashboard photo editor uses file upload instead of a manual URL field', as
   await expect(photoCard.locator('input[name="url"]')).toHaveAttribute('type', 'hidden');
   await expect(page.getByLabel('Soft-cover price')).toBeVisible();
   await expect(page.getByLabel('Checkout: Square instructions')).toBeVisible();
+  await expect(page.locator('[data-kind="photos"]')).toHaveCount(4);
 });

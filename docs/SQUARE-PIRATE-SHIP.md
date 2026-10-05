@@ -15,7 +15,7 @@ For each book item and payment link:
 
 1. Enable **Shipping** as the fulfillment method. This makes the delivery-address
    fields appear during checkout.
-2. Confirm the current item price: soft-cover $13.99 and hard-cover $15.99.
+2. Confirm the current item price: soft-cover $14.99 and hard-cover $16.99.
 3. Enable customer quantity selection if buyers may order more than one copy.
 4. Configure the amount customers pay for shipping. Pirate Ship does not send live
    rates to Square checkout, so use a Square shipping profile, fixed charge, or free

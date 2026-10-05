@@ -24,7 +24,7 @@ Removing an address immediately invalidates sessions created for that address.
 
 ## What the author can update
 
-- Website headings, introductions, biographies, and checkout description
+- Website headings, introductions, biographies, checkout description, and Square instructions
 - Soft-cover and hard-cover prices displayed on the website
 - The shared shipping announcement
 - Curriculum titles, descriptions, placements, and PDF files

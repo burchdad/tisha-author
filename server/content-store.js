@@ -11,7 +11,9 @@ const photoPlacements = new Set(['author', 'illustrator', 'visit']);
 const toolkitCategories = new Set(toolkitGroups.map((group) => group.category));
 
 function hasBlobCredentials() {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN || (process.env.BLOB_STORE_ID && process.env.VERCEL_OIDC_TOKEN));
+  // Vercel Functions receive OIDC credentials at request time, so BLOB_STORE_ID
+  // is enough for the Blob SDK to authenticate without a long-lived token.
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID);
 }
 
 function blobOptions() {
@@ -39,7 +41,7 @@ function array(value) {
 
 export function defaultContent() {
   return {
-    settings: { ...defaultSettings },
+    settings: { shippingMessage: defaultSettings.shippingMessage, paperbackPrice: defaultSettings.paperbackPrice, hardcoverPrice: defaultSettings.hardcoverPrice },
     copy: Object.fromEntries(textFields.map((field) => [field.name, field.initialValue])),
     curricula: defaultCurricula.map((item) => ({ title: item.title, description: item.description, placement: item.placement, url: item.existingUrl })),
     media: defaultMedia.map((item) => ({ title: item.title, description: item.description || '', category: item.category, url: item.url })),

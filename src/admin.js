@@ -11,6 +11,7 @@ let content;
 let savedSnapshot = '';
 const inviteCopyNames = new Set(['schoolEyebrow', 'schoolHeading', 'schoolIntro', 'readingTitle', 'readingDescription', 'workshopTitle', 'workshopDescription', 'trainingTitle', 'trainingDescription', 'signingTitle', 'signingDescription', 'schoolClosing']);
 const toolkitCopyNames = new Set(['toolkitHeading', 'toolkitIntro', 'toolkitFeatureHeading', 'toolkitFeatureIntro', 'toolkitModalHeading', 'toolkitModalIntro']);
+const bookCopyNames = new Set(['bookDescription', 'checkoutInstructions']);
 
 const escape = (value = '') => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 const field = (label, name, value = '', options = {}) => {
@@ -30,20 +31,22 @@ async function api(path, options = {}) {
 function setStatus(node, message, state = '') { node.textContent = message; node.dataset.state = state; }
 
 function copyFields(names) {
-  return textFields.filter((item) => names ? names.has(item.name) : !inviteCopyNames.has(item.name) && !toolkitCopyNames.has(item.name)).map((item) =>
+  return textFields.filter((item) => names ? names.has(item.name) : !inviteCopyNames.has(item.name) && !toolkitCopyNames.has(item.name) && !bookCopyNames.has(item.name)).map((item) =>
     field(item.title, item.name, content.copy[item.name], { multiline: content.copy[item.name]?.length > 80, max: 5000 })
   ).join('');
 }
 
 function renderCopy() {
+  document.querySelector('#book-copy-fields').innerHTML = copyFields(bookCopyNames);
   document.querySelector('#copy-fields').innerHTML = copyFields();
   document.querySelector('#invite-fields').innerHTML = copyFields(inviteCopyNames);
   document.querySelector('#toolkit-copy-fields').innerHTML = copyFields(toolkitCopyNames);
 }
 
 function uploadControl(kind, index, url, accepts, uploadLabel) {
-  return `<label>File URL<input name="url" type="text" value="${escape(url)}" required></label>
-    <label class="upload-label">Upload ${uploadLabel}<input class="file-input" type="file" accept="${accepts}" data-upload-kind="${kind}" data-upload-index="${index}"><span class="upload-progress" aria-live="polite"></span></label>`;
+  const current = url ? `<a class="current-file" href="${escape(url)}" target="_blank" rel="noopener">View current ${uploadLabel}</a>` : '<span class="current-file empty-file">No file uploaded yet</span>';
+  return `<input name="url" type="hidden" value="${escape(url)}">
+    <label class="upload-label">Choose a new ${uploadLabel}<input class="file-input" type="file" accept="${accepts}" data-upload-kind="${kind}" data-upload-index="${index}"><span class="upload-help">Select a file from your computer. It uploads automatically; then save the website changes.</span><span class="upload-progress" aria-live="polite"></span></label>${current}`;
 }
 
 function renderCurricula() {
@@ -191,13 +194,21 @@ document.addEventListener('change', async (event) => {
   const progress = input.parentElement.querySelector('.upload-progress'); input.disabled = true; progress.textContent = 'Uploading…';
   try {
     const file = input.files[0];
+    if (file.size > 15 * 1024 * 1024) throw new Error('That file is larger than 15 MB. Choose a smaller file.');
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-').slice(-120);
-    const result = await uploadPresigned(`uploads/${Date.now()}-${safeName}`, file, { access: 'public', handleUploadUrl: '/api/admin/upload' });
+    const result = await uploadPresigned(`uploads/${Date.now()}-${safeName}`, file, {
+      access: 'public', handleUploadUrl: '/api/admin/upload', abortSignal: AbortSignal.timeout(60000),
+      onUploadProgress: ({ percentage }) => { progress.textContent = `Uploading… ${Math.round(percentage)}%`; },
+    });
     const card = input.closest('.editor-card'); card.querySelector('input[name="url"]').value = result.url;
-    const preview = card.querySelector('.preview'); if (preview) preview.src = result.url;
+    let preview = card.querySelector('.preview');
+    if (!preview && input.accept.startsWith('image/')) { preview = document.createElement('img'); preview.className = 'preview'; preview.alt = ''; card.querySelector('.card-heading').after(preview); }
+    if (preview) preview.src = result.url;
+    const currentFile = card.querySelector('.current-file');
+    if (currentFile) { const link = document.createElement('a'); link.className = 'current-file'; link.href = result.url; link.target = '_blank'; link.rel = 'noopener'; link.textContent = `View uploaded ${input.accept.startsWith('image/') ? 'photo' : 'file'}`; currentFile.replaceWith(link); }
     progress.textContent = 'Upload complete. Save changes to publish it.';
     showUnsavedStatus();
-  } catch (error) { progress.textContent = error.message || 'Upload failed.'; }
+  } catch (error) { console.error('Dashboard upload failed', error); progress.textContent = error.name === 'TimeoutError' ? 'Upload timed out. Check your connection and try again.' : (error.message || 'Upload failed.'); }
   finally { input.disabled = false; }
 });
 

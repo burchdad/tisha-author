@@ -56,6 +56,7 @@ button:disabled { opacity: .55; cursor: wait; }
 .copy-fields label:has(textarea) { grid-column: 1 / -1; }
 .card-list { display: grid; gap: 16px; }
 .section-copy { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #ded6c6; }
+.book-copy-fields { margin-top: 20px; }
 .toolkit-category { border: 1px solid #ded6c6; border-radius: 12px; background: #fffaf0; overflow: hidden; }
 .toolkit-category summary { display: flex; justify-content: space-between; gap: 20px; padding: 15px 18px; cursor: pointer; font-weight: 800; }
 .toolkit-category summary span { color: #617068; font-size: .85rem; font-weight: 600; }
@@ -63,6 +64,10 @@ button:disabled { opacity: .55; cursor: wait; }
 .editor-card { padding: 20px; border-radius: 14px; border: 1px solid #ded6c6; background: white; }
 .preview { display: block; width: 180px; height: 120px; object-fit: cover; border-radius: 10px; margin: 10px 0 18px; background: #eee; }
 .upload-progress { min-height: 1.25em; color: #176f59; font-size: .84rem; font-weight: 600; }
+.upload-label { align-content: start; }
+.upload-help { color: #657068; font-size: .82rem; font-weight: 500; }
+.current-file { align-self: end; margin-bottom: 2px; color: #0b5b48; font-weight: 750; overflow-wrap: anywhere; }
+.empty-file { color: #657068; font-weight: 500; }
 .note { margin: 20px 0 0; padding: 12px 15px; border-radius: 9px; background: #fff1c4; color: #604d12; }
 .empty { padding: 20px; text-align: center; color: #657068; border: 1px dashed #b8c5bc; border-radius: 12px; }
 .revision-list { display: grid; gap: 10px; }

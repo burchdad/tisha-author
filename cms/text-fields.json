@@ -252,6 +252,13 @@
     "initialValue": "A heartwarming adventure about friendship, gratitude, courage, and discovering that what makes you different may be your greatest strength."
   },
   {
+    "name": "checkoutInstructions",
+    "title": "Checkout: Square instructions",
+    "selector": ".checkout-instructions",
+    "page": "index.html",
+    "initialValue": "Choose your quantity and enter your email, delivery address, and payment securely on Square."
+  },
+  {
     "name": "curriculumTitle",
     "title": "Curriculum: title",
     "selector": ".curriculum-hero h1",

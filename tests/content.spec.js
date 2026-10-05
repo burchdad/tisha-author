@@ -131,9 +131,21 @@ for (const width of [1440, 390]) {
     await expect(page.locator('[data-square-link]')).toBeVisible();
     await expect(page.locator('[data-square-link]')).toContainText('Continue to Square');
     await expect(page.getByText('Choose your quantity and enter your email, delivery address, and payment securely on Square.')).toBeVisible();
-    await expect(page.getByText(/send tracking information when it ships/)).toBeVisible();
+    await expect(page.getByText(/Shipping and tax are shown|send tracking information when it ships/)).toHaveCount(0);
     await expect(page.locator('[data-venmo-link]')).toHaveCount(0);
     await expect(page.locator('[data-cashapp-link], [data-paypal-link], [data-shipping-field], [data-copy-order]')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
   });
 }
+
+test('dashboard photo editor uses file upload instead of a manual URL field', async ({ page }) => {
+  await page.route('**/api/admin/session', (route) => route.fulfill({ json: { authenticated: true, configured: true } }));
+  await page.route('**/api/admin/content', (route) => route.fulfill({ json: content() }));
+  await page.route('**/api/admin/revisions', (route) => route.fulfill({ json: { revisions: [] } }));
+  await page.goto('/admin#site-photos');
+  const photoCard = page.locator('[data-kind="photos"]').first();
+  await expect(photoCard.getByText('Choose a new photo')).toBeVisible();
+  await expect(photoCard.locator('input[name="url"]')).toHaveAttribute('type', 'hidden');
+  await expect(page.getByLabel('Soft-cover price')).toBeVisible();
+  await expect(page.getByLabel('Checkout: Square instructions')).toBeVisible();
+});

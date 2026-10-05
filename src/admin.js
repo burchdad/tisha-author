@@ -197,15 +197,16 @@ document.addEventListener('change', async (event) => {
     if (file.size > 15 * 1024 * 1024) throw new Error('That file is larger than 15 MB. Choose a smaller file.');
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-').slice(-120);
     const result = await uploadPresigned(`uploads/${Date.now()}-${safeName}`, file, {
-      access: 'public', handleUploadUrl: '/api/admin/upload', abortSignal: AbortSignal.timeout(60000),
+      access: 'private', handleUploadUrl: '/api/admin/upload', abortSignal: AbortSignal.timeout(60000),
       onUploadProgress: ({ percentage }) => { progress.textContent = `Uploading… ${Math.round(percentage)}%`; },
     });
-    const card = input.closest('.editor-card'); card.querySelector('input[name="url"]').value = result.url;
+    const mediaUrl = `/api/media?pathname=${encodeURIComponent(result.pathname)}`;
+    const card = input.closest('.editor-card'); card.querySelector('input[name="url"]').value = mediaUrl;
     let preview = card.querySelector('.preview');
     if (!preview && input.accept.startsWith('image/')) { preview = document.createElement('img'); preview.className = 'preview'; preview.alt = ''; card.querySelector('.card-heading').after(preview); }
-    if (preview) preview.src = result.url;
+    if (preview) preview.src = mediaUrl;
     const currentFile = card.querySelector('.current-file');
-    if (currentFile) { const link = document.createElement('a'); link.className = 'current-file'; link.href = result.url; link.target = '_blank'; link.rel = 'noopener'; link.textContent = `View uploaded ${input.accept.startsWith('image/') ? 'photo' : 'file'}`; currentFile.replaceWith(link); }
+    if (currentFile) { const link = document.createElement('a'); link.className = 'current-file'; link.href = mediaUrl; link.target = '_blank'; link.rel = 'noopener'; link.textContent = `View uploaded ${input.accept.startsWith('image/') ? 'photo' : 'file'}`; currentFile.replaceWith(link); }
     progress.textContent = 'Upload complete. Save changes to publish it.';
     showUnsavedStatus();
   } catch (error) { console.error('Dashboard upload failed', error); progress.textContent = error.name === 'TimeoutError' ? 'Upload timed out. Check your connection and try again.' : (error.message || 'Upload failed.'); }

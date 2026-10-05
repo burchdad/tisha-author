@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createSession, hasSameOrigin, isAuthenticated, validateCredentials } from '../server/admin-auth.js';
 import { defaultContent, normalizeContent } from '../server/content-store.js';
+import mediaHandler from '../api/media.js';
 
 test('admin credentials create a signed session and reject tampering', () => {
   process.env.ADMIN_EMAIL = 'stephen.burch@ghostai.solutions';
@@ -43,4 +44,16 @@ test('content is normalized and unsafe URLs are removed', () => {
 test('invalid catalog prices are rejected', () => {
   const source = defaultContent(); source.settings.paperbackPrice = -1;
   assert.throws(() => normalizeContent(source), /valid prices/);
+});
+
+test('private media proxy rejects paths outside the upload folder', async () => {
+  let body = '';
+  const response = {
+    headers: {},
+    setHeader(name, value) { this.headers[name] = value; },
+    end(value = '') { body += value; },
+  };
+  await mediaHandler({ method: 'GET', query: { pathname: '../site-content/secret.json' } }, response);
+  assert.equal(response.statusCode, 400);
+  assert.match(body, /Invalid media path/);
 });

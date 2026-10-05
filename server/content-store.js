@@ -1,4 +1,4 @@
-import { del, list, put } from '@vercel/blob';
+import { del, get, list, put } from '@vercel/blob';
 import { defaultCurricula, defaultEvents, defaultMedia, defaultPhotos, defaultSettings, defaultSocial } from '../cms/defaults.js';
 import textFields from '../cms/text-fields.json' with { type: 'json' };
 import toolkitGroups from '../cms/toolkit-resources.json' with { type: 'json' };
@@ -109,9 +109,9 @@ export async function readContent() {
   const result = await list({ prefix: CONTENT_PREFIX, limit: 100, ...blobOptions() });
   const latest = result.blobs.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt))[0];
   if (!latest) return defaultContent();
-  const response = await fetch(latest.url, { cache: 'no-store' });
-  if (!response.ok) throw new Error('Saved content could not be read.');
-  return normalizeContent(await response.json());
+  const resultBlob = await get(latest.pathname, { access: 'private', useCache: false, ...blobOptions() });
+  if (!resultBlob || resultBlob.statusCode !== 200) throw new Error('Saved content could not be read.');
+  return normalizeContent(JSON.parse(await new Response(resultBlob.stream).text()));
 }
 
 export async function writeContent(input) {
@@ -119,7 +119,7 @@ export async function writeContent(input) {
   const content = normalizeContent(input);
   const pathname = `${CONTENT_PREFIX}${Date.now()}.json`;
   const saved = await put(pathname, JSON.stringify(content), {
-    access: 'public', addRandomSuffix: false, contentType: 'application/json', cacheControlMaxAge: 60,
+    access: 'private', addRandomSuffix: false, contentType: 'application/json', cacheControlMaxAge: 60,
     ...blobOptions(),
   });
   const existing = await list({ prefix: CONTENT_PREFIX, limit: 100, ...blobOptions() });
@@ -139,7 +139,7 @@ export async function restoreContentRevision(id) {
   const result = await list({ prefix: CONTENT_PREFIX, limit: 100, ...blobOptions() });
   const revision = result.blobs.find((blob) => blob.pathname === id);
   if (!revision) throw new Error('That revision is no longer available.');
-  const response = await fetch(revision.url, { cache: 'no-store' });
-  if (!response.ok) throw new Error('That revision could not be read.');
-  return writeContent(await response.json());
+  const resultBlob = await get(revision.pathname, { access: 'private', useCache: false, ...blobOptions() });
+  if (!resultBlob || resultBlob.statusCode !== 200) throw new Error('That revision could not be read.');
+  return writeContent(JSON.parse(await new Response(resultBlob.stream).text()));
 }

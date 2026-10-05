@@ -61,9 +61,11 @@ purchase. See `docs/SQUARE-PIRATE-SHIP.md` for the account-side checklist.
 ## Security and recovery
 
 Sessions expire after eight hours and use `HttpOnly`, `Secure`, and `SameSite=Strict`.
-Mutations require a matching request origin. Files are public because the public site
-must display them; dashboard credentials and content-management tokens stay on the
-server. To revoke access, rotate `ADMIN_PASSWORD` or `ADMIN_AUTH_SECRET` and redeploy.
+Mutations require a matching request origin. The Blob store remains private. Public
+pages receive uploaded photos and documents through `/api/media`, which streams only
+validated upload paths without exposing Blob credentials. Dashboard credentials and
+storage tokens stay on the server. To revoke access, rotate `ADMIN_PASSWORD` or
+`ADMIN_AUTH_SECRET` and redeploy.
 
 Each save writes a complete, validated content snapshot. The dashboard keeps the ten
 most recent saved versions and can restore any of them from Revision history. It also

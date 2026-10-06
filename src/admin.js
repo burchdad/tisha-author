@@ -191,14 +191,13 @@ document.querySelector('#content-form').addEventListener('change', showUnsavedSt
 document.addEventListener('change', async (event) => {
   const input = event.target.closest('[data-upload-kind]');
   if (!input?.files?.[0]) return;
-  const progress = input.parentElement.querySelector('.upload-progress'); input.disabled = true; progress.textContent = 'Uploading…';
+  const progress = input.parentElement.querySelector('.upload-progress'); input.disabled = true; progress.textContent = 'Uploading securely…';
   try {
     const file = input.files[0];
     if (file.size > 15 * 1024 * 1024) throw new Error('That file is larger than 15 MB. Choose a smaller file.');
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-').slice(-120);
     const result = await uploadPresigned(`uploads/${Date.now()}-${safeName}`, file, {
       access: 'private', handleUploadUrl: '/api/admin/upload', abortSignal: AbortSignal.timeout(60000),
-      onUploadProgress: ({ percentage }) => { progress.textContent = `Uploading… ${Math.round(percentage)}%`; },
     });
     const mediaUrl = `/api/media?pathname=${encodeURIComponent(result.pathname)}`;
     const card = input.closest('.editor-card'); card.querySelector('input[name="url"]').value = mediaUrl;

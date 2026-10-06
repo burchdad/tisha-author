@@ -24,6 +24,7 @@ export default async function handler(request, response) {
     });
     sendJson(response, 200, result);
   } catch (error) {
+    console.error('Dashboard upload authorization failed', { message: error?.message, name: error?.name });
     sendJson(response, 400, { message: error.message || 'The file could not be uploaded.' });
   }
 }

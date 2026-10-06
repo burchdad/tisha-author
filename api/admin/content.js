@@ -10,6 +10,7 @@ export default async function handler(request, response) {
     const content = request.method === 'GET' ? await readContent() : await writeContent(await readJson(request));
     sendJson(response, 200, content);
   } catch (error) {
+    console.error('Dashboard content request failed', { method: request.method, message: error?.message, name: error?.name });
     sendJson(response, error instanceof SyntaxError || error.code === 'INVALID_CONTENT' ? 400 : 503, { message: error.message || 'Content could not be saved.' });
   }
 }

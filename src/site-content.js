@@ -149,6 +149,8 @@ export function applySiteContent(data) {
   const gallery = document.querySelector('[data-event-panel="past"]');
   if (gallery && Array.isArray(data.gallery)) {
     const photos = data.gallery.filter((photo) => safeUrl(photo.url));
+    const galleryTab = document.querySelector('[data-event-tab="past"]');
+    if (galleryTab) galleryTab.textContent = photos.length ? `Photo Gallery (${photos.length})` : 'Photo Gallery';
     if (photos.length) {
       const grid = element('div', '', 'cms-photo-gallery');
       for (const photo of photos) {
@@ -163,6 +165,12 @@ export function applySiteContent(data) {
         grid.append(figure);
       }
       gallery.replaceChildren(grid);
+      document.querySelectorAll('[data-event-tab]').forEach((tab) => {
+        tab.setAttribute('aria-selected', String(tab === galleryTab));
+      });
+      document.querySelectorAll('[data-event-panel]').forEach((panel) => {
+        panel.hidden = panel !== gallery;
+      });
     } else {
       gallery.replaceChildren(element('p', 'Signing photos, readings, and memories will appear here as the gallery grows.', 'event-gallery-placeholder'));
     }

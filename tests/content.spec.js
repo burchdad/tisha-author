@@ -49,8 +49,9 @@ for (const width of [1440, 390]) {
     await expect(page.locator('[data-square-link]')).toContainText('Hard-cover');
     await expect(page.locator('[data-checkout-status]')).toHaveText('Secure checkout is provided by Square.');
     await page.locator('.book-modal-close').click();
-    await expect(page.locator('[data-event-tab="past"]')).toHaveText('Photo Gallery (1)');
+    await expect(page.locator('[data-event-tab="past"]')).toHaveText('Past Events');
     await expect(page.locator('[data-event-tab="past"]')).toHaveAttribute('aria-selected', 'true');
+    await page.getByRole('button', { name: 'Open Unassigned photos, 1 photo' }).click();
     await expect(page.locator('.cms-photo-gallery img')).toHaveAttribute('alt', 'Rider and Tisha at a reading');
     await page.locator('[data-event-tab="upcoming"]').click();
     await expect(page.locator('[data-event-panel="upcoming"]')).toBeVisible();

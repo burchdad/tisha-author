@@ -75,3 +75,33 @@ warns before leaving or signing out with unsaved edits. Source-controlled defaul
 remain available for recovery. Uploaded files
 are retained even if an editor removes their URL from the page; delete unused files
 from the Vercel Blob dashboard during periodic maintenance.
+
+## Past-event photo folders
+
+The Past Events tab now opens a grid of event folders. In the dashboard, use
+**Past-event albums → Create event folder**, enter the event title, and optionally
+choose a date. Choose **Add photo to this event** on that folder, upload its photo,
+and save the website changes. Each photo can be reassigned using its Event folder
+selector. Choose an optional cover from photos already assigned to that event;
+otherwise the public site shows a folder illustration.
+
+Existing gallery photos are preserved in **Unassigned photos** until you explicitly
+assign them. No event names or dates are inferred. Removing a folder moves its
+photos to Unassigned; it does not delete photos or uploaded files. Photo removal
+removes the selected gallery entry only. The file remains in Blob storage as before.
+Upcoming events remain a separate editor and are not automatically turned into albums.
+
+The editor blocks saving a photo card without an uploaded image. Gallery saves
+validate unique IDs, real event dates, valid event associations, and cover ownership.
+A detected stale snapshot is rejected so you can refresh before overwriting another
+session's changes. The snapshot check is not a distributed transaction lock; avoid
+saving from multiple author sessions at exactly the same time.
+
+### Review previews
+
+Vercel Preview deployments are read-only for content saves, uploads, and revision
+restores, even when they share Production's private Blob store. The session endpoint
+exposes this mode to show a dashboard notice; server-side guards enforce it. An
+existing author login can view/edit a local review draft, but cannot publish it from
+the preview. Use production only after the review branch has been approved and
+released. Never test uploads or saves against the live store without authorization.

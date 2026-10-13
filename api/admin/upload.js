@@ -1,3 +1,4 @@
+import { assertContentWritesAllowed } from '../../server/preview-safety.js';
 import { issueSignedToken } from '@vercel/blob';
 import { handleUploadPresigned } from '@vercel/blob/client';
 import { hasSameOrigin, isAuthenticated } from '../../server/admin-auth.js';
@@ -9,6 +10,7 @@ export default async function handler(request, response) {
     const body = await readJson(request);
     if (!isAuthenticated(request)) return sendJson(response, 401, { message: 'Please sign in again.' });
     if (!hasSameOrigin(request)) return sendJson(response, 403, { message: 'Request rejected.' });
+    assertContentWritesAllowed();
     const result = await handleUploadPresigned({
       request, body,
       getSignedToken: async (pathname) => {
@@ -25,6 +27,6 @@ export default async function handler(request, response) {
     sendJson(response, 200, result);
   } catch (error) {
     console.error('Dashboard upload authorization failed', { message: error?.message, name: error?.name });
-    sendJson(response, 400, { message: error.message || 'The file could not be uploaded.' });
+    sendJson(response, error.code === 'READ_ONLY_PREVIEW' ? 403 : 400, { message: error.message || 'The file could not be uploaded.' });
   }
 }

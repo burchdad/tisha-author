@@ -41,6 +41,9 @@ class Element {
   prepend(...nodes) { this.children.unshift(...nodes); }
   replaceChildren(...nodes) { this.children = nodes; }
   focus() { this.focused = true; }
+  showModal() { this.open = true; }
+  close() { this.open = false; this.fire('close'); }
+  remove() {}
   scrollTo() {}
   map(selector, ...nodes) { this.queries.set(selector, nodes); return nodes[0]; }
 }
@@ -144,8 +147,19 @@ async function run(options) {
 
 function assertContentAndControls(f) {
   assert.equal(f.hero.textContent, 'Fixture content loaded.', JSON.stringify(f.stats.warnings));
-  assert.equal(f.gallery.children[0].children[0].children[0].alt, 'Synthetic gallery fixture');
-  assert.equal(f.galleryTab.textContent, 'Photo Gallery (1)');
+  const folder = f.gallery.children[0].children[0];
+  assert.equal(folder.children[2].children[0].textContent, 'Unassigned photos');
+  folder.fire('click');
+  const photoButton = f.gallery.children[1].children[0].children[0];
+  assert.equal(photoButton.children[0].alt, 'Synthetic gallery fixture');
+  photoButton.fire('click');
+  const viewer = f.document.body.children[0];
+  assert.equal(viewer.open, true);
+  viewer.children[0].children[0].children[1].fire('click');
+  assert.equal(viewer.open, false);
+  f.gallery.children[0].children[0].fire('click');
+  assert.equal(f.gallery.children[0].children[0], folder);
+  assert.equal(f.galleryTab.textContent, 'Past Events');
   assert.equal(f.galleryTab.getAttribute('aria-selected'), 'true');
   assert.equal(f.square.getAttribute('aria-disabled'), 'false');
   assert.equal(f.square.href, 'https://square.link/u/ZV1vr14t');

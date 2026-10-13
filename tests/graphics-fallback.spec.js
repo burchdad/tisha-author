@@ -34,7 +34,8 @@ for (const width of [390, 1440]) {
     await page.goto('/');
     await expect(page.locator('#magic-world')).toBeHidden();
     await expect(page.locator('.hero-lede')).toHaveText('Offline fixture content is available.');
-    await expect(page.locator('[data-event-tab="past"]')).toHaveText('Photo Gallery (3)');
+    await expect(page.locator('[data-event-tab="past"]')).toHaveText('Past Events');
+    await page.getByRole('button', { name: 'Open Unassigned photos, 3 photos' }).click();
     const photos = page.locator('.cms-photo-gallery img');
     await expect(photos).toHaveCount(3);
     for (let index = 0; index < 3; index++) {

@@ -1,4 +1,6 @@
 import { del, get, list, put } from '@vercel/blob';
+import { normalizeGallery, preserveLegacyGallery, validateContentRevision } from './gallery-model.js';
+import { assertContentWritesAllowed } from './preview-safety.js';
 import { defaultCurricula, defaultEvents, defaultMedia, defaultPhotos, defaultSettings, defaultSocial } from '../cms/defaults.js';
 import textFields from '../cms/text-fields.json' with { type: 'json' };
 import toolkitGroups from '../cms/toolkit-resources.json' with { type: 'json' };
@@ -25,7 +27,8 @@ function text(value, max, fallback = '') {
 }
 
 function url(value, fallback = '') {
-  const candidate = text(value, 2048, fallback);
+  const candidate = text(value, 2048, fallback).replaceAll(' ', '%20');
+  if (/[\u0000-\u001f\u007f\\]/.test(candidate)) return fallback;
   if (/^\/(?!\/)/.test(candidate)) return candidate;
   try {
     const parsed = new URL(candidate);
@@ -47,6 +50,7 @@ export function defaultContent() {
     media: defaultMedia.map((item) => ({ title: item.title, description: item.description || '', category: item.category, url: item.url })),
     photos: defaultPhotos.map((item) => ({ placement: item.placement, alt: item.alt, url: item.existingUrl })),
     gallery: [],
+    eventAlbums: [],
     toolkit: toolkitGroups.flatMap((group) => group.resources.map((item) => ({ ...item, category: group.category }))),
     social: defaultSocial.map((item) => ({ ...item })),
     events: defaultEvents.map((item) => ({ ...item })),
@@ -82,10 +86,7 @@ export function normalizeContent(input) {
     return { placement: fallback.placement, alt: text(item.alt, 300, fallback.alt), url: url(item.url, fallback.url) };
   }).filter((item) => photoPlacements.has(item.placement));
 
-  const gallery = array(input?.gallery).map((item) => ({
-    title: text(item?.title, 200), description: text(item?.description, 1000), alt: text(item?.alt, 300),
-    date: /^\d{4}-\d{2}-\d{2}$/.test(item?.date || '') ? item.date : '', url: url(item?.url),
-  })).filter((item) => item.url);
+  const { gallery, eventAlbums } = normalizeGallery(input, url);
 
   const toolkit = array(input?.toolkit ?? defaults.toolkit).map((item) => ({
     title: text(item?.title, 200), tag: text(item?.tag, 80),
@@ -101,22 +102,25 @@ export function normalizeContent(input) {
     location: text(item?.location, 200), url: url(item?.url),
   })).filter((item) => item.title);
 
-  return { settings: { shippingMessage, paperbackPrice, hardcoverPrice }, copy, curricula, media, photos, gallery, toolkit, social, events };
+  return { settings: { shippingMessage, paperbackPrice, hardcoverPrice }, copy, curricula, media, photos, gallery, eventAlbums, toolkit, social, events };
 }
 
 export async function readContent() {
-  if (!hasBlobCredentials()) return defaultContent();
+  if (!hasBlobCredentials()) return { ...defaultContent(), revision: null };
   const result = await list({ prefix: CONTENT_PREFIX, limit: 100, ...blobOptions() });
   const latest = result.blobs.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt))[0];
-  if (!latest) return defaultContent();
+  if (!latest) return { ...defaultContent(), revision: null };
   const resultBlob = await get(latest.pathname, { access: 'private', useCache: false, ...blobOptions() });
   if (!resultBlob || resultBlob.statusCode !== 200) throw new Error('Saved content could not be read.');
-  return normalizeContent(JSON.parse(await new Response(resultBlob.stream).text()));
+  return { ...normalizeContent(JSON.parse(await new Response(resultBlob.stream).text())), revision: latest.pathname };
 }
 
 export async function writeContent(input) {
+  assertContentWritesAllowed();
   if (!hasBlobCredentials()) throw new Error('File storage is not configured.');
-  const content = normalizeContent(input);
+  const current = await readContent();
+  validateContentRevision(input, current);
+  const content = normalizeContent(preserveLegacyGallery(input, current, url));
   const pathname = `${CONTENT_PREFIX}${Date.now()}.json`;
   const saved = await put(pathname, JSON.stringify(content), {
     access: 'private', addRandomSuffix: false, contentType: 'application/json', cacheControlMaxAge: 60,
@@ -125,7 +129,7 @@ export async function writeContent(input) {
   const existing = await list({ prefix: CONTENT_PREFIX, limit: 100, ...blobOptions() });
   const oldUrls = existing.blobs.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt)).slice(10).map((blob) => blob.url);
   if (oldUrls.length) await del(oldUrls, blobOptions());
-  return content;
+  return { ...content, revision: pathname };
 }
 
 export async function listContentRevisions() {
@@ -134,12 +138,14 @@ export async function listContentRevisions() {
   return result.blobs.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt)).slice(0, 10).map((blob) => ({ id: blob.pathname, createdAt: blob.uploadedAt }));
 }
 
-export async function restoreContentRevision(id) {
+export async function restoreContentRevision(id, expectedRevision) {
+  assertContentWritesAllowed();
   if (typeof id !== 'string' || !/^site-content\/\d+\.json$/.test(id)) throw new Error('Invalid revision.');
   const result = await list({ prefix: CONTENT_PREFIX, limit: 100, ...blobOptions() });
   const revision = result.blobs.find((blob) => blob.pathname === id);
   if (!revision) throw new Error('That revision is no longer available.');
   const resultBlob = await get(revision.pathname, { access: 'private', useCache: false, ...blobOptions() });
   if (!resultBlob || resultBlob.statusCode !== 200) throw new Error('That revision could not be read.');
-  return writeContent(JSON.parse(await new Response(resultBlob.stream).text()));
+  const snapshot = JSON.parse(await new Response(resultBlob.stream).text());
+  return writeContent({ ...snapshot, eventAlbums: snapshot.eventAlbums || [], ...(expectedRevision === undefined ? {} : { revision: expectedRevision }) });
 }

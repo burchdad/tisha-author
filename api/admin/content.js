@@ -11,6 +11,6 @@ export default async function handler(request, response) {
     sendJson(response, 200, content);
   } catch (error) {
     console.error('Dashboard content request failed', { method: request.method, message: error?.message, name: error?.name });
-    sendJson(response, error instanceof SyntaxError || error.code === 'INVALID_CONTENT' ? 400 : 503, { message: error.message || 'Content could not be saved.' });
+    sendJson(response, error.code === 'READ_ONLY_PREVIEW' ? 403 : error.code === 'CONTENT_CONFLICT' ? 409 : error instanceof SyntaxError || error.code === 'INVALID_CONTENT' ? 400 : 503, { message: error.message || 'Content could not be saved.' });
   }
 }

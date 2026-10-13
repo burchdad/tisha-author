@@ -25,10 +25,10 @@
         <nav class="section-nav" aria-label="Dashboard sections">
           <div class="sidebar-brand"><span class="sidebar-mark" aria-hidden="true">R</span><div><strong>AUTHOR ADMIN</strong><small>Website updates</small></div></div>
           <div class="sidebar-rule"></div>
-          <a href="#book-details">Book details</a><a href="#purchase-popup">Purchase pop-up</a><a href="#website-copy">Website text</a><a href="#invite-author">Invite the Author</a><a href="#teacher-toolkit">Teacher Toolkit</a><a href="#curricula">Curricula</a><a href="#media">Featured media</a><a href="#upcoming-events">Upcoming events</a><a href="#social-links">Social links</a><a href="#site-photos">Site photos</a><a href="#gallery">In the Wild</a><a href="#revisions">Revision history</a>
+          <a href="#book-details">Book details</a><a href="#purchase-popup">Purchase pop-up</a><a href="#website-copy">Website text</a><a href="#invite-author">Invite the Author</a><a href="#teacher-toolkit">Teacher Toolkit</a><a href="#curricula">Curricula</a><a href="#media">Featured media</a><a href="#upcoming-events">Upcoming events</a><a href="#social-links">Social links</a><a href="#site-photos">Site photos</a><a href="#gallery">Event photo folders</a><a href="#revisions">Revision history</a>
           <div class="sidebar-actions"><a href="/" target="_blank" rel="noopener">View public website</a><button id="logout" type="button">Sign out</button></div>
         </nav>
-        <div class="dashboard-heading"><div><p class="eyebrow">AUTHOR DASHBOARD</p><h1>Update the website</h1><p>Save once when you finish. Uploaded files become public only when their URL is saved here.</p></div><button class="primary" data-save type="button">Save website changes</button></div>
+        <div class="dashboard-heading"><div><p class="eyebrow">AUTHOR DASHBOARD</p><h1>Update the website</h1><p>Save once when you finish. Uploaded files become public only when their URL is saved here.</p><p class="editing-note">Use one editing session at a time to avoid overwriting another session’s changes.</p><p id="preview-notice" class="preview-notice" role="status" hidden>Read-only preview: try the event folders and edit fields locally. Saving, uploading, and restoring are disabled; live website content stays unchanged.</p></div><button class="primary" data-save type="button">Save website changes</button></div>
         <form id="content-form">
           <section class="editor-section" id="book-details">
             <div class="section-title"><div><h2>Book details</h2><p>Prices shown on this website and the shared shipping message.</p></div></div>
@@ -44,7 +44,13 @@
           <section class="editor-section" id="upcoming-events"><div class="section-title"><div><h2>Upcoming events</h2><p>Publish book signings, readings, and school appearances.</p></div><button class="secondary" type="button" data-add="events">Add event</button></div><div id="events-list" class="card-list"></div></section>
           <section class="editor-section" id="social-links"><div class="section-title"><div><h2>Social links</h2><p>Update the social accounts shown near the bottom of the website.</p></div><button class="secondary" type="button" data-add="social">Add social link</button></div><div id="social-list" class="card-list"></div></section>
           <section class="editor-section" id="site-photos"><div class="section-title"><div><h2>Website photos</h2><p>Update the author, illustrator, and school visit photographs.</p></div></div><div id="photos-list" class="card-list"></div></section>
-          <section class="editor-section" id="gallery"><div class="section-title"><div><h2>Rider's Magic Mark in the Wild</h2><p>Add book signings, readings, and event photographs.</p></div><button class="secondary" type="button" data-add="gallery">Add gallery photo</button></div><div id="gallery-list" class="card-list"></div></section>
+          <section class="editor-section" id="gallery" aria-labelledby="gallery-heading">
+            <div class="section-title"><div><h2 id="gallery-heading">Rider's Magic Mark in the Wild</h2><p>Create an event folder, then add its photos. These photo folders are separate from Upcoming events.</p></div><button class="secondary" type="button" data-add="eventAlbums">Create event folder</button></div>
+            <div id="event-albums-list" class="album-card-list"></div>
+            <div class="unassigned-summary"><div><h3>Unassigned photos</h3><p><span data-unassigned-count>0 photos</span> · Photos without an event stay in the gallery.</p></div><button class="secondary" type="button" data-add="gallery" data-event-id="">Add unassigned photo</button></div>
+            <div class="section-title gallery-photo-heading"><div><h3>All gallery photos</h3><p>Choose an event folder for each photo, or keep it unassigned.</p></div><button class="secondary" type="button" data-add="gallery">Add photo</button></div>
+            <div id="gallery-list" class="card-list"></div>
+          </section>
           <section class="editor-section" id="revisions"><div class="section-title"><div><h2>Revision history</h2><p>Restore any of the ten most recently saved website versions.</p></div></div><div id="revisions-list" class="revision-list"><p class="empty">Loading saved versions…</p></div></section>
         </form>
         <div class="save-bar"><p class="status" data-save-status role="status"></p><button class="primary" data-save type="button">Save website changes</button></div>

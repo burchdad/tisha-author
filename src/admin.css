@@ -20,7 +20,9 @@ input, textarea, select { width: 100%; padding: 12px 13px; border: 1px solid #b8
 textarea { resize: vertical; line-height: 1.5; }
 input:focus, textarea:focus, select:focus { outline: 3px solid #00a8ad33; border-color: #007f83; }
 button { border-radius: 999px; padding: 11px 18px; border: 0; font-weight: 800; cursor: pointer; }
-button:disabled { opacity: .55; cursor: wait; }
+button:disabled { opacity: .55; cursor: not-allowed; }
+input:disabled, textarea:disabled, select:disabled { opacity: .65; cursor: not-allowed; }
+[aria-busy="true"] button, [aria-busy="true"] input, [aria-busy="true"] textarea, [aria-busy="true"] select { cursor: wait; }
 .primary { color: white; background: #c64626; box-shadow: 0 7px 16px #c646262a; }
 .secondary { color: #0b5b48; background: #e0f5ec; border: 1px solid #a7d7c8; }
 .remove { color: #9b271d; background: transparent; padding: 7px 10px; }
@@ -110,3 +112,25 @@ button:disabled { opacity: .55; cursor: wait; }
   .section-nav { grid-template-columns: 1fr; }
   .sidebar-brand, .sidebar-rule, .sidebar-actions { grid-column: 1; }
 }
+
+.preview-notice { max-width: 760px; padding: 14px 16px; border: 1px solid #d6b15b; border-radius: 10px; color: #60470c; background: #fff1c4; font-size: .94rem; line-height: 1.5; }
+.album-card-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.album-card-list > .empty { grid-column: 1 / -1; }
+.album-editor { border-top: 5px solid #cfa43a; background: #fffdf6; }
+.album-editor .field-grid { grid-template-columns: minmax(0, 1fr); }
+.album-editor .card-heading { gap: 12px; }
+.album-editor .card-heading > div { min-width: 0; }
+.album-editor h3 { overflow-wrap: anywhere; }
+.album-editor .remove { max-width: 110px; flex-shrink: 0; font-size: .8rem; }
+.album-label { margin: 0 0 7px; color: #7b651f; font-size: .68rem; letter-spacing: .1em; font-weight: 800; }
+.album-count { color: #647168; font-size: .85rem; margin: 8px 0 18px; }
+.album-add-photo { margin-top: 18px; }
+.unassigned-summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 20px; margin: 22px 0 32px; border: 1px dashed #b8c5bc; border-radius: 14px; background: #f3f7f3; }
+.unassigned-summary h3, .gallery-photo-heading h3 { margin: 0 0 7px; }
+.unassigned-summary p { margin: 0; color: #647168; font-size: .9rem; }
+.unassigned-summary button { flex-shrink: 0; }
+@media (max-width: 1100px) { .album-card-list { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 700px) { .unassigned-summary { flex-direction: column; align-items: start; } .album-editor .card-heading { flex-wrap: wrap; } }
+
+.editing-note { color: #647168; font-size: .9rem; line-height: 1.5; }
+.upload-recovery { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; grid-column: 1 / -1; }

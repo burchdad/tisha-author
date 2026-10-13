@@ -1,129 +1,62 @@
-const RESEND_API_URL = 'https://api.resend.com/emails';
+import legacyHandler from '../server/legacy-school-visit.js';
+import { randomUUID } from 'node:crypto';
+import { adminConfigured } from '../server/admin-auth.js';
+import { methodNotAllowed, sendJson } from '../server/http.js';
+import { createVisitStore } from '../server/visit-store.js';
+import { createVisit, digest, normalizeInquiry, validId, VisitError } from '../server/visit-model.js';
+import { readVisitJson, requireVisitOrigin, siteOrigin, visitConfigured } from '../server/visit-http.js';
+import { inquiryEmail } from '../server/visit-email.js';
+import { schoolVisitSender } from '../server/visit-sender.js';
 
-function json(response, status, payload) {
-  response.statusCode = status;
-  response.setHeader('Content-Type', 'application/json');
-  response.end(JSON.stringify(payload));
-}
-
-function escapeHtml(value = '') {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
-function isValidEmail(value = '') {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value).trim());
-}
-
-async function readBody(request) {
-  if (request.body && typeof request.body === 'object') return request.body;
-  const chunks = [];
-  for await (const chunk of request) chunks.push(chunk);
-  const rawBody = Buffer.concat(chunks).toString('utf8');
-  return rawBody ? JSON.parse(rawBody) : {};
-}
-
-export default async function handler(request, response) {
-  response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (request.method === 'OPTIONS') {
-    response.statusCode = 204;
-    response.end();
-    return;
-  }
-
-  if (request.method !== 'POST') {
-    json(response, 405, { message: 'Method not allowed.' });
-    return;
-  }
-
-  const apiKey = process.env.RESEND_API_KEY;
-  const toEmail = process.env.INVITE_TO_EMAIL || process.env.RESEND_TO_EMAIL || 'ridersmagicmark@gmail.com';
-  const fromEmail = process.env.RESEND_FROM_EMAIL || "Rider's Magic Mark <onboarding@resend.dev>";
-
-  if (!apiKey || !toEmail) {
-    json(response, 500, { message: 'Email delivery is not configured yet.' });
-    return;
-  }
-
-  let body;
-  try {
-    body = await readBody(request);
-  } catch {
-    json(response, 400, { message: 'Please check the form and try again.' });
-    return;
-  }
-
-  if (body.website) {
-    json(response, 200, { message: 'Thanks! We received your request.' });
-    return;
-  }
-
-  const fields = {
-    name: String(body.name || '').trim(),
-    school: String(body.school || '').trim(),
-    email: String(body.email || '').trim(),
-    interest: String(body.interest || '').trim(),
-    preferredDate: String(body.preferredDate || '').trim(),
-    preferredTime: String(body.preferredTime || '').trim(),
-    notes: String(body.notes || '').trim(),
+export function createSchoolVisitHandler({ store = createVisitStore(), send = (...args) => fetch(...args), now = () => Date.now() } = {}) {
+  return async function handler(request, response) {
+    if (process.env.SCHOOL_VISIT_APPROVAL_ENABLED !== 'true') return legacyHandler(request, response);
+    if (request.method !== 'POST') return methodNotAllowed(response, ['POST']);
+    try {
+      requireVisitOrigin(request);
+      if (!visitConfigured() || !adminConfigured() || !process.env.RESEND_API_KEY) throw new VisitError('School visit review is being configured. Please contact us directly.', 503);
+      const from = schoolVisitSender();
+      const body = await readVisitJson(request);
+      if (body?.website) return sendJson(response, 200, { message: 'Thanks! We received your request.' });
+      const fields = normalizeInquiry(body, now());
+      const id = body.requestId || randomUUID();
+      if (!validId(id)) throw new VisitError('Please refresh the form and try again.');
+      let saved = await store.read(id);
+      if (!saved) {
+        try { await store.write(createVisit(id, fields, now())); }
+        catch (error) {
+          // A concurrent create or an interrupted response may already have saved
+          // the record. Re-read instead of interpreting SDK error message text.
+          if (!await store.read(id)) throw error;
+        }
+        saved = await store.read(id);
+      }
+      if (!saved) throw new Error('Unable to read saved request.');
+      if (saved.record.requestDigest !== digest(fields)) throw new VisitError('The submitted details changed. Refresh the page to send a new request.', 409);
+      if (saved.record.notification.status !== 'sent') {
+        // Resend retains idempotency keys for 24 hours. Never retry an uncertain
+        // send after that window; preserve the request for operator recovery.
+        if (now() - Date.parse(saved.record.createdAt) > 23 * 3600000) throw new VisitError('Your request is saved, but its email needs a delivery check. Please contact us directly.', 503);
+        const result = await send('https://api.resend.com/emails', {
+          method: 'POST', headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json', 'Idempotency-Key': `school-visit-${id}` },
+          body: JSON.stringify({ from, to: [process.env.INVITE_TO_EMAIL || process.env.RESEND_TO_EMAIL || 'ridersmagicmark@gmail.com'], reply_to: fields.email, ...inquiryEmail(saved.record, siteOrigin()) }),
+          signal: AbortSignal.timeout(10000),
+        });
+        if (!result.ok) throw new VisitError('Your request is saved, but the notification could not be sent. Try again with the same details.', 502);
+        const delivery = await result.json();
+        if (typeof delivery.id !== 'string') throw new Error('Email provider did not confirm acceptance.');
+        for (let attempt = 0; attempt < 3; attempt++) {
+          saved = await store.read(id);
+          if (saved.record.notification.status === 'sent') break;
+          const record = { ...saved.record, notification: { status: 'sent', providerId: delivery.id, sentAt: new Date(now()).toISOString() } };
+          try { await store.write(record, saved.etag); break; }
+          catch (error) { if (error.status !== 409 || attempt === 2) throw error; }
+        }
+      }
+      return sendJson(response, 200, { message: 'Thanks! Your visit request has been sent for review. The date is not booked until the author confirms it with you.' });
+    } catch (error) {
+      return sendJson(response, error instanceof VisitError ? error.status : 503, { message: error instanceof VisitError ? error.message : 'We could not confirm delivery yet. Please retry with the same details.' });
+    }
   };
-
-  if (!fields.name || !fields.school || !isValidEmail(fields.email) || !fields.interest || !fields.preferredDate || !fields.preferredTime) {
-    json(response, 400, { message: 'Please complete the required fields before submitting.' });
-    return;
-  }
-
-  const subject = `School visit inquiry from ${fields.school}`;
-  const html = `
-    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#172033">
-      <h1 style="font-size:24px">New Rider's Magic Mark school visit inquiry</h1>
-      <p><strong>Name:</strong> ${escapeHtml(fields.name)}</p>
-      <p><strong>School or organization:</strong> ${escapeHtml(fields.school)}</p>
-      <p><strong>Email:</strong> ${escapeHtml(fields.email)}</p>
-      <p><strong>Visit interest:</strong> ${escapeHtml(fields.interest)}</p>
-      <p><strong>Preferred date:</strong> ${escapeHtml(fields.preferredDate)}</p>
-      <p><strong>Preferred time:</strong> ${escapeHtml(fields.preferredTime)}</p>
-      ${fields.notes ? `<p><strong>Notes:</strong><br />${escapeHtml(fields.notes).replaceAll('\n', '<br />')}</p>` : ''}
-    </div>
-  `;
-
-  const text = [
-    "New Rider's Magic Mark school visit inquiry",
-    `Name: ${fields.name}`,
-    `School or organization: ${fields.school}`,
-    `Email: ${fields.email}`,
-    `Visit interest: ${fields.interest}`,
-    `Preferred date: ${fields.preferredDate}`,
-    `Preferred time: ${fields.preferredTime}`,
-    fields.notes ? `Notes: ${fields.notes}` : '',
-  ].filter(Boolean).join('\n');
-
-  const resendResponse = await fetch(RESEND_API_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: fromEmail,
-      to: [toEmail],
-      reply_to: fields.email,
-      subject,
-      html,
-      text,
-    }),
-  });
-
-  if (!resendResponse.ok) {
-    json(response, 502, { message: 'The message could not be sent yet. Please try again soon.' });
-    return;
-  }
-
-  json(response, 200, { message: 'Thanks! We received your request and will follow up soon.' });
 }
+export default createSchoolVisitHandler();

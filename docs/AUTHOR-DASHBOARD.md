@@ -75,3 +75,11 @@ warns before leaving or signing out with unsaved edits. Source-controlled defaul
 remain available for recovery. Uploaded files
 are retained even if an editor removes their URL from the page; delete unused files
 from the Vercel Blob dashboard during periodic maintenance.
+
+## School-visit review
+
+The review-only implementation adds a protected visit page linked from inquiry
+emails. See [SCHOOL-VISIT-APPROVAL.md](SCHOOL-VISIT-APPROVAL.md) for its sender
+migration, feature flag, private-storage/authentication prerequisites, manual
+calendar workflow and production validation gates. Approval does not itself
+send a school confirmation or create a live calendar event.

@@ -1,0 +1,44 @@
+name: Mocked visit review
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mocked-visit-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  mocked-review:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'codex/tisha-visit-review-current'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+      - name: Build and offline regression tests
+        run: |
+          npm run build
+          npm run test:api
+      - name: Install official Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run localhost browser fixtures
+        env:
+          CI: 'true'
+        run: |
+          export PLAYWRIGHT_CHROMIUM_PATH="$(node --input-type=module -e "import { chromium } from '@playwright/test'; process.stdout.write(chromium.executablePath())")"
+          npx playwright test --config playwright.review.config.js --reporter=line --global-timeout=600000 --forbid-only
+      # Only synthetic fixtures and localhost are used. No provider secrets,
+      # environment grants, deployments, caches, or billed artifact storage.

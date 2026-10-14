@@ -105,3 +105,19 @@ exposes this mode to show a dashboard notice; server-side guards enforce it. An
 existing author login can view/edit a local review draft, but cannot publish it from
 the preview. Use production only after the review branch has been approved and
 released. Never test uploads or saves against the live store without authorization.
+
+## School-visit review
+
+School inquiries can be reviewed at the authenticated link in the owner email after
+the visit feature is configured and released. Sign in with the existing author
+account, review or edit the date, time, time zone, duration and location, then
+choose **Approve visit**, **Request changes**, **Save details for later**, or
+**Decline request**. Request changes requires a note and opens a separate reply
+draft for you to review and send. Recording that proposal does not contact the
+school, approve the request, or book a calendar event.
+
+Approval requires checking your own calendar. Calendar export and recording a
+manual import are separate steps. There is no automatic booking, school email,
+or calendar invitation. Visit records and exports are unavailable in Preview,
+and all Preview inquiry submissions are blocked before storage or email.
+See `docs/SCHOOL-VISIT-APPROVAL.md` for the release checklist.

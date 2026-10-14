@@ -66,6 +66,10 @@ for (const width of [390, 1440]) {
         await page.keyboard.press('Tab');
         expect(await page.evaluate(() => document.activeElement.closest('dialog')?.open)).toBe(true);
       }
+      for (let tab = 0; tab < 4; tab++) {
+        await page.keyboard.press('Shift+Tab');
+        expect(await page.evaluate(() => document.activeElement.closest('dialog')?.open)).toBe(true);
+      }
       await page.keyboard.press('ArrowRight');
       await expect(page.getByRole('dialog')).toHaveAccessibleName('A wide moment');
       await expect(page.getByRole('dialog').locator('.cms-photo-stage img')).toHaveAttribute('src', '/album-fixture-landscape.svg');

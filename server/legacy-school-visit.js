@@ -1,0 +1,145 @@
+import { schoolVisitSender } from './visit-sender.js';
+import { readVisitJson } from './visit-http.js';
+import { digest, validId, VisitError } from './visit-model.js';
+const RESEND_API_URL = 'https://api.resend.com/emails';
+
+function json(response, status, payload) {
+  response.statusCode = status;
+    response.setHeader('Content-Type', 'application/json');
+    response.end(JSON.stringify(payload));
+  }
+
+  function escapeHtml(value = '') {
+    return String(value)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+  }
+
+  function isValidEmail(value = '') {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value).trim());
+  }
+
+  export function createLegacySchoolVisitHandler({ send = (...args) => fetch(...args) } = {}) {
+    return async function handler(request, response) {
+    response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (request.method === 'OPTIONS') {
+      response.statusCode = 204;
+      response.end();
+      return;
+    }
+
+    if (request.method !== 'POST') {
+      json(response, 405, { message: 'Method not allowed.' });
+      return;
+    }
+
+    const apiKey = process.env.RESEND_API_KEY;
+    const toEmail = process.env.INVITE_TO_EMAIL || process.env.RESEND_TO_EMAIL || 'ridersmagicmark@gmail.com';
+    let fromEmail;
+    try { fromEmail = schoolVisitSender(); } catch { return json(response, 503, { message: 'School visit email delivery is being configured. Please contact us directly.' }); }
+
+    if (!apiKey || !toEmail) {
+      json(response, 500, { message: 'Email delivery is not configured yet.' });
+      return;
+    }
+
+    let body;
+    try {
+      body = await readVisitJson(request);
+      if (!body || typeof body !== 'object' || Array.isArray(body)) throw new VisitError('Please check the form.');
+    } catch (error) {
+      json(response, error.status || 400, { message: error instanceof VisitError ? error.message : 'Please check the form and try again.' });
+      return;
+    }
+
+    if (body.website) {
+      json(response, 200, { message: 'Thanks! We received your request.' });
+      return;
+    }
+
+    const fields = {
+      name: String(body.name || '').trim(),
+      school: String(body.school || '').trim(),
+      email: String(body.email || '').trim(),
+      interest: String(body.interest || '').trim(),
+      preferredDate: String(body.preferredDate || '').trim(),
+      preferredTime: String(body.preferredTime || '').trim(),
+      notes: String(body.notes || '').trim(),
+      timeZone: String(body.timeZone || '').trim(),
+      durationMinutes: String(body.durationMinutes || '').trim(),
+      location: String(body.location || '').trim(),
+    };
+
+    if (!fields.name || !fields.school || !isValidEmail(fields.email) || !fields.interest || !fields.preferredDate || !fields.preferredTime) {
+      json(response, 400, { message: 'Please complete the required fields before submitting.' });
+      return;
+    }
+
+    const limits = { name: 150, school: 200, email: 254, interest: 200, preferredDate: 10, preferredTime: 5, notes: 3000, timeZone: 80, durationMinutes: 3, location: 500 };
+    if (Object.entries(fields).some(([name, value]) => value.length > limits[name] || /[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(value)) || (body.requestId && !validId(body.requestId))) return json(response, 400, { message: 'Please check the form details.' });
+    const subject = `School visit inquiry from ${fields.school.replace(/[\r\n]/g, ' ')}`;
+    const html = `
+      <div style="font-family:Arial,sans-serif;line-height:1.6;color:#172033">
+        <h1 style="font-size:24px">New Rider's Magic Mark school visit inquiry</h1>
+        <p><strong>Name:</strong> ${escapeHtml(fields.name)}</p>
+        <p><strong>School or organization:</strong> ${escapeHtml(fields.school)}</p>
+        <p><strong>Email:</strong> ${escapeHtml(fields.email)}</p>
+        <p><strong>Visit interest:</strong> ${escapeHtml(fields.interest)}</p>
+        <p><strong>Preferred date:</strong> ${escapeHtml(fields.preferredDate)}</p>
+        <p><strong>Preferred time:</strong> ${escapeHtml(fields.preferredTime)}</p>
+        ${fields.timeZone ? `<p><strong>Time zone:</strong> ${escapeHtml(fields.timeZone)}</p>` : ''}
+        ${fields.durationMinutes ? `<p><strong>Duration:</strong> ${escapeHtml(fields.durationMinutes)} minutes</p>` : ''}
+        ${fields.location ? `<p><strong>Location:</strong> ${escapeHtml(fields.location)}</p>` : ''}
+        ${fields.notes ? `<p><strong>Notes:</strong><br />${escapeHtml(fields.notes).replaceAll('\n', '<br />')}</p>` : ''}
+      </div>
+    `;
+
+    const text = [
+      "New Rider's Magic Mark school visit inquiry",
+      `Name: ${fields.name}`,
+      `School or organization: ${fields.school}`,
+      `Email: ${fields.email}`,
+      `Visit interest: ${fields.interest}`,
+      `Preferred date: ${fields.preferredDate}`,
+      `Preferred time: ${fields.preferredTime}`,
+      fields.timeZone ? `Time zone: ${fields.timeZone}` : '',
+      fields.durationMinutes ? `Duration: ${fields.durationMinutes} minutes` : '',
+      fields.location ? `Location: ${fields.location}` : '',
+      fields.notes ? `Notes: ${fields.notes}` : '',
+    ].filter(Boolean).join('\n');
+
+    let resendResponse;
+    try {
+      resendResponse = await send(RESEND_API_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        ...(body.requestId ? { 'Idempotency-Key': `school-visit-legacy-${body.requestId}-${digest(fields)}` } : {}),
+      },
+      signal: AbortSignal.timeout(10000),
+      body: JSON.stringify({
+        from: fromEmail,
+        to: [toEmail],
+        reply_to: fields.email,
+        subject,
+        html,
+        text,
+      }),
+    });
+    } catch { return json(response, 503, { message: 'We could not confirm email delivery. Please retry with the same details.' }); }
+
+    if (!resendResponse.ok) {
+      json(response, 502, { message: 'The message could not be sent yet. Please try again soon.' });
+      return;
+    }
+
+    json(response, 200, { message: 'Thanks! We received your request and will follow up soon.' });
+  };
+}
+export default createLegacySchoolVisitHandler();

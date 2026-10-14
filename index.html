@@ -363,6 +363,13 @@
                 <input type="time" name="preferredTime" required />
               </label>
             </div>
+            <div class="form-schedule-row">
+              <label>Time zone<input name="timeZone" placeholder="America/Chicago" list="visit-time-zones" maxlength="80" required /></label>
+              <label>Visit duration<select name="durationMinutes" required><option value="">Choose duration</option><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60">60 minutes</option><option value="90">90 minutes</option><option value="120">2 hours</option></select></label>
+            </div>
+            <datalist id="visit-time-zones"><option value="America/Chicago"><option value="America/New_York"><option value="America/Denver"><option value="America/Los_Angeles"><option value="America/Phoenix"><option value="Etc/UTC"></datalist>
+            <label>Location or virtual visit details<input name="location" maxlength="500" required placeholder="School address, city, or virtual visit" /></label>
+            <p>The date and time are a request. Your visit is not booked until the author confirms it. Please do not include student names or private student information.</p>
             <label class="form-notes">
               Notes
               <textarea name="notes" placeholder="Share grade levels, group size, location, or anything helpful."></textarea>

@@ -80,3 +80,10 @@ export function hasSameOrigin(request) {
 export function adminConfigured() {
   return configured();
 }
+
+// Read the identity only after signature, expiry and allowlist checks succeed.
+export function authenticatedEmail(request) {
+  if (!isAuthenticated(request)) return null;
+  const token = parseCookies(request.headers.cookie)[COOKIE_NAME];
+  return JSON.parse(Buffer.from(token.split('.')[0], 'base64url').toString('utf8')).email;
+}

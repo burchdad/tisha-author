@@ -50,14 +50,14 @@ for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 900 });
     const writes = await fixture(page);
     const oldPhoto = page.locator('[data-kind="gallery"]').nth(1);
-    await expect(oldPhoto.getByLabel('Event folder', { exact: true })).toHaveValue('');
-    await oldPhoto.getByLabel('Caption', { exact: true }).fill('An unsaved caption');
+    await expect(oldPhoto.getByRole('combobox', { name: 'Event folder', exact: true })).toHaveValue('');
+    await oldPhoto.getByRole('textbox', { name: 'Caption', exact: true }).fill('An unsaved caption');
     await page.getByRole('button', { name: 'Create event folder', exact: true }).click();
     const folder = page.locator('[data-kind="eventAlbums"]').last();
     await folder.getByLabel('Event name', { exact: true }).fill('Library signing');
     await folder.getByLabel('Event date (optional)', { exact: true }).fill('2026-10-13');
     const folderId = await folder.locator('input[name="id"]').inputValue();
-    await oldPhoto.getByLabel('Event folder', { exact: true }).selectOption(folderId);
+    await oldPhoto.getByRole('combobox', { name: 'Event folder', exact: true }).selectOption(folderId);
     await folder.getByLabel('Cover photo (optional)').selectOption('photo_legacy');
     await page.locator('[data-save]').last().click();
     await expect(page.locator('[data-save-status]')).toContainText('Saved.');
@@ -75,7 +75,7 @@ test('an album add-photo button preselects its folder and a blank upload cannot 
   const folder = page.locator('[data-kind="eventAlbums"]').first();
   await folder.getByRole('button', { name: 'Add photo to this event', exact: true }).click();
   const photo = page.locator('[data-kind="gallery"]').last();
-  await expect(photo.getByLabel('Event folder', { exact: true })).toHaveValue('album_reading');
+  await expect(photo.getByRole('combobox', { name: 'Event folder', exact: true })).toHaveValue('album_reading');
   await expect(photo.locator('input[name="id"]')).toHaveValue(/^photo_/);
   await photo.getByLabel('Title', { exact: true }).fill('Keep this new draft');
   await page.locator('[data-save]').last().click();
@@ -88,7 +88,7 @@ test('folder removal can be canceled and confirmation moves photos without delet
   const writes = await fixture(page);
   const folder = page.locator('[data-kind="eventAlbums"]').first();
   const photo = page.locator('[data-kind="gallery"]').first();
-  await photo.getByLabel('Caption', { exact: true }).fill('Keep this unsaved caption');
+  await photo.getByRole('textbox', { name: 'Caption', exact: true }).fill('Keep this unsaved caption');
   page.once('dialog', (dialog) => dialog.dismiss());
   await folder.getByRole('button', { name: 'Remove event folder', exact: true }).click();
   await expect(folder).toHaveCount(1);
@@ -96,8 +96,8 @@ test('folder removal can be canceled and confirmation moves photos without delet
   await folder.getByRole('button', { name: 'Remove event folder', exact: true }).click();
   await expect(page.locator('[data-kind="eventAlbums"]')).toHaveCount(0);
   await expect(page.locator('[data-kind="gallery"]')).toHaveCount(2);
-  await expect(photo.getByLabel('Event folder', { exact: true })).toHaveValue('');
-  await expect(photo.getByLabel('Caption', { exact: true })).toHaveValue('Keep this unsaved caption');
+  await expect(photo.getByRole('combobox', { name: 'Event folder', exact: true })).toHaveValue('');
+  await expect(photo.getByRole('textbox', { name: 'Caption', exact: true })).toHaveValue('Keep this unsaved caption');
   await expect(photo.locator('input[name="url"]')).toHaveValue('/fixture-reading.jpg');
   await page.locator('[data-save]').last().click();
   await expect(page.locator('[data-save-status]')).toContainText('Saved.');
@@ -114,7 +114,7 @@ test('cover choices contain only the event’s uploaded photos and clear after r
   const cover = folder.getByLabel('Cover photo (optional)');
   await expect(cover.locator('option')).toHaveCount(2);
   await expect(cover.locator('option[value="photo_legacy"]')).toHaveCount(0);
-  await page.locator('[data-kind="gallery"]').first().getByLabel('Event folder', { exact: true }).selectOption('');
+  await page.locator('[data-kind="gallery"]').first().getByRole('combobox', { name: 'Event folder', exact: true }).selectOption('');
   await expect(cover).toHaveValue('');
   await expect(cover.locator('option')).toHaveCount(1);
 });
@@ -128,9 +128,9 @@ test('legacy fixtures keep photo metadata and stable generated IDs through new f
   await page.getByRole('button', { name: 'Create event folder', exact: true }).click();
   await page.getByLabel('Event name', { exact: true }).fill('A new event');
   await expect(photo.locator('input[name="id"]')).toHaveValue(id);
-  await expect(photo.getByLabel('Caption', { exact: true })).toHaveValue('Old caption');
+  await expect(photo.getByRole('textbox', { name: 'Caption', exact: true })).toHaveValue('Old caption');
   await expect(photo.getByLabel('Image description for accessibility', { exact: true })).toHaveValue('Old alt');
-  await expect(photo.getByLabel('Event folder', { exact: true })).toHaveValue('');
+  await expect(photo.getByRole('combobox', { name: 'Event folder', exact: true })).toHaveValue('');
 });
 
 test('preview writes stay blocked even if disabled controls are dispatched programmatically', async ({ page }) => {
@@ -151,12 +151,12 @@ test('preview writes stay blocked even if disabled controls are dispatched progr
 test('a stale save leaves the unsaved fields and associations in place', async ({ page }) => {
   await fixture(page, { save: (route) => route.fulfill({ status: 409, json: { message: 'A newer version was saved. Refresh before saving again.' } }) });
   const photo = page.locator('[data-kind="gallery"]').last();
-  await photo.getByLabel('Event folder', { exact: true }).selectOption('album_reading');
-  await photo.getByLabel('Caption', { exact: true }).fill('My unsaved edit');
+  await photo.getByRole('combobox', { name: 'Event folder', exact: true }).selectOption('album_reading');
+  await photo.getByRole('textbox', { name: 'Caption', exact: true }).fill('My unsaved edit');
   await page.locator('[data-save]').last().click();
   await expect(page.locator('[data-save-status]')).toContainText('A newer version was saved');
-  await expect(photo.getByLabel('Caption', { exact: true })).toHaveValue('My unsaved edit');
-  await expect(photo.getByLabel('Event folder', { exact: true })).toHaveValue('album_reading');
+  await expect(photo.getByRole('textbox', { name: 'Caption', exact: true })).toHaveValue('My unsaved edit');
+  await expect(photo.getByRole('combobox', { name: 'Event folder', exact: true })).toHaveValue('album_reading');
   await expect(page.locator('[data-save]').last()).toBeEnabled();
 });
 

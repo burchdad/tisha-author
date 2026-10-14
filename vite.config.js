@@ -19,6 +19,7 @@ export default defineConfig({
         home: resolve(import.meta.dirname, 'index.html'),
         admin: resolve(import.meta.dirname, 'admin/index.html'),
         curriculum: resolve(import.meta.dirname, 'curriculum.html'),
+        visits: resolve(import.meta.dirname, 'visits.html'),
       },
     },
   },

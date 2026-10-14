@@ -421,6 +421,13 @@ function initializeInviteForm() {
   const form = document.querySelector('[data-invite-form]');
   if (!form) return;
 
+  const retryStorageKey = 'rmm_school_visit_retry_v1';
+  // Keep one pending request in this tab. Never retain names, email, or form data.
+  // Stop before Resend's 24-hour idempotency window can expire.
+  const retryWindowMs = 23 * 60 * 60 * 1000;
+  let submitting = false;
+  const timezone = form.elements?.timeZone;
+  if (timezone) timezone.value = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
   const status = form.querySelector('[data-form-status]');
   const submitButton = form.querySelector('button[type="submit"]');
 
@@ -430,17 +437,52 @@ function initializeInviteForm() {
     status.dataset.state = state;
   };
 
+  const readRetry = () => {
+    const raw = sessionStorage.getItem(retryStorageKey);
+    if (raw === null) return null;
+    const retry = JSON.parse(raw);
+    if (!retry || typeof retry.id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(retry.id) ||
+      typeof retry.fingerprint !== 'string' || !/^[0-9a-f]{64}$/.test(retry.fingerprint) || !Number.isFinite(retry.createdAt) || retry.createdAt <= 0 || retry.createdAt > Date.now()) {
+      throw new Error('Invalid saved retry.');
+    }
+    return { id: retry.id, fingerprint: retry.fingerprint, createdAt: retry.createdAt };
+  };
+  const retryHelp = 'Retry with the same details in this tab within 23 hours of your first attempt. Changing details sends a new request. Keep this tab open until receipt is confirmed.';
+  const storageHelp = 'Your browser could not retain a safe retry. Nothing new was sent. Allow session storage and try again, or contact the author to check any earlier submission.';
+  try {
+    if (readRetry()) setStatus(`A previous submission may already have been received. Re-enter its details to check delivery. ${retryHelp}`);
+  } catch { setStatus(storageHelp, 'error'); }
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    if (!form.reportValidity()) return;
+    if (submitting || !form.reportValidity()) return;
 
+    submitting = true;
     submitButton.disabled = true;
     submitButton.textContent = 'Sending...';
     setStatus('Sending your request...', 'loading');
 
-    const payload = Object.fromEntries(new FormData(form).entries());
-
+    let sendAttempted = false;
     try {
+      const payload = Object.fromEntries(new FormData(form).entries());
+      let fingerprint;
+      try {
+        const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(payload)));
+        fingerprint = Array.from(new Uint8Array(hash), (byte) => byte.toString(16).padStart(2, '0')).join('');
+      } catch { throw new Error('Your browser could not prepare a safe retry. Nothing was sent. Please use an updated browser or contact the author directly.'); }
+      let retry;
+      try { retry = readRetry(); } catch { throw new Error(storageHelp); }
+      if (retry?.fingerprint === fingerprint && Date.now() - retry.createdAt >= retryWindowMs) {
+        throw new Error('This request’s 23-hour retry window has ended. It may already have been received. Please contact the author to check delivery before sending another request.');
+      }
+      if (retry?.fingerprint !== fingerprint) retry = { id: crypto.randomUUID(), fingerprint, createdAt: Date.now() };
+      try {
+        const saved = JSON.stringify(retry);
+        sessionStorage.setItem(retryStorageKey, saved);
+        if (sessionStorage.getItem(retryStorageKey) !== saved) throw new Error('Retry was not saved.');
+      } catch { throw new Error(storageHelp); }
+      payload.requestId = retry.id;
+      sendAttempted = true;
       const response = await fetch('/api/school-visit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -449,14 +491,20 @@ function initializeInviteForm() {
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(result.message || 'The message could not be sent yet.');
+        throw new Error(result?.message || 'The message could not be sent yet.');
       }
+      if (typeof result?.message !== 'string' || !result.message.trim()) throw new Error('We could not confirm receipt yet.');
 
+      let retryCleared = false;
+      try { sessionStorage.removeItem(retryStorageKey); retryCleared = sessionStorage.getItem(retryStorageKey) === null; } catch { /* Retaining a confirmed retry is safer than resending it with a new ID. */ }
       form.reset();
-      setStatus(result.message || 'Thanks! We received your request and will follow up soon.', 'success');
+      if (timezone) timezone.value = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+      setStatus(`${result.message}${retryCleared ? '' : ' Your browser could not clear its saved retry. Please check this confirmation before submitting again.'}`, 'success');
     } catch (error) {
-      setStatus(error.message || 'Something went wrong. Please try again soon.', 'error');
+      const message = error.message || 'We could not confirm receipt yet.';
+      setStatus(`${message}${sendAttempted ? ` ${retryHelp}` : ''}`, 'error');
     } finally {
+      submitting = false;
       submitButton.disabled = false;
       submitButton.textContent = 'Start the Conversation';
     }

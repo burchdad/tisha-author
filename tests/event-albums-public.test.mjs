@@ -77,6 +77,30 @@ const buttonNamed = (root, name) => byTag(root, 'button').find((node) => node.ge
 const serialize = (value) => JSON.parse(JSON.stringify(value));
 const populated = () => { const f = fixture(); f.apply({ eventAlbums: albums, gallery: photos }); return f; };
 
+test('photo dialog wraps Tab and Shift+Tab through enabled controls', () => {
+  const f = populated();
+  byClass(f.gallery, 'cms-album-card')[0].fire('click');
+  byClass(f.gallery, 'cms-photo-open')[0].fire('click');
+  const dialog = byTag(f.document, 'dialog')[0];
+  const close = buttonNamed(dialog, 'Close photo');
+  const next = buttonNamed(dialog, 'Next photo');
+  const previous = buttonNamed(dialog, 'Previous photo');
+  let prevented = 0;
+  close.focus();
+  dialog.fire('keydown', { key: 'Tab', shiftKey: true, preventDefault: () => prevented++ });
+  assert.equal(f.document.activeElement, next);
+  dialog.fire('keydown', { key: 'Tab', preventDefault: () => prevented++ });
+  assert.equal(f.document.activeElement, close);
+  next.fire('click');
+  assert.equal(next.disabled, true);
+  close.focus();
+  dialog.fire('keydown', { key: 'Tab', shiftKey: true, preventDefault: () => prevented++ });
+  assert.equal(f.document.activeElement, previous);
+  dialog.fire('keydown', { key: 'Tab', preventDefault: () => prevented++ });
+  assert.equal(f.document.activeElement, close);
+  assert.equal(prevented, 4);
+});
+
 test('public albums keep source order and group only photos with stable, known references', () => {
   const { publicEventAlbums } = fixture();
   const result = publicEventAlbums(albums, photos);

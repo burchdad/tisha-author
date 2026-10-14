@@ -220,7 +220,8 @@ function renderEventAlbums(albumItems, galleryItems) {
     fullImage.removeAttribute('src');
   };
   dialog.addEventListener('close', onDialogClose);
-  // Native modal dialogs supply background inertness, focus trapping, and Escape.
+  // Native modal dialogs supply background inertness and Escape. Explicitly
+  // wrap Tab at the enabled controls so focus also stays out of browser chrome.
   close.addEventListener('click', closePhoto);
   let pointerStartedOutside = false;
   dialog.addEventListener('pointerdown', (event) => { pointerStartedOutside = event.target === dialog; });
@@ -237,6 +238,16 @@ function renderEventAlbums(albumItems, galleryItems) {
   previous.addEventListener('click', () => movePhoto(-1));
   next.addEventListener('click', () => movePhoto(1));
   dialog.addEventListener('keydown', (event) => {
+    if (event.key === 'Tab' && !event.altKey && !event.ctrlKey && !event.metaKey) {
+      const buttons = [close, ...(!controls.hidden ? [previous, next] : [])].filter((button) => !button.disabled);
+      const first = buttons[0]; const last = buttons[buttons.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault(); last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault(); first.focus();
+      }
+      return;
+    }
     if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
     if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
       event.preventDefault();

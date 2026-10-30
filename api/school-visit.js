@@ -44,7 +44,10 @@ export default async function handler(request, response) {
 
   const apiKey = process.env.RESEND_API_KEY;
   const toEmail = process.env.INVITE_TO_EMAIL || process.env.RESEND_TO_EMAIL || 'ridersmagicmark@gmail.com';
-  const fromEmail = process.env.RESEND_FROM_EMAIL || "Rider's Magic Mark <onboarding@resend.dev>";
+  const schoolVisitFromEmail = process.env.SCHOOL_VISIT_FROM_EMAIL?.trim();
+  const fromEmail = schoolVisitFromEmail
+    ? `Rider's Magic Mark School Visits <${schoolVisitFromEmail}>`
+    : process.env.RESEND_FROM_EMAIL || "Rider's Magic Mark <onboarding@resend.dev>";
 
   if (!apiKey || !toEmail) {
     json(response, 500, { message: 'Email delivery is not configured yet.' });
@@ -127,3 +130,4 @@ export default async function handler(request, response) {
 
   json(response, 200, { message: 'Thanks! We received your request and will follow up soon.' });
 }
+

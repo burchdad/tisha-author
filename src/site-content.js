@@ -1,3 +1,4 @@
+import { normalizePodcastPromo } from '../cms/podcast-promo.js';
 import textFields from '../cms/text-fields.json';
 import { defaultSettings, photoSlots } from '../cms/defaults.js';
 
@@ -383,6 +384,16 @@ export function applySiteContent(data) {
     if (price) price.textContent = currency.format(catalog[format + 'Price']);
   }
   if (Array.isArray(data.curricula)) renderCurricula(data.curricula);
+  const promo = document.querySelector('.podcast-promo');
+  if (promo) {
+    const value = normalizePodcastPromo(data.podcastPromo);
+    promo.hidden = !value.visible || !value.url || !value.title || !value.label;
+    promo.querySelector('strong').textContent = value.title;
+    promo.querySelector('p').textContent = value.description;
+    const link = promo.querySelector('a');
+    link.textContent = value.label;
+    if (value.url) link.href = value.url; else link.removeAttribute('href');
+  }
   if (Array.isArray(data.media)) renderMedia(data.media);
   if (Array.isArray(data.toolkit)) renderToolkit(data.toolkit);
   if (Array.isArray(data.social)) renderSocial(data.social);

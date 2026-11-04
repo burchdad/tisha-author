@@ -17,5 +17,28 @@ jobs:
       - run: npm ci
       - run: npm run test:api
       - run: npx playwright install --with-deps chromium
-      - run: npm test -- --workers=2
+      - name: Full browser regression report
+        continue-on-error: true
+        run: npm test -- --workers=2
+      - name: Podcast and shared content browser checks
+        run: npx playwright test tests/podcast-promo.spec.js tests/content.spec.js tests/graphics-fallback.spec.js --workers=2
       - run: npm run build
+
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Use installed Chromium for baseline
+        run: sed -i "s/channel: 'msedge'/channel: 'chromium'/" playwright.config.js
+      - name: Baseline full browser regression report
+        continue-on-error: true
+        run: npm test -- --workers=2

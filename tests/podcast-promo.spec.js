@@ -28,7 +28,7 @@ for(const width of [390,1440]){
   });
   await page.goto('/admin');await expect(page.getByLabel('Podcast HTTPS link')).toHaveValue(defaultPodcastPromo.url);
   await page.getByLabel('Podcast heading').fill('My new show');await page.getByLabel('Podcast HTTPS link').fill('https://example.com/show');
-  await page.getByLabel('Show author podcast').selectOption('false');await page.locator('[data-save]').first().click();
+  await page.getByLabel('Show author podcast').selectOption('false');await page.locator('[data-save]:visible').first().click();
   await expect.poll(()=>data.podcastPromo?.visible).toBe(false);expect(data.media).toEqual(original);
   await page.reload();await expect(page.getByLabel('Podcast heading')).toHaveValue('My new show');await expect(page.getByLabel('Show author podcast')).toHaveValue('false');
  });

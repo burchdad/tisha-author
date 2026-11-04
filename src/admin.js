@@ -1,3 +1,4 @@
+import { normalizePodcastPromo } from '../cms/podcast-promo.js';
 import { uploadPresigned } from '@vercel/blob/client';
 import textFields from '../cms/text-fields.json';
 import './admin.css';
@@ -115,6 +116,14 @@ function renderCurricula() {
       ${uploadControl('curricula', index, item.url, 'application/pdf', 'PDF')}</div></article>`).join('') || '<p class="empty">No curriculum files yet.</p>';
 }
 
+function renderPodcastPromo() {
+  const promo = normalizePodcastPromo(content.podcastPromo);
+  document.querySelector('#podcast-promo-fields').innerHTML = `<label>Show author podcast<select name="podcastVisible"><option value="true" ${promo.visible ? 'selected' : ''}>Show</option><option value="false" ${!promo.visible ? 'selected' : ''}>Hide</option></select></label>
+    ${field('Podcast heading', 'podcastTitle', promo.title, { max: 200 })}
+    ${field('Podcast description', 'podcastDescription', promo.description, { multiline: true })}
+    ${field('Podcast button label', 'podcastLabel', promo.label, { max: 200 })}
+    ${field('Podcast HTTPS link', 'podcastUrl', promo.url, { type: 'url' })}`;
+}
 function renderMedia() {
   document.querySelector('#media-list').innerHTML = content.media.map((item, index) => `<article class="editor-card" data-kind="media" data-index="${index}">
     <div class="card-heading"><h3>Media link ${index + 1}</h3><button class="remove" type="button" data-remove="media" data-index="${index}">Remove</button></div>
@@ -247,7 +256,7 @@ function render() {
   form.elements.paperbackPrice.value = content.settings.paperbackPrice;
   form.elements.hardcoverPrice.value = content.settings.hardcoverPrice;
   form.elements.shippingMessage.value = content.settings.shippingMessage;
-  renderCopy(); renderToolkit(); renderCurricula(); renderMedia(); renderEvents(); renderSocial(); renderPhotos(); renderAlbums(); renderGallery();
+  renderPodcastPromo(); renderCopy(); renderToolkit(); renderCurricula(); renderMedia(); renderEvents(); renderSocial(); renderPhotos(); renderAlbums(); renderGallery();
   syncInteractivity();
 }
 
@@ -258,6 +267,7 @@ function valuesForCard(card) {
 function collect() {
   const form = document.querySelector('#content-form');
   return {
+    podcastPromo: { visible: form.elements.podcastVisible.value === 'true', title: form.elements.podcastTitle.value, description: form.elements.podcastDescription.value, label: form.elements.podcastLabel.value, url: form.elements.podcastUrl.value },
     revision: content.revision ?? null,
     settings: { paperbackPrice: Number(form.elements.paperbackPrice.value), hardcoverPrice: Number(form.elements.hardcoverPrice.value), shippingMessage: form.elements.shippingMessage.value },
     copy: Object.fromEntries(textFields.map((item) => [item.name, form.elements[item.name].value])),

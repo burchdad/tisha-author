@@ -4,7 +4,7 @@ export default defineConfig({
   testDir: './tests',
   testIgnore: '**/*.test.mjs',
   fullyParallel: true,
-  use: { baseURL: 'http://127.0.0.1:4176', channel: 'msedge', headless: true },
+  use: { baseURL: 'http://127.0.0.1:4176', channel: process.env.CI ? 'chromium' : 'msedge', headless: true },
   webServer: {
     command: 'node node_modules/vite/bin/vite.js --host 127.0.0.1 --port 4176 --strictPort',
     url: 'http://127.0.0.1:4176',

@@ -105,3 +105,7 @@ exposes this mode to show a dashboard notice; server-side guards enforce it. An
 existing author login can view/edit a local review draft, but cannot publish it from
 the preview. Use production only after the review branch has been approved and
 released. Never test uploads or saves against the live store without authorization.
+
+## Author podcast
+
+Use **Author podcast** to edit the biography podcast heading, description, button label and HTTPS link, or choose **Hide**. Save website changes to publish. Featured media remains separate. Legacy reads default to unEDited chatter without rewriting storage. Restoring pre-feature revisions or saving from older editor tabs preserves current podcast settings. The promo stays hidden until content loads, so hidden promos do not flash or reappear during outages. Empty/unsafe links hide it.

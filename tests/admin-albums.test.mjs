@@ -1,3 +1,4 @@
+import { normalizePodcastPromo } from '../cms/podcast-promo.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
@@ -39,14 +40,14 @@ function card(values) {
 
 function setup({ fetchImpl, uploadImpl } = {}) {
   const document = new Element(); document.body = new Element(); document.createElement = () => new Element();
-  const ids = ['login-panel', 'login-form', 'dashboard', 'logout', 'preview-notice', 'content-form', 'purchase-popup-fields', 'copy-fields', 'invite-fields', 'toolkit-copy-fields', 'curricula-list', 'media-list', 'events-list', 'social-list', 'revisions-list', 'photos-list', 'gallery-list', 'toolkit-list', 'event-albums-list'];
+  const ids = ['login-panel', 'login-form', 'dashboard', 'logout', 'preview-notice', 'content-form', 'purchase-popup-fields', 'copy-fields', 'invite-fields', 'toolkit-copy-fields', 'curricula-list', 'media-list', 'events-list', 'social-list', 'revisions-list', 'photos-list', 'gallery-list', 'toolkit-list', 'event-albums-list', 'podcast-promo-fields'];
   for (const id of ids) document.map(`#${id}`, new Element());
   const form = document.querySelector('#content-form');
-  form.elements = Object.fromEntries(['paperbackPrice', 'hardcoverPrice', 'shippingMessage', ...fields.map((field) => field.name)].map((name) => [name, new Element({ value: name.includes('Price') ? '20' : 'Fixture text' })]));
+  form.elements = Object.fromEntries(['podcastVisible', 'podcastTitle', 'podcastDescription', 'podcastLabel', 'podcastUrl', 'paperbackPrice', 'hardcoverPrice', 'shippingMessage', ...fields.map((field) => field.name)].map((name) => [name, new Element({ value: name.includes('Price') ? '20' : 'Fixture text' })]));
   const saveStatus = document.map('[data-save-status]', new Element());
   const save = document.map('[data-save]', new Element());
   const unassigned = document.map('[data-unassigned-count]', new Element());
-  const context = vm.createContext({ document, window: new Element(), IntersectionObserver: class { observe() {} }, URL, crypto: webcrypto, AbortSignal, console: { error() {} }, textFields: fields, confirm: () => true, fetch: fetchImpl || (async () => { throw new Error('Unexpected fetch'); }), uploadPresigned: uploadImpl || (async () => { throw new Error('Unexpected upload'); }) });
+  const context = vm.createContext({ document, window: new Element(), IntersectionObserver: class { observe() {} }, URL, crypto: webcrypto, AbortSignal, console: { error() {} }, textFields: fields, normalizePodcastPromo, confirm: () => true, fetch: fetchImpl || (async () => { throw new Error('Unexpected fetch'); }), uploadPresigned: uploadImpl || (async () => { throw new Error('Unexpected upload'); }) });
   const executable = source.replace(/^import .*;\n/gm, '').slice(0, source.replace(/^import .*;\n/gm, '').lastIndexOf('\ntry {\n  const session'));
   vm.runInContext(executable + `\nglobalThis.admin = { normalizeAlbumFields, albumOptions, coverOptions, albumSummary, viewableUrl, renderAlbums, renderGallery, collect, refreshAlbumControls, saveChanges, restoreRevision, syncInteractivity, beginOperation, endOperation, getContent: () => content, getOperation: () => operation, setState: (data, preview = false) => { content = data; readOnly = preview; savedSnapshot = ''; }, setSnapshot: (value) => { savedSnapshot = value; } };`, context);
   return { admin: context.admin, context, document, form, saveStatus, save, unassigned };

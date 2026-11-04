@@ -1,3 +1,4 @@
+import { defaultPodcastPromo, normalizePodcastPromo, preservePodcastPromo } from '../cms/podcast-promo.js';
 import { del, get, list, put } from '@vercel/blob';
 import { normalizeGallery, preserveLegacyGallery, validateContentRevision } from './gallery-model.js';
 import { assertContentWritesAllowed } from './preview-safety.js';
@@ -44,6 +45,7 @@ function array(value) {
 
 export function defaultContent() {
   return {
+    podcastPromo: { ...defaultPodcastPromo },
     settings: { shippingMessage: defaultSettings.shippingMessage, paperbackPrice: defaultSettings.paperbackPrice, hardcoverPrice: defaultSettings.hardcoverPrice },
     copy: Object.fromEntries(textFields.map((field) => [field.name, field.initialValue])),
     curricula: defaultCurricula.map((item) => ({ title: item.title, description: item.description, placement: item.placement, url: item.existingUrl })),
@@ -102,7 +104,7 @@ export function normalizeContent(input) {
     location: text(item?.location, 200), url: url(item?.url),
   })).filter((item) => item.title);
 
-  return { settings: { shippingMessage, paperbackPrice, hardcoverPrice }, copy, curricula, media, photos, gallery, eventAlbums, toolkit, social, events };
+  return { podcastPromo: normalizePodcastPromo(input?.podcastPromo), settings: { shippingMessage, paperbackPrice, hardcoverPrice }, copy, curricula, media, photos, gallery, eventAlbums, toolkit, social, events };
 }
 
 export async function readContent() {
@@ -120,7 +122,7 @@ export async function writeContent(input) {
   if (!hasBlobCredentials()) throw new Error('File storage is not configured.');
   const current = await readContent();
   validateContentRevision(input, current);
-  const content = normalizeContent(preserveLegacyGallery(input, current, url));
+  const content = normalizeContent(preserveLegacyGallery(preservePodcastPromo(input, current), current, url));
   const pathname = `${CONTENT_PREFIX}${Date.now()}.json`;
   const saved = await put(pathname, JSON.stringify(content), {
     access: 'private', addRandomSuffix: false, contentType: 'application/json', cacheControlMaxAge: 60,

@@ -38,7 +38,8 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - name: Use installed Chromium for baseline
-        run: sed -i "s/channel: 'msedge'/channel: 'chromium'/" playwright.config.js
+        run: |
+          sed -i "s/channel: 'msedge'/channel: 'chromium'/" playwright.config.js
       - name: Baseline full browser regression report
         continue-on-error: true
         run: npm test -- --workers=2
